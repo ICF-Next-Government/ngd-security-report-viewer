@@ -1,0 +1,2 @@
+#!/usr/bin/bash
+bun src/cli/generate-html-report.ts --input scan.sarif.json --output report.html

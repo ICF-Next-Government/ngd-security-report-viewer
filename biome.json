@@ -1,0 +1,52 @@
+{
+  "$schema": "https://biomejs.dev/schemas/1.6.3/schema.json",
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 100,
+    "quoteStyle": "double",
+    "semicolons": "always"
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "style": {
+        "quotes": {
+          "enabled": true,
+          "style": "double"
+        },
+        "semicolons": {
+          "enabled": true,
+          "style": "always"
+        },
+        "maxLength": {
+          "enabled": true,
+          "length": 100,
+          "ignoreUrls": true,
+          "ignoreStrings": false,
+          "ignoreTemplateLiterals": false,
+          "ignoreComments": false,
+          "ignoreRegExpLiterals": false
+        }
+      }
+    }
+  },
+  "files": {
+    "ignore": [
+      ".git/",
+      ".gitignore",
+      ".editorconfig",
+      "node_modules/",
+      "dist/",
+      "build/",
+      "*.lock",
+      "*.md",
+      "*.json",
+      "*.yml",
+      "*.yaml"
+    ]
+  }
+}
