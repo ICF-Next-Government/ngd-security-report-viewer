@@ -1,0 +1,14 @@
+name: Sarif JSON Report Generator
+description: Reads a Sarif JSON file and generates a static HTML file as a report.
+inputs:
+  sarif-file:
+    description: Name of the Sarif JSON file to look for.
+    required: false
+    default: scan.sarif.json
+  sarif-report:
+    description: Name of the generated HTML file for the report.
+    required: false
+    default: report.html
+runs:
+  using: node20
+  main: bin/action.js
