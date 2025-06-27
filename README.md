@@ -53,7 +53,8 @@ bun src/cli/generate-html-report.ts --input scan.sarif.json --output report.html
 This is best for generating from within a GHA.
 
 ```yaml
-name: ...
+name: ICF Sarif Report Generator
+uses: ICF-Next-Government/icf-sarif-viewer@main
 with:
   in: scan.sarif.json
   out: report.html
