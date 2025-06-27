@@ -6,6 +6,7 @@ start:
 
 .PHONY: build
 build:
+	@bun i
 	@rm -rfv dist
 	@bun run build
 	@DOCKER_BUILDKIT=1 docker compose build service
@@ -16,10 +17,14 @@ ssh:
 
 .PHONY: clean
 clean:
+	@rm -rfv dist node_modules
+
+.PHONY: nuke
+nuke:
 	@docker compose down
 	@docker compose stop service
 	@docker compose rm service
 	@docker rmi $(shell docker images --filter reference=$(SERVICE_NAME) -qa) -f
 
 .PHONY: rebuild
-rebuild: clean build
+rebuild: nuke clean build

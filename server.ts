@@ -37,6 +37,7 @@ function getMimeType(filePath) {
 
 const server = serve({
   port: PORT,
+  hostname: "0.0.0.0",
   async fetch(req) {
     try {
       const url = new URL(req.url);
