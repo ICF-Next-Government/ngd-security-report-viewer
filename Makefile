@@ -6,6 +6,8 @@ start:
 
 .PHONY: build
 build:
+	@rm -rfv dist
+	@bun run build
 	@DOCKER_BUILDKIT=1 docker compose build service
 
 .PHONY: ssh

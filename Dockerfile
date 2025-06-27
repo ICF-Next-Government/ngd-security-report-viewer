@@ -11,5 +11,8 @@ FROM oven/bun:1
 WORKDIR /code
 
 COPY --from=build /code/dist /code/dist
+COPY --from=build /code/server.ts /code/server.ts
 
-CMD ["bun", "--version"]
+EXPOSE 9876
+
+CMD ["bun", "server.ts"]

@@ -4,7 +4,7 @@ services:
       dockerfile: Dockerfile
     container_name: sarif-viewer
     ports:
-      - 5173:5173
+      - 9867:9876
     tty: true
     working_dir: /code
     stdin_open: true
