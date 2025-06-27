@@ -12,13 +12,13 @@ inputs:
 runs:
   using: composite
   steps:
+    - uses: oven-sh/setup-bun@v2
     - name: Checkout code
       uses: actions/checkout@v4
       with:
         repository: ICF-Next-Government/icf-sarif-viewer
         path: .sarif-viewer
         ref: main
-
     - name: Generate Sarif Report
       run: bun src/cli/generate-html-report.ts --input ${{ inputs.in }} --output ${{ inputs.out }}
       shell: sh
