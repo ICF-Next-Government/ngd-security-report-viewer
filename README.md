@@ -24,6 +24,12 @@ make start
 
 Visit [http://localhost:9867](http://localhost:9867) in the browser.
 
+If you want an all-in-one command, here you go (NOTE: requires the `gh` CLI):
+
+```bash
+gh repo clone ICF-Next-Government/icf-sarif-viewer; cd icf-sarif-viewer; make start; cd ..;
+```
+
 ## As a CLI Tool
 
 This is best used for programmatically and automatically integrating the generation of these scan reports.
