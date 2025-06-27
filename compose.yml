@@ -1,0 +1,9 @@
+services:
+  dev:
+    build:
+      dockerfile: Dockerfile.dev
+    ports:
+      - 5173:5173
+    tty: true
+    working_dir: /code
+    stdin_open: true

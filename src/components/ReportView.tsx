@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ArrowLeft, Download, FileText } from "lucide-react";
+import { ArrowLeft, Download } from "lucide-react";
 import {
   ProcessedResult,
   ReportSummary as ReportSummaryType,
