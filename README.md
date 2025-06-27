@@ -16,9 +16,11 @@ There are 3 ways to this project;
 - As a CLI tool. Where you can manually run the CLI tool yourself.
 - As a GitHub Action, which just uses the application as a CLI tool, wrapped in a GHA.
 
-## Local (Containerized)
+## As a Local (Containerized) Service
 
-Just pull the repo. From the root of the repo run this command:
+This is useful when doing development and you need to regularly review security scans, actively, when you generate them. Specically, this is very useful for doing security remediations locally.
+
+> Run this from the root of the repo.
 
 ```bash
 make start
@@ -26,9 +28,11 @@ make start
 
 Visit [http://localhost:9867](http://localhost:9867) in the browser.
 
-## CLI Tool
+## As a CLI Tool
 
-From the root of the repo you can run this:
+This is best used for programmatically and automatically integrating the generation of these scan reports.
+
+> Run from the root of the repo.
 
 ```bash
 bun src/cli/generate-html-report.ts --input <sarif_json_file> --output <report_html_file>
@@ -44,9 +48,9 @@ Here is a working example:
 bun src/cli/generate-html-report.ts --input scan.sarif.json --output report.html
 ```
 
-## GHA
+## As a GHA
 
-Add this to GHA that generates a Sarif JSON file and update the input to where that Sarif JSON is in the `in` variable and the name of the output you want in the `out` variable. Then you can attach the generated static HTML file to the GHA as a security scan artifact for human reable HTML reports.
+This is best for generating from within a GHA.
 
 ```yaml
 name: ...
