@@ -2,19 +2,15 @@
 
 This can be used as:
 
-- Local viewer (containerized)
+- Local UI (containerized)
 - CLI Tool
 - GitHub Action
 
-This small application can accept Sarif JSON files and parse them into a human readable UI. Those UIs can be exported as static HTML files (think Trivy scan outputs, and used as attachments for GitHub Actions from things like Semgrep scans.
+This is a small application for viewing Sarif JSON files. Either as a local running server to use for local development/debugging or as a CLI and GitHub Action for integration and automation of human readable Sarif JSON reports as static HTML files (like Trivy, same idea).
 
 # Quick Start
 
-There are 3 ways to this project;
-
-- As a local (containerized) running service to aid development while running local security scans and viewing them.
-- As a CLI tool. Where you can manually run the CLI tool yourself.
-- As a GitHub Action, which just uses the application as a CLI tool, wrapped in a GHA.
+Ideally, this is intended to be used based on your use cases, but should support many integration and unknown use cases.
 
 ## As a Local (Containerized) Service
 
