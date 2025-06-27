@@ -1,0 +1,12 @@
+#!/usr/bin/bash
+#
+# THIS IS A HELPER SCRIPT AND SHOULD NOT BE CALLED DIRECTLY
+#
+# Creates a git tag and pushes the tag to GitHub.
+#
+
+in=${1:-scan.sarif.json}
+out=${2:-scan.sarif.html}
+gha_dir=${3:-.sarif-viewer}
+
+bun $gha_dir/src/cli/generate-html-report.ts --input $in --output $out

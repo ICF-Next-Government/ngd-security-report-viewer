@@ -6,8 +6,8 @@
  *   bun src/cli/generate-html-report.ts --input path/to/file.sarif.json --output report.html
  */
 
-import { readFile, writeFile } from "fs/promises";
-import { resolve } from "path";
+import { readFile, writeFile } from "node:fs/promises";
+import { resolve } from "node:path";
 import { SarifLog } from "../types/sarif";
 import { SarifParser } from "../utils/sarifParser";
 

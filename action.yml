@@ -19,15 +19,6 @@ runs:
         repository: ICF-Next-Government/icf-sarif-viewer
         ref: main
 
-    - name: LIST THINGS
-      shell: sh
-      run: |
-        echo "PWD"
-        ls -la
-
-        echo "\nBACK ONE"
-        ls -la ..
-
-    # - name: Generate Sarif Report
-    #   run: bun src/cli/generate-html-report.ts --input ../${{ inputs.in }} --output ../${{ inputs.out }}
-    #   shell: bash
+    - name: Generate Sarif Report
+      run: bash .sarif-viewer/bin/create ${{ inputs.in }} ${{ inputs.out }}
+      shell: bash
