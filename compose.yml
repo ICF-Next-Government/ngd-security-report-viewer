@@ -1,7 +1,8 @@
 services:
-  dev:
+  service:
     build:
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
+    container_name: sarif-viewer
     ports:
       - 5173:5173
     tty: true
