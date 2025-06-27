@@ -15,10 +15,11 @@ runs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        path: .sarif-viewer
         repository: ICF-Next-Government/icf-sarif-viewer
+        path: .sarif-viewer
         ref: main
 
     - name: Generate Sarif Report
-      run: sh -c .sarif-viewer/bin/create ${{ inputs.in }} ${{ inputs.out }}
+      run: bun src/cli/generate-html-report.ts --input ${{ inputs.in }} --output ${{ inputs.out }}
       shell: sh
+      working-directory: .sarif-viewer
