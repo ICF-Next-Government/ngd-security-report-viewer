@@ -20,5 +20,5 @@ runs:
         ref: main
 
     - name: Generate Sarif Report
-      run: ./.sarif-viewer/bin/create ${{ inputs.in }} ${{ inputs.out }}
+      run: sh -c .sarif-viewer/bin/create ${{ inputs.in }} ${{ inputs.out }}
       shell: sh
