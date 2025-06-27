@@ -10,5 +10,11 @@ inputs:
     required: false
     default: report.html
 runs:
-  using: node20
-  main: bin/action.js
+  using: composite
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Generate Sarif Report
+      run: bun src/cli/generate-html-report.ts --input ${{ inputs.in }} --output ${{ inputs.out }}
+      shell: bash
