@@ -20,7 +20,6 @@ runs:
         ref: main
 
     - name: LIST THINGS
-      shell: bash
       run: |
         echo "PWD"
         ls -la
