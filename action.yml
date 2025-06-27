@@ -14,7 +14,20 @@ runs:
   steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        path: .sarif-viewer
+        repository: ICF-Next-Government/icf-sarif-viewer
+        ref: main
 
-    - name: Generate Sarif Report
-      run: bun src/cli/generate-html-report.ts --input ${{ inputs.in }} --output ${{ inputs.out }}
+    - name: LIST THINGS
       shell: bash
+      run: |
+        echo "PWD"
+        ls -la
+
+        echo "\nBACK ONE"
+        ls -la ..
+
+    # - name: Generate Sarif Report
+    #   run: bun src/cli/generate-html-report.ts --input ../${{ inputs.in }} --output ../${{ inputs.out }}
+    #   shell: bash
