@@ -104,4 +104,5 @@ export type ReportSummary = {
   filesAffected: number;
   toolName: string;
   toolVersion?: string;
+  timestamp?: string; // ISO string for upload/view time
 };

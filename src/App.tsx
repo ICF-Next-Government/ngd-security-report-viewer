@@ -11,10 +11,12 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
   const [showReport, setShowReport] = useState(false);
+  const [uploadTimestamp, setUploadTimestamp] = useState<Date | null>(null);
 
   const handleFileUpload = async (file: File) => {
     setLoading(true);
     setError("");
+    setUploadTimestamp(new Date());
 
     try {
       const fileContent = await file.text();
@@ -48,6 +50,7 @@ function App() {
     setResults([]);
     setSummary(null);
     setError("");
+    setUploadTimestamp(null);
   };
 
   if (showReport && summary) {
@@ -56,6 +59,7 @@ function App() {
         results={results}
         summary={summary}
         onBack={handleBackToUpload}
+        uploadTimestamp={uploadTimestamp}
       />
     );
   }
