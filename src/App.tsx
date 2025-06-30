@@ -3,7 +3,14 @@ import { FileUpload } from "./components/FileUpload";
 import { ReportView } from "./components/ReportView";
 import { SarifParser } from "./utils/sarifParser";
 import { ProcessedResult, ReportSummary, SarifLog } from "./types/sarif";
-import { Shield, Zap, Eye, Download } from "lucide-react";
+import {
+  Shield,
+  Zap,
+  Eye,
+  Download,
+  FileText,
+  AlertCircle,
+} from "lucide-react";
 
 function App() {
   const [results, setResults] = useState<ProcessedResult[]>([]);
@@ -12,6 +19,11 @@ function App() {
   const [error, setError] = useState<string>("");
   const [showReport, setShowReport] = useState(false);
   const [uploadTimestamp, setUploadTimestamp] = useState<Date | null>(null);
+
+  // Toggle for file upload vs paste JSON
+  const [usePaste, setUsePaste] = useState(false);
+  const [jsonInput, setJsonInput] = useState("");
+  const [jsonInputError, setJsonInputError] = useState<string>("");
 
   const handleFileUpload = async (file: File) => {
     setLoading(true);
@@ -45,12 +57,43 @@ function App() {
     }
   };
 
+  const handlePasteParse = () => {
+    setLoading(true);
+    setJsonInputError("");
+    setUploadTimestamp(new Date());
+
+    try {
+      const sarifData: SarifLog = JSON.parse(jsonInput);
+
+      if (!sarifData.runs || !Array.isArray(sarifData.runs)) {
+        throw new Error(
+          'Invalid SARIF format: Missing or invalid "runs" array',
+        );
+      }
+
+      const parsed = SarifParser.parse(sarifData);
+      setResults(parsed.results);
+      setSummary(parsed.summary);
+      setShowReport(true);
+    } catch (err) {
+      setJsonInputError(
+        err instanceof Error
+          ? `Failed to parse SARIF JSON: ${err.message}`
+          : "Failed to parse SARIF JSON. Please ensure it's valid JSON.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleBackToUpload = () => {
     setShowReport(false);
     setResults([]);
     setSummary(null);
     setError("");
     setUploadTimestamp(null);
+    setJsonInput("");
+    setJsonInputError("");
   };
 
   if (showReport && summary) {
@@ -127,12 +170,95 @@ function App() {
           </div>
         </div>
 
-        {/* Upload Component */}
-        <FileUpload
-          onFileUpload={handleFileUpload}
-          loading={loading}
-          error={error}
-        />
+        {/* Toggle for upload vs paste */}
+        <div className="flex justify-center mb-8">
+          <div className="inline-flex rounded-lg bg-slate-800/50 border border-slate-700 shadow overflow-hidden">
+            <button
+              className={`px-6 py-2 text-sm font-medium focus:outline-none transition-colors ${
+                !usePaste
+                  ? "bg-blue-600 text-white"
+                  : "bg-transparent text-slate-300 hover:bg-slate-700/50"
+              }`}
+              onClick={() => setUsePaste(false)}
+              disabled={loading || !usePaste}
+              type="button"
+            >
+              Upload File
+            </button>
+            <button
+              className={`px-6 py-2 text-sm font-medium focus:outline-none transition-colors ${
+                usePaste
+                  ? "bg-blue-600 text-white"
+                  : "bg-transparent text-slate-300 hover:bg-slate-700/50"
+              }`}
+              onClick={() => setUsePaste(true)}
+              disabled={loading || usePaste}
+              type="button"
+            >
+              Paste JSON
+            </button>
+          </div>
+        </div>
+
+        {/* Upload or Paste Component */}
+        {!usePaste ? (
+          <FileUpload
+            onFileUpload={handleFileUpload}
+            loading={loading}
+            error={error}
+          />
+        ) : (
+          <div className="w-full max-w-2xl mx-auto">
+            <div className="bg-slate-800/50 border-2 border-dashed border-slate-600 rounded-xl p-8 text-center shadow-lg backdrop-blur-sm">
+              <div className="flex flex-col items-center space-y-4">
+                <div className="p-4 rounded-full bg-slate-700/50">
+                  <FileText className="h-8 w-8 text-slate-400" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-xl font-semibold text-white">
+                    Paste SARIF JSON
+                  </h3>
+                  <p className="text-slate-300">
+                    Paste your Semgrep SARIF JSON content below to generate a
+                    report.
+                  </p>
+                  <p className="text-sm text-slate-400">
+                    Supports SARIF v2.1.0 format from Semgrep and other tools.
+                  </p>
+                </div>
+                <textarea
+                  className="w-full min-h-[180px] rounded-lg bg-slate-900/80 border border-slate-700 text-slate-100 p-4 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                  placeholder="Paste SARIF JSON here..."
+                  value={jsonInput}
+                  onChange={(e) => setJsonInput(e.target.value)}
+                  disabled={loading}
+                  spellCheck={false}
+                />
+                <button
+                  className="mt-2 px-6 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition disabled:opacity-50"
+                  onClick={handlePasteParse}
+                  disabled={loading || !jsonInput.trim()}
+                  type="button"
+                >
+                  {loading ? "Parsing..." : "Parse JSON"}
+                </button>
+                {jsonInputError && (
+                  <div className="mt-2 p-3 bg-red-900/50 border border-red-700 rounded-lg flex items-start space-x-3 backdrop-blur-sm w-full text-left">
+                    <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <h4 className="text-sm font-medium text-red-300">
+                        Parse Error
+                      </h4>
+                      <p className="text-sm text-red-400 mt-1">
+                        {jsonInputError}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Footer */}
         <div className="text-center mt-12 text-sm text-slate-400">
