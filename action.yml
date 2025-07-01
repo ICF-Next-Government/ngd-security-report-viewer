@@ -14,7 +14,7 @@ runs:
   steps:
     - name: Install dependencies and Bun
       run: |
-        apt-get update && apt-get install -y curl wget unzip
+        apt update && apt install -y curl wget unzip
 
         # Try curl first, then wget
         if command -v curl >/dev/null 2>&1; then
