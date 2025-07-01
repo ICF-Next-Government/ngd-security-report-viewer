@@ -39,7 +39,6 @@ runs:
       with:
         repository: ICF-Next-Government/icf-sarif-viewer
         path: .sarif-viewer
-        ref: main
 
     - name: Install dependencies
       shell: bash
