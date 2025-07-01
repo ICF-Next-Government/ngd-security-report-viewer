@@ -12,19 +12,12 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: oven-sh/setup-bun@v2
-
-    - name: Install Bun
-      run: curl -fsSL https://bun.sh/install | bash
-      shell: sh
-
-    - name: Add Bun to PATH
-      run: echo "$HOME/.bun/bin" >> $GITHUB_PATH
-      shell: sh
+    - name: Setup Bun
+      uses: oven-sh/setup-bun@v2
 
     - name: Verify Bun installation
       run: bun --version
-      shell: sh
+      shell: bash
 
     - name: Checkout code
       uses: actions/checkout@v4
@@ -35,5 +28,31 @@ runs:
 
     - name: Generate Sarif Report
       run: bun src/cli/generate-html-report.ts --input ${{ inputs.in }} --output ${{ inputs.out }}
-      shell: sh
+      shell: bash
       working-directory: .sarif-viewer
+
+    # - uses: oven-sh/setup-bun@v2
+    #
+    # - name: Install Bun
+    #   run: curl -fsSL https://bun.sh/install | bash
+    #   shell: sh
+    #
+    # - name: Add Bun to PATH
+    #   run: echo "$HOME/.bun/bin" >> $GITHUB_PATH
+    #   shell: sh
+    #
+    # - name: Verify Bun installation
+    #   run: bun --version
+    #   shell: sh
+    #
+    # - name: Checkout code
+    #   uses: actions/checkout@v4
+    #   with:
+    #     repository: ICF-Next-Government/icf-sarif-viewer
+    #     path: .sarif-viewer
+    #     ref: main
+    #
+    # - name: Generate Sarif Report
+    #   run: bun src/cli/generate-html-report.ts --input ${{ inputs.in }} --output ${{ inputs.out }}
+    #   shell: sh
+    #   working-directory: .sarif-viewer
