@@ -13,11 +13,12 @@ runs:
   using: composite
   steps:
     - name: Install bash and dependencies
+      shell: sh
       run: |
         apk add --no-cache bash curl unzip libstdc++ libgcc
-      shell: sh
 
     - name: Install Bun
+      shell: bash
       run: |
         # Try official installer first, fallback to manual
         if curl -fsSL https://bun.sh/install | bash; then
@@ -32,11 +33,13 @@ runs:
           rm -rf /tmp/bun.zip /tmp/bun-linux-x64
         fi
         echo "$HOME/.bun/bin" >> $GITHUB_PATH
-      shell: bash
 
     - name: Verify Bun installation
-      run: $HOME/.bun/bin/bun --version
       shell: bash
+      run: bun --version
+
+    - shell: bash
+      run: echo "WORKED!!!!!!!!!!!!"
 
     # - uses: oven-sh/setup-bun@v2
     #
