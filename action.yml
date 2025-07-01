@@ -34,12 +34,20 @@ runs:
         fi
         echo "$HOME/.bun/bin" >> $GITHUB_PATH
 
-    - name: Verify Bun installation
-      shell: bash
-      run: bun --version
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        repository: ICF-Next-Government/icf-sarif-viewer
+        path: .sarif-viewer
+        ref: main
 
-    - shell: bash
-      run: echo "WORKED!!!!!!!!!!!!"
+    - name: Install dependencies
+      shell: bash
+      run: cd .sarif-viewer && bun i
+
+    - name: FILES
+      shell: bash
+      run: ls -la
 
     # - uses: oven-sh/setup-bun@v2
     #
