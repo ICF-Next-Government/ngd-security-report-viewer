@@ -50,6 +50,31 @@ export const ReportView: React.FC<ReportViewProps> = ({
   <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
   <style>
     /* ...styles omitted for brevity, unchanged... */
+    /* Stylish dark scrollbar for exported HTML */
+    html, body {
+      scrollbar-width: thin;
+      scrollbar-color: #334155 #0f172a;
+    }
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar {
+      width: 12px;
+      background: #0f172a;
+    }
+    html::-webkit-scrollbar-thumb,
+    body::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #334155 40%, #1e293b 100%);
+      border-radius: 8px;
+      border: 2px solid #0f172a;
+      min-height: 40px;
+    }
+    html::-webkit-scrollbar-thumb:hover,
+    body::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, #475569 40%, #334155 100%);
+    }
+    html::-webkit-scrollbar-corner,
+    body::-webkit-scrollbar-corner {
+      background: #0f172a;
+    }
   </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">

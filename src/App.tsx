@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FileUpload } from "./components/FileUpload";
 import { ReportView } from "./components/ReportView";
 import { SarifParser } from "./utils/sarifParser";
@@ -19,6 +19,22 @@ function App() {
   const [error, setError] = useState<string>("");
   const [showReport, setShowReport] = useState(false);
   const [uploadTimestamp, setUploadTimestamp] = useState<Date | null>(null);
+
+  // For animated transitions
+  const [transitioning, setTransitioning] = useState(false);
+  const [pendingShowReport, setPendingShowReport] = useState<boolean | null>(
+    null,
+  );
+
+  // Always hide html/body scrollbars; only allow scrolling on report wrapper
+  useEffect(() => {
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
+    };
+  }, []);
 
   // Toggle for file upload vs paste JSON
   const [usePaste, setUsePaste] = useState(false);
@@ -44,7 +60,15 @@ function App() {
       const parsed = SarifParser.parse(sarifData);
       setResults(parsed.results);
       setSummary(parsed.summary);
-      setShowReport(true);
+
+      // Animate transition to report
+      setTransitioning(true);
+      setPendingShowReport(true);
+      setTimeout(() => {
+        setShowReport(true);
+        setTransitioning(false);
+        setPendingShowReport(null);
+      }, 350);
     } catch (err) {
       console.error("Parse error:", err);
       setError(
@@ -74,7 +98,15 @@ function App() {
       const parsed = SarifParser.parse(sarifData);
       setResults(parsed.results);
       setSummary(parsed.summary);
-      setShowReport(true);
+
+      // Animate transition to report
+      setTransitioning(true);
+      setPendingShowReport(true);
+      setTimeout(() => {
+        setShowReport(true);
+        setTransitioning(false);
+        setPendingShowReport(null);
+      }, 350);
     } catch (err) {
       setJsonInputError(
         err instanceof Error
@@ -87,28 +119,105 @@ function App() {
   };
 
   const handleBackToUpload = () => {
-    setShowReport(false);
-    setResults([]);
-    setSummary(null);
-    setError("");
-    setUploadTimestamp(null);
-    setJsonInput("");
-    setJsonInputError("");
+    // Animate transition back to home
+    setTransitioning(true);
+    setPendingShowReport(false);
+    setTimeout(() => {
+      setShowReport(false);
+      setResults([]);
+      setSummary(null);
+      setError("");
+      setUploadTimestamp(null);
+      setJsonInput("");
+      setJsonInputError("");
+      setTransitioning(false);
+      setPendingShowReport(null);
+    }, 350);
   };
 
-  if (showReport && summary) {
+  // Animation classes
+  const fadeClass = transitioning
+    ? pendingShowReport
+      ? "animate-fade-in"
+      : "animate-fade-out-black"
+    : "";
+
+  if ((showReport || (transitioning && pendingShowReport)) && summary) {
     return (
-      <ReportView
-        results={results}
-        summary={summary}
-        onBack={handleBackToUpload}
-        uploadTimestamp={uploadTimestamp}
-      />
+      <div
+        className={`fixed inset-0 min-h-screen w-screen transition-opacity duration-300 report-scrollbar ${fadeClass}`}
+        style={{
+          background: "linear-gradient(to bottom right, #0f172a, #1e293b 80%)",
+          opacity: transitioning && !pendingShowReport ? 1 : 1,
+          pointerEvents:
+            transitioning && !pendingShowReport ? "none" : undefined,
+          overflowY: "auto",
+          zIndex: 10,
+        }}
+      >
+        <ReportView
+          results={results}
+          summary={summary}
+          onBack={handleBackToUpload}
+          uploadTimestamp={uploadTimestamp}
+        />
+        <style>
+          {`
+            @keyframes fadeIn {
+              from { opacity: 0; transform: translateY(16px);}
+              to { opacity: 1; transform: none;}
+            }
+            @keyframes fadeOutBlack {
+              0% {
+                opacity: 1;
+                filter: brightness(1);
+                background: #0f172a;
+              }
+              70% {
+                opacity: 0;
+                filter: brightness(0.2);
+                background: #0f172a;
+              }
+              100% {
+                opacity: 0;
+                filter: brightness(0);
+                background: #0f172a;
+              }
+            }
+            .animate-fade-in {
+              animation: fadeIn 0.35s;
+            }
+            .animate-fade-out-black {
+              animation: fadeOutBlack 0.35s forwards;
+            }
+            /* Hide scrollbar for home page */
+            .no-scrollbar::-webkit-scrollbar {
+              display: none;
+            }
+            .no-scrollbar {
+              -ms-overflow-style: none;
+              scrollbar-width: none;
+            }
+          `}
+        </style>
+      </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div
+      className={`min-h-screen transition-opacity duration-300 no-scrollbar ${
+        transitioning && pendingShowReport === false
+          ? "animate-fade-out-black"
+          : "animate-fade-in"
+      }`}
+      style={{
+        background: "linear-gradient(to bottom right, #0f172a, #1e293b 80%)",
+        opacity: transitioning && pendingShowReport ? 0 : 1,
+        pointerEvents: transitioning && pendingShowReport ? "none" : undefined,
+        overflow: "hidden",
+      }}
+    >
       <div className="container mx-auto px-4 py-12">
         {/* Header */}
         <div className="text-center mb-12">
@@ -295,6 +404,58 @@ function App() {
           </div>
         </footer>
       </div>
+      <style>
+        {`
+          @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(16px);}
+            to { opacity: 1; transform: none;}
+          }
+          @keyframes fadeOutBlack {
+            0% {
+              opacity: 1;
+              filter: brightness(1);
+              background: #0f172a;
+            }
+            70% {
+              opacity: 0;
+              filter: brightness(0.2);
+              background: #0f172a;
+            }
+            100% {
+              opacity: 0;
+              filter: brightness(0);
+              background: #0f172a;
+            }
+          }
+          .animate-fade-in {
+            animation: fadeIn 0.35s;
+          }
+          .animate-fade-out-black {
+            animation: fadeOutBlack 0.35s forwards;
+          }
+          /* Stylish dark scrollbar for report page */
+          .report-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: #334155 #0f172a;
+          }
+          .report-scrollbar::-webkit-scrollbar {
+            width: 12px;
+            background: #0f172a;
+          }
+          .report-scrollbar::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #334155 40%, #1e293b 100%);
+            border-radius: 8px;
+            border: 2px solid #0f172a;
+            min-height: 40px;
+          }
+          .report-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #475569 40%, #334155 100%);
+          }
+          .report-scrollbar::-webkit-scrollbar-corner {
+            background: #0f172a;
+          }
+        `}
+      </style>
     </div>
   );
 }
