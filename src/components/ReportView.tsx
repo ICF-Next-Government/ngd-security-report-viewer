@@ -75,7 +75,212 @@ export const ReportView: React.FC<ReportViewProps> = ({
     body::-webkit-scrollbar-corner {
       background: #0f172a;
     }
+    /* Inline search styles to match in-app report viewer */
+    .inline-search-bar {
+      position: relative;
+      width: 100%;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: rgba(51,65,85,0.5);
+      border-radius: 0.5rem;
+      border: 1.5px solid #334155;
+      box-shadow: 0 2px 8px 0 rgba(30,41,59,0.10);
+      padding: 0.5rem 0.5rem 0.5rem 0;
+      flex-wrap: wrap;
+    }
+    .inline-search-bar input {
+      flex: 1 1 220px;
+      min-width: 0;
+      padding: 0.75rem 2.5rem 0.75rem 2.5rem;
+      background: transparent;
+      border: none;
+      color: #e0e7ef;
+      font-size: 1rem;
+      border-radius: 0.5rem;
+      outline: none;
+      transition: box-shadow 0.2s;
+    }
+    .inline-search-bar select {
+      background: rgba(51,65,85,0.7);
+      border: 1.5px solid #334155;
+      color: #e0e7ef;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      padding: 0.65rem 2.2rem 0.65rem 2.2rem;
+      outline: none;
+      min-width: 140px;
+      margin-left: 0.25rem;
+      margin-right: 0.25rem;
+      appearance: none;
+      box-shadow: 0 2px 8px 0 rgba(30,41,59,0.05);
+      transition: border 0.2s;
+    }
+    .inline-search-bar select:focus {
+      border-color: #3b82f6;
+    }
+    .inline-search-bar .inline-filter-icon {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1.1rem;
+      height: 1.1rem;
+      color: #fbbf24;
+      pointer-events: none;
+      opacity: 0.9;
+      z-index: 1;
+    }
+    .inline-search-bar input {
+      width: 100%;
+      padding: 0.75rem 2.5rem 0.75rem 2.5rem;
+      background: transparent;
+      border: none;
+      color: #e0e7ef;
+      font-size: 1rem;
+      border-radius: 0.5rem;
+      outline: none;
+      transition: box-shadow 0.2s;
+    }
+    .inline-search-bar input:focus {
+      box-shadow: 0 0 0 2px #3b82f6;
+      background: rgba(51,65,85,0.7);
+    }
+    .inline-search-bar .inline-search-icon {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1.1rem;
+      height: 1.1rem;
+      color: #94a3b8;
+      pointer-events: none;
+      opacity: 0.9;
+    }
+    .inline-search-bar .inline-clear-btn {
+      position: absolute;
+      right: 0.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 0 0.25rem;
+      border-radius: 0.25rem;
+      opacity: 0.85;
+      transition: background 0.15s;
+      z-index: 2;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .inline-search-bar .inline-clear-btn:hover {
+      background: #334155;
+      color: #fff;
+      opacity: 1;
+    }
+    .finding-result[hidden] {
+      display: none !important;
+    }
+    .inline-highlight {
+      background: #2563eb;
+      color: #fff;
+      border-radius: 0.25em;
+      padding: 0 0.15em;
+      font-weight: 600;
+    }
+    .inline-no-results {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(30,41,59,0.7);
+      border: 1.5px dashed #334155;
+      border-radius: 0.75rem;
+      padding: 2.5rem 1rem;
+      margin-top: 1.5rem;
+      color: #e0e7ef;
+      animation: fadeInNoResults 0.4s;
+      min-height: 120px;
+      text-align: center;
+    }
+    @keyframes fadeInNoResults {
+      from { opacity: 0; transform: translateY(16px);}
+      to { opacity: 1; transform: none;}
+    }
   </style>
+  <script>
+    // Inline search/filter for findings with clear button, highlight, and no results message
+    window.addEventListener('DOMContentLoaded', function() {
+      var input = document.getElementById('inline-findings-search');
+      var clearBtn = document.getElementById('inline-findings-clear');
+      var findingsList = document.getElementById('findings-list');
+      var findings = document.querySelectorAll('.finding-result');
+      var noResults = document.getElementById('inline-no-results');
+      var severitySelect = document.getElementById('inline-severity-filter');
+      function highlight(text, term) {
+        if (!term) return text;
+        // Escape regex special chars (fix: remove $ from inside curly braces to avoid JSX/TSX template parsing issues)
+        var safeTerm = term.replace(/[.*+?^{}()|[\]\\]/g, '\\$&');
+        return text.replace(new RegExp(safeTerm, 'gi'), function(match) {
+          return '<mark class="inline-highlight">' + match + '</mark>';
+        });
+      }
+      function filterFindings() {
+        var term = input.value.trim().toLowerCase();
+        var selectedSeverity = severitySelect ? severitySelect.value : "all";
+        var anyVisible = false;
+        findings.forEach(function(finding) {
+          // Remove previous highlights
+          finding.innerHTML = finding.getAttribute('data-raw');
+          var text = finding.innerText.toLowerCase();
+          var matchesSearch = !term || text.includes(term);
+          var matchesSeverity = selectedSeverity === "all" ||
+            (finding.getAttribute('data-severity') === selectedSeverity);
+          if (matchesSearch && matchesSeverity) {
+            finding.hidden = false;
+            if (term) {
+              // Highlight all matches in the finding
+              var html = finding.innerHTML;
+              finding.innerHTML = highlight(html, term);
+            }
+            anyVisible = true;
+          } else {
+            finding.hidden = true;
+          }
+        });
+        if (noResults) {
+          noResults.style.display = anyVisible ? 'none' : 'flex';
+        }
+        // Show/hide clear button
+        if (clearBtn) {
+          clearBtn.style.display = input.value ? 'flex' : 'none';
+        }
+      }
+      if (input) {
+        input.addEventListener('input', filterFindings);
+      }
+      if (severitySelect) {
+        severitySelect.addEventListener('change', filterFindings);
+      }
+      if (clearBtn) {
+        clearBtn.addEventListener('click', function() {
+          input.value = '';
+          filterFindings();
+          input.focus();
+        });
+      }
+      // Store raw HTML for each finding for highlight reset
+      findings.forEach(function(finding) {
+        finding.setAttribute('data-raw', finding.innerHTML);
+      });
+      filterFindings();
+    });
+  </script>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -223,15 +428,60 @@ export const ReportView: React.FC<ReportViewProps> = ({
         </div>
       </div>
       <div class="space-y-8">
-        <div class="flex items-center justify-between">
-          <h2 class="text-2xl font-bold text-white">Security Findings</h2>
-          <span class="text-slate-400">${results.length} findings</span>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <h2 class="text-2xl font-bold text-white">Security Findings</h2>
+            <span class="text-slate-400">${results.length} findings</span>
+          </div>
         </div>
-        <div class="space-y-6">
+        <div class="inline-search-bar">
+          <svg class="inline-search-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <input
+            id="inline-findings-search"
+            type="search"
+            placeholder="Search findings, files, or rule IDs..."
+            autocomplete="off"
+            spellcheck="false"
+            aria-label="Search findings"
+          />
+          <button id="inline-findings-clear" class="inline-clear-btn" type="button" style="display:none;" aria-label="Clear search">
+            &#10005;
+          </button>
+          <span style="position:relative;">
+            <svg class="inline-filter-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="left:0.75rem;">
+              <path d="M4 6h16M6 10h12M8 14h8M10 18h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <select id="inline-severity-filter" aria-label="Filter by severity">
+              <option value="all">All Severities</option>
+              <option value="critical">Critical</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+              <option value="info">Info</option>
+            </select>
+          </span>
+        </div>
+        <div class="space-y-6" id="findings-list">
+          <div id="inline-no-results" class="inline-no-results" style="display:none;">
+            <svg class="h-12 w-12 text-slate-400 mx-auto mb-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <line x1="8" y1="8" x2="16" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <h3 class="text-lg font-medium text-white mb-2">No results found</h3>
+            <p class="text-slate-400">Try a different search term.</p>
+          </div>
           ${
             results.length === 0
               ? `<div class="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-12 text-center shadow-lg">
-                  <svg class="h-12 w-12 text-slate-400 mx-auto mb-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 9l5-5 5 5M12 4v12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <svg class="h-12 w-12 text-slate-400 mx-auto mb-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="8" y1="8" x2="16" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
                   <h3 class="text-lg font-medium text-white mb-2">No findings found</h3>
                   <p class="text-slate-400">This SARIF file contains no security findings.</p>
                 </div>`
@@ -279,7 +529,7 @@ export const ReportView: React.FC<ReportViewProps> = ({
                     };
                     const colors = severityColors[result.severity];
                     return `
-                  <div class="${colors.bg} ${colors.border} backdrop-blur-sm border rounded-lg p-6 transition-all hover:shadow-lg hover:scale-[1.01]">
+                  <div class="finding-result ${colors.bg} ${colors.border} backdrop-blur-sm border rounded-lg p-6 transition-all hover:shadow-lg hover:scale-[1.01]" data-severity="${result.severity}">
                     <div class="flex items-start space-x-4">
                       <div class="h-6 w-6 ${colors.icon} mt-1 flex-shrink-0"><!-- icon --></div>
                       <div class="flex-1 min-w-0">
