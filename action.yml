@@ -49,7 +49,3 @@ runs:
       run: bun src/cli/generate-html-report.ts --input ../${{ inputs.in }} --output ../${{ inputs.out }}
       shell: sh
       working-directory: .sarif-viewer
-
-    - name: SEE RESULTS
-      shell: bash
-      run: ls -la
