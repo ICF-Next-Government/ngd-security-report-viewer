@@ -12,6 +12,13 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: System setup
+      shell: sh
+      run: |
+        if command -v "curl"; then
+          apt install curl bash -y
+        fi
+
     - name: Install Bun
       run: curl -fsSL https://bun.sh/install | bash
       shell: sh
