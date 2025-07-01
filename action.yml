@@ -12,11 +12,17 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Setup Bun
-      uses: oven-sh/setup-bun@v2
+    - name: Install Bun manually
+      run: |
+        curl -fsSL https://bun.sh/install | bash
+        export PATH="$HOME/.bun/bin:$PATH"
+        echo "$HOME/.bun/bin" >> $GITHUB_PATH
+      shell: bash
 
     - name: Verify Bun installation
-      run: bun --version
+      run: |
+        export PATH="$HOME/.bun/bin:$PATH"
+        bun --version
       shell: bash
 
     - name: Checkout code
