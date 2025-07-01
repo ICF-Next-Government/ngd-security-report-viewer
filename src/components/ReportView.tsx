@@ -53,7 +53,7 @@ export const ReportView: React.FC<ReportViewProps> = ({
   </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-  <div class="container max-w-7xl mx-auto px-4 py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
     <div class="text-center mb-12">
       <div class="flex items-center justify-center space-x-3 mb-6">
         <div class="p-3 bg-blue-600 rounded-xl shadow-lg">
@@ -72,7 +72,6 @@ export const ReportView: React.FC<ReportViewProps> = ({
         </span>
       </div>
     </div>
-    <div class="space-y-8">
       <div class="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-6 shadow-lg">
         <div class="flex items-center space-x-3 mb-4">
           <svg class="h-6 w-6 text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -379,11 +378,54 @@ export const ReportView: React.FC<ReportViewProps> = ({
       {/* Content */}
       <div
         id="report-content"
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8"
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fade-in"
+        style={{ animation: "fadeIn 0.7s" }}
       >
-        <ReportSummary summary={summary} />
-        <FindingsList results={results} />
+        {/* Timestamp badge at the top */}
+        {formattedTimestamp && (
+          <div className="flex justify-center mb-6">
+            <span
+              className="inline-flex items-center px-3 py-1 rounded-full bg-slate-800/50 border border-slate-700 text-slate-300 text-xs font-medium shadow"
+              title={uploadTimestamp?.toISOString() || ""}
+              tabIndex={0}
+              aria-label={`Report generated: ${formattedTimestamp} (click for exact time)`}
+            >
+              <svg
+                className="h-4 w-4 mr-1 text-blue-400"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                viewBox="0 0 24 24"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <path
+                  d="M12 8v4l2 2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              Report generated: {formattedTimestamp}
+            </span>
+          </div>
+        )}
+        <div className="animate-fade-in" style={{ animation: "fadeIn 1s" }}>
+          <ReportSummary summary={summary} />
+        </div>
+        <div className="animate-fade-in" style={{ animation: "fadeIn 1.3s" }}>
+          <FindingsList results={results} />
+        </div>
       </div>
+      <style>
+        {`
+          @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(16px);}
+            to { opacity: 1; transform: none;}
+          }
+          .animate-fade-in {
+            animation: fadeIn 0.7s;
+          }
+        `}
+      </style>
     </div>
   );
 };

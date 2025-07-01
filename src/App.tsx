@@ -261,12 +261,39 @@ function App() {
         )}
 
         {/* Footer */}
-        <div className="text-center mt-12 text-sm text-slate-400">
+        <footer className="text-center mt-12 text-sm text-slate-400 border-t border-slate-700 pt-8">
           <p>
             Supports SARIF v2.1.0 format • Compatible with Semgrep, CodeQL, and
             other SARIF-compliant tools
           </p>
-        </div>
+          <div className="flex justify-center gap-4 mt-4">
+            <a
+              href="https://github.com/ICF-Next-Government/icf-sarif-viewer"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-blue-400 transition-colors underline"
+            >
+              GitHub
+            </a>
+            <a
+              href="mailto:support@icf.com"
+              className="hover:text-blue-400 transition-colors underline"
+            >
+              Support
+            </a>
+            <a
+              href="https://sarifweb.azurewebsites.net/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-blue-400 transition-colors underline"
+            >
+              SARIF Spec
+            </a>
+          </div>
+          <div className="mt-4 text-xs text-slate-500">
+            &copy; {new Date().getFullYear()} ICF SARIF Viewer
+          </div>
+        </footer>
       </div>
     </div>
   );
