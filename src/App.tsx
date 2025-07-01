@@ -26,15 +26,26 @@ function App() {
     null,
   );
 
-  // Always hide html/body scrollbars; only allow scrolling on report wrapper
+  // Hide html/body scrollbars on report, but allow scrolling (hidden scrollbar) on home
   useEffect(() => {
-    document.documentElement.style.overflow = "hidden";
-    document.body.style.overflow = "hidden";
+    if (showReport || (transitioning && pendingShowReport)) {
+      document.documentElement.style.overflow = "hidden";
+      document.body.style.overflow = "hidden";
+      document.documentElement.classList.remove("no-scrollbar");
+      document.body.classList.remove("no-scrollbar");
+    } else {
+      document.documentElement.style.overflow = "auto";
+      document.body.style.overflow = "auto";
+      document.documentElement.classList.add("no-scrollbar");
+      document.body.classList.add("no-scrollbar");
+    }
     return () => {
       document.documentElement.style.overflow = "";
       document.body.style.overflow = "";
+      document.documentElement.classList.remove("no-scrollbar");
+      document.body.classList.remove("no-scrollbar");
     };
-  }, []);
+  }, [showReport, transitioning, pendingShowReport]);
 
   // Toggle for file upload vs paste JSON
   const [usePaste, setUsePaste] = useState(false);
@@ -215,7 +226,7 @@ function App() {
         background: "linear-gradient(to bottom right, #0f172a, #1e293b 80%)",
         opacity: transitioning && pendingShowReport ? 0 : 1,
         pointerEvents: transitioning && pendingShowReport ? "none" : undefined,
-        overflow: "hidden",
+        overflow: "auto",
       }}
     >
       <div className="container mx-auto px-4 py-12">
@@ -309,62 +320,121 @@ function App() {
           </div>
         </div>
 
-        {/* Upload or Paste Component */}
-        {!usePaste ? (
-          <FileUpload
-            onFileUpload={handleFileUpload}
-            loading={loading}
-            error={error}
-          />
-        ) : (
-          <div className="w-full max-w-2xl mx-auto">
-            <div className="bg-slate-800/50 border-2 border-dashed border-slate-600 rounded-xl p-8 text-center shadow-lg backdrop-blur-sm">
-              <div className="flex flex-col items-center space-y-4">
-                <div className="p-4 rounded-full bg-slate-700/50">
-                  <FileText className="h-8 w-8 text-slate-400" />
-                </div>
-                <div className="space-y-2">
-                  <h3 className="text-xl font-semibold text-white">
-                    Paste SARIF JSON
-                  </h3>
-                  <p className="text-slate-300">
-                    Paste your Semgrep SARIF JSON content below to generate a
-                    report.
-                  </p>
-                  <p className="text-sm text-slate-400">
-                    Supports SARIF v2.1.0 format from Semgrep and other tools.
-                  </p>
-                </div>
-                <textarea
-                  className="w-full min-h-[180px] rounded-lg bg-slate-900/80 border border-slate-700 text-slate-100 p-4 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                  placeholder="Paste SARIF JSON here..."
-                  value={jsonInput}
-                  onChange={(e) => setJsonInput(e.target.value)}
-                  disabled={loading}
-                  spellCheck={false}
-                />
-                <button
-                  className="mt-2 px-6 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition disabled:opacity-50"
-                  onClick={handlePasteParse}
-                  disabled={loading || !jsonInput.trim()}
-                  type="button"
-                >
-                  {loading ? "Parsing..." : "Parse JSON"}
-                </button>
-                {jsonInputError && (
-                  <div className="mt-2 p-3 bg-red-900/50 border border-red-700 rounded-lg flex items-start space-x-3 backdrop-blur-sm w-full text-left">
-                    <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <h4 className="text-sm font-medium text-red-300">
-                        Parse Error
-                      </h4>
-                      <p className="text-sm text-red-400 mt-1">
-                        {jsonInputError}
-                      </p>
-                    </div>
+        {/* Upload or Paste Component with smooth transition, no overlap, and no layout shift */}
+        <div className="relative w-full max-w-2xl mx-auto h-[520px] flex items-stretch">
+          {usePaste ? (
+            <div
+              key="paste"
+              className="w-full h-full transition-all duration-500 ease-in-out animate-fade-in-panel flex"
+            >
+              <div className="bg-slate-800/50 border-2 border-dashed border-slate-600 rounded-xl p-8 text-center shadow-lg backdrop-blur-sm h-full flex flex-col justify-center w-full">
+                <div className="flex flex-col items-center space-y-4 w-full">
+                  <div className="p-4 rounded-full bg-slate-700/50">
+                    <FileText className="h-8 w-8 text-slate-400" />
                   </div>
-                )}
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-semibold text-white">
+                      Paste SARIF JSON
+                    </h3>
+                    <p className="text-slate-300">
+                      Paste your Semgrep SARIF JSON content below to generate a
+                      report.
+                    </p>
+                    <p className="text-sm text-slate-400">
+                      Supports SARIF v2.1.0 format from Semgrep and other tools.
+                    </p>
+                  </div>
+                  <div className="relative w-full">
+                    <textarea
+                      ref={(el) => {
+                        // Auto-focus and select on panel open
+                        if (el && usePaste) {
+                          setTimeout(() => {
+                            el.focus();
+                            el.select();
+                          }, 100);
+                        }
+                      }}
+                      className="w-full min-h-[180px] rounded-lg bg-slate-900/80 border border-slate-700 text-slate-100 p-4 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                      placeholder="Paste SARIF JSON here..."
+                      value={jsonInput}
+                      onChange={(e) => setJsonInput(e.target.value)}
+                      disabled={loading}
+                      spellCheck={false}
+                    />
+                    <button
+                      className="absolute top-2 right-2 px-2 py-1 rounded bg-slate-700 text-slate-200 text-xs hover:bg-blue-600 transition"
+                      type="button"
+                      aria-label="Copy JSON to clipboard"
+                      onClick={() => {
+                        if (navigator.clipboard) {
+                          navigator.clipboard.writeText(jsonInput);
+                        }
+                      }}
+                      disabled={!jsonInput.trim()}
+                    >
+                      Copy
+                    </button>
+                  </div>
+                  <button
+                    className="mt-2 px-6 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition disabled:opacity-50"
+                    onClick={handlePasteParse}
+                    disabled={loading || !jsonInput.trim()}
+                    type="button"
+                  >
+                    {loading ? "Parsing..." : "Parse JSON"}
+                  </button>
+                  {jsonInputError && (
+                    <div className="mt-2 p-3 bg-red-900/50 border border-red-700 rounded-lg flex items-start space-x-3 backdrop-blur-sm w-full text-left">
+                      <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <h4 className="text-sm font-medium text-red-300">
+                          Parse Error
+                        </h4>
+                        <p className="text-sm text-red-400 mt-1">
+                          {jsonInputError}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
+            </div>
+          ) : (
+            <div
+              key="upload"
+              className="w-full h-full transition-all duration-500 ease-in-out animate-fade-in-panel flex"
+            >
+              <div className="w-full h-full flex flex-col justify-center">
+                <FileUpload
+                  onFileUpload={handleFileUpload}
+                  loading={loading}
+                  error={error}
+                />
+              </div>
+            </div>
+          )}
+          <style>
+            {`
+              @keyframes fadeInPanel {
+                from { opacity: 0; transform: translateY(24px);}
+                to { opacity: 1; transform: none;}
+              }
+              .animate-fade-in-panel {
+                animation: fadeInPanel 0.5s;
+              }
+            `}
+          </style>
+        </div>
+
+        {/* Animated loading spinner overlay */}
+        {loading && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm transition-all">
+            <div className="flex flex-col items-center space-y-4">
+              <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              <span className="text-white text-lg font-semibold">
+                Parsing...
+              </span>
             </div>
           </div>
         )}
@@ -404,58 +474,6 @@ function App() {
           </div>
         </footer>
       </div>
-      <style>
-        {`
-          @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(16px);}
-            to { opacity: 1; transform: none;}
-          }
-          @keyframes fadeOutBlack {
-            0% {
-              opacity: 1;
-              filter: brightness(1);
-              background: #0f172a;
-            }
-            70% {
-              opacity: 0;
-              filter: brightness(0.2);
-              background: #0f172a;
-            }
-            100% {
-              opacity: 0;
-              filter: brightness(0);
-              background: #0f172a;
-            }
-          }
-          .animate-fade-in {
-            animation: fadeIn 0.35s;
-          }
-          .animate-fade-out-black {
-            animation: fadeOutBlack 0.35s forwards;
-          }
-          /* Stylish dark scrollbar for report page */
-          .report-scrollbar {
-            scrollbar-width: thin;
-            scrollbar-color: #334155 #0f172a;
-          }
-          .report-scrollbar::-webkit-scrollbar {
-            width: 12px;
-            background: #0f172a;
-          }
-          .report-scrollbar::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #334155 40%, #1e293b 100%);
-            border-radius: 8px;
-            border: 2px solid #0f172a;
-            min-height: 40px;
-          }
-          .report-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, #475569 40%, #334155 100%);
-          }
-          .report-scrollbar::-webkit-scrollbar-corner {
-            background: #0f172a;
-          }
-        `}
-      </style>
     </div>
   );
 }

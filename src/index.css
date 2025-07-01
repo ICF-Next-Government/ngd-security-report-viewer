@@ -16,6 +16,18 @@ body {
   scrollbar-width: thin;
   scrollbar-color: #334155 #0f172a;
 }
+
+/* Hide scrollbar for home page */
+html.no-scrollbar,
+body.no-scrollbar {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+html.no-scrollbar::-webkit-scrollbar,
+body.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+}
+
 html::-webkit-scrollbar,
 body::-webkit-scrollbar {
   width: 12px;
