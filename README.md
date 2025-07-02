@@ -5,8 +5,13 @@
 This can be used as:
 
 - Local UI (containerized)
+  - View JSON file reports.
+  - Export reports as static HTML.
 - CLI Tool
+  - Export reports as static HTML.
+  - Generate CLI summaries.
 - GitHub Action
+  - Uses the CLI implementation under the hood.
 
 This is a small application for viewing Sarif JSON files. Either as a local running server to use for local development/debugging or as a CLI and GitHub Action for integration and automation of human readable Sarif JSON reports as static HTML files (like Trivy, same idea).
 
@@ -14,13 +19,21 @@ This is a small application for viewing Sarif JSON files. Either as a local runn
 
 ![ICF Sarif Viewer](./.docs/icf-sarif-viewer-report-sample.webp)
 
+# Report Summaries
+
+You can also check the report summary of a Sarif JSON file, which will generate JSON data in the stdout that tells you how many `critial`, `high`, `medium`, `low`, and `info` levels exist within the Sarif JSON file. This is useful for checking, programmatically, if you need to notify someone of the existence of (for example) `critical` and `high` findings.
+
+Below is a screenshot of a sample output from checking a Sarif JSON files summary:
+
+![ICF Sarif Viewer](./.docs/icf-sarif-viewer-report-summary-sample.webp)
+
 # Quick Start
 
-Ideally, this is intended to be used based on your use cases, but should support many integration and unknown use cases.
+This will take you through the various ways you can use this utility.
 
 ## As a Local (Containerized) Service
 
-This is useful when doing development and you need to regularly review security scans, actively, when you generate them. Specically, this is very useful for doing security remediations locally.
+This is useful when doing development and you need to regularly review security scans when you generate them. Specically, this is very useful for doing security remediations and re-running scans to check the remediations.
 
 > Run this from the root of the repo.
 
@@ -38,7 +51,7 @@ gh repo clone ICF-Next-Government/icf-sarif-viewer; cd icf-sarif-viewer; make st
 
 ## As a CLI Tool
 
-This is best used for programmatically and automatically integrating the generation of these scan reports.
+This is best used for programmatically integrating the generation of these static HTML reports from the Sarif JSON file.
 
 > Run from the root of the repo.
 
