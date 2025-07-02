@@ -1,6 +1,6 @@
 # ICF Sarif Viewer
 
-![ICF Sarif Viewer](./.docs/icf-sarif-viewer-file-upload.png)
+![ICF Sarif Viewer](./.docs/icf-sarif-viewer-file-upload.webp)
 
 This can be used as:
 
@@ -12,7 +12,7 @@ This is a small application for viewing Sarif JSON files. Either as a local runn
 
 # Sample Report(s)
 
-![ICF Sarif Viewer](./.docs/icf-sarif-viewer-report-sample.png)
+![ICF Sarif Viewer](./.docs/icf-sarif-viewer-report-sample.webp)
 
 # Quick Start
 
