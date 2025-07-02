@@ -499,9 +499,8 @@ export function generateHtml({
                   <h3 class="text-lg font-medium text-white mb-2">No results found</h3>
                   <p class="text-slate-400">Try a different search term.</p>
                 </div>
-                ${
-                  results
-                    .map((result) => {
+                ${results
+                  .map((result) => {
                     const severityColors: Record<
                       string,
                       {
@@ -607,7 +606,8 @@ export function generateHtml({
                   </div>
                   `;
                   })
-                  .join("")
+                  .join("")}
+              `
           }
         </div>
       </div>
