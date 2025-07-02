@@ -229,22 +229,21 @@ function App() {
         overflow: "auto",
       }}
     >
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-6">
         {/* Header */}
-        <div className="text-center mb-12">
-          <div className="flex items-center justify-center space-x-3 mb-6">
-            <div className="p-3 bg-blue-600 rounded-xl shadow-lg">
-              <Shield className="h-8 w-8 text-white" />
+        <div className="text-center mb-6">
+          <div className="flex items-center justify-center space-x-2 mb-3">
+            <div className="p-2 bg-blue-600 rounded-xl shadow-lg">
+              <Shield className="h-7 w-7 text-white" />
             </div>
-            <h1 className="text-4xl font-bold text-white">
+            <h1 className="text-3xl font-bold text-white">
               SARIF Report Viewer
             </h1>
           </div>
 
-          <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
-            Upload your Semgrep SARIF files to generate comprehensive security
-            analysis reports with detailed findings, severity breakdowns, and
-            actionable insights.
+          <p className="text-lg text-slate-300 mb-4 max-w-2xl mx-auto">
+            A modern, beautiful SARIF JSON report viewer for Semgrep, CodeQL,
+            and more.
           </p>
 
           {/* Features */}
@@ -291,10 +290,10 @@ function App() {
         </div>
 
         {/* Toggle for upload vs paste */}
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-center mb-4">
           <div className="inline-flex rounded-lg bg-slate-800/50 border border-slate-700 shadow overflow-hidden">
             <button
-              className={`px-6 py-2 text-sm font-medium focus:outline-none transition-colors ${
+              className={`px-4 py-1.5 text-sm font-medium focus:outline-none transition-colors ${
                 !usePaste
                   ? "bg-blue-600 text-white"
                   : "bg-transparent text-slate-300 hover:bg-slate-700/50"
@@ -306,7 +305,7 @@ function App() {
               Upload File
             </button>
             <button
-              className={`px-6 py-2 text-sm font-medium focus:outline-none transition-colors ${
+              className={`px-4 py-1.5 text-sm font-medium focus:outline-none transition-colors ${
                 usePaste
                   ? "bg-blue-600 text-white"
                   : "bg-transparent text-slate-300 hover:bg-slate-700/50"
@@ -321,26 +320,26 @@ function App() {
         </div>
 
         {/* Upload or Paste Component with smooth transition, no overlap, and no layout shift */}
-        <div className="relative w-full max-w-2xl mx-auto h-[520px] flex items-stretch">
+        <div className="relative w-full max-w-2xl mx-auto h-[440px] flex items-stretch">
           {usePaste ? (
             <div
               key="paste"
               className="w-full h-full transition-all duration-500 ease-in-out animate-fade-in-panel flex"
             >
-              <div className="bg-slate-800/50 border-2 border-dashed border-slate-600 rounded-xl p-8 text-center shadow-lg backdrop-blur-sm h-full flex flex-col justify-center w-full">
-                <div className="flex flex-col items-center space-y-4 w-full">
-                  <div className="p-4 rounded-full bg-slate-700/50">
-                    <FileText className="h-8 w-8 text-slate-400" />
+              <div className="bg-slate-800/50 border-2 border-dashed border-slate-600 rounded-xl py-1.5 px-8 text-center shadow-lg backdrop-blur-sm h-full flex flex-col justify-center w-full">
+                <div className="flex flex-col items-center space-y-3 w-full">
+                  <div className="p-3 rounded-full bg-slate-700/50">
+                    <FileText className="h-7 w-7 text-slate-400" />
                   </div>
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-semibold text-white">
+                  <div className="space-y-1">
+                    <h3 className="text-lg font-semibold text-white">
                       Paste SARIF JSON
                     </h3>
-                    <p className="text-slate-300">
+                    <p className="text-slate-300 text-sm">
                       Paste your Semgrep SARIF JSON content below to generate a
                       report.
                     </p>
-                    <p className="text-sm text-slate-400">
+                    <p className="text-xs text-slate-400">
                       Supports SARIF v2.1.0 format from Semgrep and other tools.
                     </p>
                   </div>
@@ -355,7 +354,7 @@ function App() {
                           }, 100);
                         }
                       }}
-                      className="w-full min-h-[180px] rounded-lg bg-slate-900/80 border border-slate-700 text-slate-100 p-4 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                      className="w-full min-h-[120px] rounded-lg bg-slate-900/80 border border-slate-700 text-slate-100 p-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                       placeholder="Paste SARIF JSON here..."
                       value={jsonInput}
                       onChange={(e) => setJsonInput(e.target.value)}
@@ -377,7 +376,7 @@ function App() {
                     </button>
                   </div>
                   <button
-                    className="mt-2 px-6 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition disabled:opacity-50"
+                    className="mt-1 px-4 py-1.5 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition disabled:opacity-50"
                     onClick={handlePasteParse}
                     disabled={loading || !jsonInput.trim()}
                     type="button"
@@ -385,7 +384,7 @@ function App() {
                     {loading ? "Parsing..." : "Parse JSON"}
                   </button>
                   {jsonInputError && (
-                    <div className="mt-2 p-3 bg-red-900/50 border border-red-700 rounded-lg flex items-start space-x-3 backdrop-blur-sm w-full text-left">
+                    <div className="mt-1 p-2 bg-red-900/50 border border-red-700 rounded-lg flex items-start space-x-3 backdrop-blur-sm w-full text-left">
                       <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
                       <div>
                         <h4 className="text-sm font-medium text-red-300">
@@ -414,18 +413,18 @@ function App() {
               </div>
             </div>
           )}
-          <style>
-            {`
-              @keyframes fadeInPanel {
-                from { opacity: 0; transform: translateY(24px);}
-                to { opacity: 1; transform: none;}
-              }
-              .animate-fade-in-panel {
-                animation: fadeInPanel 0.5s;
-              }
-            `}
-          </style>
         </div>
+        <style>
+          {`
+            @keyframes fadeInPanel {
+              from { opacity: 0; transform: translateY(24px);}
+              to { opacity: 1; transform: none;}
+            }
+            .animate-fade-in-panel {
+              animation: fadeInPanel 0.5s;
+            }
+          `}
+        </style>
 
         {/* Animated loading spinner overlay */}
         {loading && (
