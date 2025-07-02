@@ -6,6 +6,7 @@ import {
 } from "../types/sarif";
 import { ReportSummary } from "./ReportSummary";
 import { FindingsList } from "./FindingsList";
+import { generateHtml } from "../shared/generateHtml";
 
 interface ReportViewProps {
   results: ProcessedResult[];
@@ -33,11 +34,6 @@ export const ReportView: React.FC<ReportViewProps> = ({
         second: "2-digit",
       })
     : null;
-
-  // Import the shared generateHtml function
-  // @ts-ignore
-  // eslint-disable-next-line import/no-unresolved
-  import { generateHtml } from "../shared/generateHtml";
 
   const handleExportHTML = () => {
     setIsExporting(true);
