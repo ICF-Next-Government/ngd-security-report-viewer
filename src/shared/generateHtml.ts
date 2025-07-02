@@ -478,15 +478,6 @@ export function generateHtml({
           </span>
         </div>
         <div class="space-y-6" id="findings-list">
-          <div id="inline-no-results" class="inline-no-results" style="display:none;">
-            <svg class="h-12 w-12 text-slate-400 mx-auto mb-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
-              <line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <line x1="8" y1="8" x2="16" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            <h3 class="text-lg font-medium text-white mb-2">No results found</h3>
-            <p class="text-slate-400">Try a different search term.</p>
-          </div>
           ${
             results.length === 0
               ? `<div class="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-12 text-center shadow-lg">
@@ -498,8 +489,19 @@ export function generateHtml({
                 <h3 class="text-lg font-medium text-white mb-2">No findings found</h3>
                 <p class="text-slate-400">This SARIF file contains no security findings.</p>
               </div>`
-              : results
-                  .map((result) => {
+              : `
+                <div id="inline-no-results" class="inline-no-results" style="display:none;">
+                  <svg class="h-12 w-12 text-slate-400 mx-auto mb-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <line x1="8" y1="8" x2="16" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                  <h3 class="text-lg font-medium text-white mb-2">No results found</h3>
+                  <p class="text-slate-400">Try a different search term.</p>
+                </div>
+                ${
+                  results
+                    .map((result) => {
                     const severityColors: Record<
                       string,
                       {
