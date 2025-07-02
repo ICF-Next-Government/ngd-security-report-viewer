@@ -1,5 +1,7 @@
 # ICF Sarif Viewer
 
+![ICF Sarif Viewer](./.docs/icf-sarif-viewer-file-upload.png)
+
 This can be used as:
 
 - Local UI (containerized)
@@ -8,7 +10,9 @@ This can be used as:
 
 This is a small application for viewing Sarif JSON files. Either as a local running server to use for local development/debugging or as a CLI and GitHub Action for integration and automation of human readable Sarif JSON reports as static HTML files (like Trivy, same idea).
 
-![ICF Sarif Viewer](./.docs/icf-sarif-viewer-file-upload.png)
+# Sample Report(s)
+
+![ICF Sarif Viewer](./.docs/icf-sarif-viewer-report-sample.png)
 
 # Quick Start
 
