@@ -7,6 +7,6 @@
 
 in=${1:-scan.sarif.json}
 out=${2:-scan.sarif.html}
-gha_dir=${3:-.icf-sarif-viewer}
+gha_dir=${3:-.ngd-security-report-viewer}
 
 bun $gha_dir/src/cli/generate-html-report.ts --input $in --output $out

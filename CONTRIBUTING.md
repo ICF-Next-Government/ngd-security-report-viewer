@@ -20,8 +20,8 @@ Please be respectful and considerate in all interactions. We strive to maintain 
 ## Getting Started
 
 1. Fork the repository
-2. Clone your fork: `git clone https://github.com/your-username/icf-sarif-viewer.git`
-3. Add upstream remote: `git remote add upstream https://github.com/ICF-Next-Government/icf-sarif-viewer.git`
+2. Clone your fork: `git clone https://github.com/your-username/ngd-security-report-viewer.git`
+3. Add upstream remote: `git remote add upstream https://github.com/ICF-Next-Government/ngd-security-report-viewer.git`
 4. Create a feature branch: `git checkout -b feat/your-feature-name`
 
 ## Development Setup

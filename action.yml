@@ -37,7 +37,7 @@ runs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        repository: ICF-Next-Government/icf-sarif-viewer
+        repository: ICF-Next-Government/ngd-security-report-viewer
         path: .sarif-viewer
 
     - name: Generate Sarif Report

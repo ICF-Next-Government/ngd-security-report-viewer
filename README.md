@@ -43,8 +43,8 @@ A versatile security report viewer for SARIF, Semgrep, and GitLab SAST JSON file
 
 ```bash
 # Clone the repository
-git clone https://github.com/ICF-Next-Government/icfng-security-report-viewer.git
-cd icfng-security-report-viewer
+git clone https://github.com/ICF-Next-Government/ngd-security-report-viewer.git
+cd ngd-security-report-viewer
 
 # Install dependencies
 bun install
@@ -66,7 +66,7 @@ Visit [http://localhost:9867](http://localhost:9867) in your browser.
 **All-in-one command** (requires `gh` CLI):
 
 ```bash
-gh repo clone ICF-Next-Government/icfng-security-report-viewer && cd icfng-security-report-viewer && make start
+gh repo clone ICF-Next-Government/ngd-security-report-viewer && cd ngd-security-report-viewer && make start
 ```
 
 ### 2. CLI Tool
@@ -109,7 +109,7 @@ Integrate report generation into your CI/CD workflow:
 
 ```yaml
 - name: Generate Security Report
-  uses: ICF-Next-Government/icfng-security-report-viewer@main
+  uses: ICF-Next-Government/ngd-security-report-viewer@main
   with:
     in: scan.sarif.json # Input file (default: scan.sarif.json)
     out: report.html # Output file (default: report.html)
@@ -139,7 +139,7 @@ bun run build
 ### Project Structure
 
 ```
-icfng-security-report-viewer/
+ngd-security-report-viewer/
 ├── src/
 │   ├── cli/             # CLI tools
 │   ├── components/      # React components
@@ -159,5 +159,5 @@ icfng-security-report-viewer/
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/ICF-Next-Government/icfng-security-report-viewer/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/ICF-Next-Government/icfng-security-report-viewer/discussions)
+- **Issues**: [GitHub Issues](https://github.com/ICF-Next-Government/ngd-security-report-viewer/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/ICF-Next-Government/ngd-security-report-viewer/discussions)

@@ -438,7 +438,7 @@ function App() {
           </p>
           <div className="flex justify-center gap-4 mt-4">
             <a
-              href="https://github.com/ICF-Next-Government/icf-sarif-viewer"
+              href="https://github.com/ICF-Next-Government/ngd-security-report-viewer"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-blue-400 transition-colors underline"
