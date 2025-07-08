@@ -38,13 +38,19 @@ Examples:
   bun src/cli/report-summary.ts -i gl-sast-report.json
 
 Output:
-  Returns JSON with severity counts:
+  Returns JSON with detailed summary information:
   {
-    "critical": 0,
-    "high": 5,
-    "medium": 12,
-    "low": 3,
-    "info": 1
+    "timestamp": 1703123456,
+    "tool": "Semgrep (GitLab) v1.110.0 (GITLAB-SAST)",
+    "total_findings": 530,
+    "files_affected": 191,
+    "severity": {
+      "critical": 0,
+      "high": 5,
+      "medium": 12,
+      "low": 3,
+      "info": 1
+    }
   }
 
 Supported formats:
@@ -69,6 +75,26 @@ Supported formats:
   }
 
   return { inputPath };
+}
+
+// --- Helper Functions ---
+function generateUnixTimestamp(): number {
+  return Math.floor(Date.now() / 1000);
+}
+
+function formatToolInfo(toolName: string, toolVersion?: string, format?: string): string {
+  let toolInfo = toolName;
+
+  if (toolVersion) {
+    toolInfo += ` v${toolVersion}`;
+  }
+
+  if (format) {
+    const formatLabel = format.toUpperCase().replace('-', '-');
+    toolInfo += ` (${formatLabel})`;
+  }
+
+  return toolInfo;
 }
 
 // --- Main CLI Logic ---
@@ -112,13 +138,19 @@ async function main() {
     process.exit(1);
   }
 
-  // Output severity counts as JSON
+  // Generate enhanced output with additional information
   const output = {
-    critical: summary.criticalCount,
-    high: summary.highCount,
-    medium: summary.mediumCount,
-    low: summary.lowCount,
-    info: summary.infoCount,
+    timestamp: generateUnixTimestamp(),
+    tool: formatToolInfo(summary.toolName, summary.toolVersion, summary.format),
+    total_findings: summary.totalFindings,
+    files_affected: summary.filesAffected,
+    severity: {
+      critical: summary.criticalCount,
+      high: summary.highCount,
+      medium: summary.mediumCount,
+      low: summary.lowCount,
+      info: summary.infoCount,
+    },
   };
 
   console.log(JSON.stringify(output, null, 2));
