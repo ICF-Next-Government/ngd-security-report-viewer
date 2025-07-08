@@ -17,7 +17,13 @@ This is a small application for viewing SARIF, Semgrep, and GitLab SAST JSON fil
 
 # Sample Report(s)
 
+> Below is a screenshot of a sample report view, before it is exported.
+
 ![ICF Security Report Viewer](./.docs/icf-sarif-viewer-report-sample.webp)
+
+> Below is a screenshot of a sample exported static HTML file.
+
+![ICF Security Report Viewer](./.docs/icf-sarif-viewer-export-sample.webp)
 
 # Report Summaries
 
@@ -26,10 +32,6 @@ You can also check the report summary of a SARIF, Semgrep, or GitLab SAST JSON f
 > Below is a screenshot of a sample output from checking a security report summary:
 
 ![ICF Security Report Viewer](./.docs/icf-sarif-viewer-report-summary-sample.webp)
-
-> Below is a screenshot of a sample exported static HTML file.
-
-![ICF Security Report Viewer](./.docs/icf-sarif-viewer-export-sample.webp)
 
 # Quick Start
 
