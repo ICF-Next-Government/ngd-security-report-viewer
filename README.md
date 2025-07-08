@@ -23,9 +23,13 @@ This is a small application for viewing SARIF, Semgrep, and GitLab SAST JSON fil
 
 You can also check the report summary of a SARIF, Semgrep, or GitLab SAST JSON file, which will generate JSON data in the stdout that tells you how many `critical`, `high`, `medium`, `low`, and `info` levels exist within the security report. This is useful for checking, programmatically, if you need to notify someone of the existence of (for example) `critical` and `high` findings.
 
-Below is a screenshot of a sample output from checking a security report summary:
+> Below is a screenshot of a sample output from checking a security report summary:
 
 ![ICF Security Report Viewer](./.docs/icf-sarif-viewer-report-summary-sample.webp)
+
+> Below is a screenshot of a sample exported static HTML file.
+
+![ICF Security Report Viewer](./.docs/icf-sarif-viewer-export-sample.webp)
 
 # Quick Start
 
