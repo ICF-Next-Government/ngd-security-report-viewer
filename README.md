@@ -30,7 +30,7 @@ A versatile security report viewer for SARIF, Semgrep, and GitLab SAST JSON file
 
 ### Report Summary Output
 
-![ICF Security Report Viewer](./.docs/summary-sample.webp)
+![ICF Security Report Viewer](./.docs/report-summary-sample.webp)
 
 ## Installation
 
