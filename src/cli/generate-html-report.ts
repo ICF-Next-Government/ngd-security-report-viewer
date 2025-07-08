@@ -1,21 +1,51 @@
 #!/usr/bin/env bun
 /**
- * CLI to generate a static HTML report from a Semgrep SARIF JSON file.
+ * CLI to generate a static HTML report from a SARIF or Semgrep JSON file.
  *
  * Usage:
- *   bun src/cli/generate-html-report.ts --input path/to/file.sarif.json --output report.html
+ *   bun src/cli/generate-html-report.ts --input path/to/file.json --output report.html
  */
 
 import { readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { SarifLog } from "../types/sarif";
-import { SarifParser } from "../utils/sarifParser";
+import { ReportParser } from "../utils/reportParser";
 
 // --- CLI Argument Parsing ---
 function parseArgs() {
   const args = process.argv.slice(2);
   let input: string | undefined;
   let output: string | undefined;
+
+  // Check for help flag
+  if (args.includes("--help") || args.includes("-h") || args.length === 0) {
+    console.log(`
+Security Report HTML Generator
+
+Usage:
+  bun src/cli/generate-html-report.ts --input <file> [--output <file>]
+
+Options:
+  -i, --input <file>   Path to SARIF, Semgrep, or GitLab SAST JSON file (required)
+  -o, --output <file>  Path for output HTML file (default: report.html)
+  -h, --help           Show this help message
+
+Examples:
+  # Generate report from SARIF file
+  bun src/cli/generate-html-report.ts --input scan.sarif.json --output report.html
+
+  # Generate report from Semgrep JSON
+  bun src/cli/generate-html-report.ts --input semgrep_output.json
+
+  # Generate report from GitLab SAST JSON
+  bun src/cli/generate-html-report.ts -i gl-sast-report.json -o security-report.html
+
+Supported formats:
+  - SARIF v2.1.0
+  - Semgrep JSON output
+  - GitLab SAST JSON format
+`);
+    process.exit(0);
+  }
 
   for (let i = 0; i < args.length; i++) {
     if ((args[i] === "--input" || args[i] === "-i") && args[i + 1]) {
@@ -29,6 +59,7 @@ function parseArgs() {
 
   if (!input) {
     console.error("Error: --input <file> is required.");
+    console.error("Run with --help for usage information.");
     process.exit(1);
   }
   if (!output) {
@@ -49,23 +80,48 @@ async function main() {
   const inputPath = resolve(process.cwd(), input);
   const outputPath = resolve(process.cwd(), output);
 
-  let sarifRaw: string;
+  console.log(`📄 Reading file: ${inputPath}`);
+
+  let fileContent: string;
   try {
-    sarifRaw = await readFile(inputPath, "utf8");
+    fileContent = await readFile(inputPath, "utf8");
   } catch (err) {
-    console.error(`Failed to read input file: ${inputPath}`);
+    console.error(`❌ Failed to read input file: ${inputPath}`);
+    console.error(`   Make sure the file exists and is readable.`);
     process.exit(1);
   }
 
-  let sarifData: SarifLog;
+  let jsonData: any;
   try {
-    sarifData = JSON.parse(sarifRaw);
+    jsonData = JSON.parse(fileContent);
   } catch (err) {
-    console.error("Failed to parse SARIF JSON. Is the file valid SARIF?");
+    console.error(
+      "❌ Failed to parse JSON. The file doesn't appear to be valid JSON.",
+    );
+    console.error(
+      `   Error: ${err instanceof Error ? err.message : "Unknown error"}`,
+    );
     process.exit(1);
   }
 
-  const { results, summary } = SarifParser.parse(sarifData);
+  let results, summary;
+  try {
+    const parsed = ReportParser.parse(jsonData);
+    results = parsed.results;
+    summary = parsed.summary;
+    console.log(`🔍 Detected format: ${summary.format.toUpperCase()}`);
+    console.log(
+      `📊 Found ${summary.totalFindings} findings in ${summary.filesAffected} files`,
+    );
+  } catch (err) {
+    console.error(
+      `❌ Failed to parse report: ${err instanceof Error ? err.message : "Unknown error"}`,
+    );
+    console.error(
+      "   The file doesn't appear to be a valid SARIF, Semgrep, or GitLab SAST report.",
+    );
+    process.exit(1);
+  }
   const html = generateHtml({
     summary,
     results,
@@ -75,8 +131,12 @@ async function main() {
   try {
     await writeFile(outputPath, html, "utf8");
     console.log(`✅ HTML report generated: ${outputPath}`);
+    console.log(`   Total size: ${(html.length / 1024).toFixed(1)} KB`);
   } catch (err) {
-    console.error(`Failed to write output file: ${outputPath}`);
+    console.error(`❌ Failed to write output file: ${outputPath}`);
+    console.error(
+      `   Error: ${err instanceof Error ? err.message : "Unknown error"}`,
+    );
     process.exit(1);
   }
 }

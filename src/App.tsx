@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { FileUpload } from "./components/FileUpload";
 import { ReportView } from "./components/ReportView";
-import { SarifParser } from "./utils/sarifParser";
-import { ProcessedResult, ReportSummary, SarifLog } from "./types/sarif";
+import { ReportParser } from "./utils/reportParser";
+import { ProcessedResult, ReportSummary, UnifiedReport } from "./types/report";
 import {
   Shield,
   Zap,
@@ -15,6 +15,7 @@ import {
 function App() {
   const [results, setResults] = useState<ProcessedResult[]>([]);
   const [summary, setSummary] = useState<ReportSummary | null>(null);
+  const [report, setReport] = useState<UnifiedReport | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
   const [showReport, setShowReport] = useState(false);
@@ -59,18 +60,12 @@ function App() {
 
     try {
       const fileContent = await file.text();
-      const sarifData: SarifLog = JSON.parse(fileContent);
+      const jsonData = JSON.parse(fileContent);
 
-      // Validate basic SARIF structure
-      if (!sarifData.runs || !Array.isArray(sarifData.runs)) {
-        throw new Error(
-          'Invalid SARIF format: Missing or invalid "runs" array',
-        );
-      }
-
-      const parsed = SarifParser.parse(sarifData);
+      const parsed = ReportParser.parse(jsonData);
       setResults(parsed.results);
       setSummary(parsed.summary);
+      setReport(parsed);
 
       // Animate transition to report
       setTransitioning(true);
@@ -84,8 +79,8 @@ function App() {
       console.error("Parse error:", err);
       setError(
         err instanceof Error
-          ? `Failed to parse SARIF file: ${err.message}`
-          : "Failed to parse SARIF file. Please ensure it's a valid JSON file.",
+          ? `Failed to parse file: ${err.message}`
+          : "Failed to parse file. Please ensure it's a valid SARIF, Semgrep, or GitLab SAST JSON file.",
       );
     } finally {
       setLoading(false);
@@ -98,17 +93,12 @@ function App() {
     setUploadTimestamp(new Date());
 
     try {
-      const sarifData: SarifLog = JSON.parse(jsonInput);
+      const jsonData = JSON.parse(jsonInput);
 
-      if (!sarifData.runs || !Array.isArray(sarifData.runs)) {
-        throw new Error(
-          'Invalid SARIF format: Missing or invalid "runs" array',
-        );
-      }
-
-      const parsed = SarifParser.parse(sarifData);
+      const parsed = ReportParser.parse(jsonData);
       setResults(parsed.results);
       setSummary(parsed.summary);
+      setReport(parsed);
 
       // Animate transition to report
       setTransitioning(true);
@@ -121,8 +111,8 @@ function App() {
     } catch (err) {
       setJsonInputError(
         err instanceof Error
-          ? `Failed to parse SARIF JSON: ${err.message}`
-          : "Failed to parse SARIF JSON. Please ensure it's valid JSON.",
+          ? `Failed to parse JSON: ${err.message}`
+          : "Failed to parse JSON. Please ensure it's valid SARIF, Semgrep, or GitLab SAST JSON.",
       );
     } finally {
       setLoading(false);
@@ -137,6 +127,7 @@ function App() {
       setShowReport(false);
       setResults([]);
       setSummary(null);
+      setReport(null);
       setError("");
       setUploadTimestamp(null);
       setJsonInput("");
@@ -237,13 +228,13 @@ function App() {
               <Shield className="h-7 w-7 text-white" />
             </div>
             <h1 className="text-3xl font-bold text-white">
-              SARIF Report Viewer
+              Security Report Viewer
             </h1>
           </div>
 
           <p className="text-lg text-slate-300 mb-4 max-w-2xl mx-auto">
-            A modern, beautiful SARIF JSON report viewer for Semgrep, CodeQL,
-            and more.
+            A modern, beautiful report viewer for SARIF, Semgrep, and GitLab
+            SAST JSON outputs.
           </p>
 
           {/* Features */}
@@ -256,8 +247,8 @@ function App() {
                 Fast Parsing
               </h3>
               <p className="text-slate-400 text-sm">
-                Instantly parse and analyze SARIF files from Semgrep and other
-                security tools
+                Instantly parse and analyze SARIF, Semgrep, and GitLab SAST
+                security reports
               </p>
             </div>
 
@@ -333,14 +324,15 @@ function App() {
                   </div>
                   <div className="space-y-1">
                     <h3 className="text-lg font-semibold text-white">
-                      Paste SARIF JSON
+                      Paste Security Report JSON
                     </h3>
                     <p className="text-slate-300 text-sm">
-                      Paste your Semgrep SARIF JSON content below to generate a
-                      report.
+                      Paste your SARIF, Semgrep, or GitLab SAST JSON content
+                      below to generate a report.
                     </p>
                     <p className="text-xs text-slate-400">
-                      Supports SARIF v2.1.0 format from Semgrep and other tools.
+                      Supports SARIF v2.1.0, Semgrep, and GitLab SAST JSON
+                      formats.
                     </p>
                   </div>
                   <div className="relative w-full">
@@ -355,7 +347,7 @@ function App() {
                         }
                       }}
                       className="w-full min-h-[120px] rounded-lg bg-slate-900/80 border border-slate-700 text-slate-100 p-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                      placeholder="Paste SARIF JSON here..."
+                      placeholder="Paste SARIF, Semgrep, or GitLab SAST JSON here..."
                       value={jsonInput}
                       onChange={(e) => setJsonInput(e.target.value)}
                       disabled={loading}

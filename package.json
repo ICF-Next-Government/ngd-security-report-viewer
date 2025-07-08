@@ -1,5 +1,5 @@
 {
-  "name": "sarif-viewer",
+  "name": "security-report-viewer",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "biome lint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "caniuse-lite": "^1.0.30001726",

@@ -1,24 +1,17 @@
+import { SarifLog, SarifResult } from "../types/sarif";
+import { ProcessedResult, ReportSummary } from "../types/report";
+import { BaseParser } from "./baseParser";
 import {
-  SarifLog,
-  SarifResult,
-  ProcessedResult,
-  ReportSummary,
-} from "../types/sarif";
+  normalizeSeverity,
+  mapSecuritySeverityScore,
+} from "./helpers/severity";
 
-export class SarifParser {
+export class SarifParser extends BaseParser {
   static parse(sarifData: SarifLog): {
     results: ProcessedResult[];
     summary: ReportSummary;
   } {
     const results: ProcessedResult[] = [];
-    let totalFindings = 0;
-    let criticalCount = 0;
-    let highCount = 0;
-    let mediumCount = 0;
-    let lowCount = 0;
-    let infoCount = 0;
-    const filesSet = new Set<string>();
-
     let toolName = "Unknown Tool";
     let toolVersion: string | undefined;
 
@@ -33,43 +26,10 @@ export class SarifParser {
           `${runIndex}-${resultIndex}`,
         );
         results.push(processed);
-        totalFindings++;
-
-        // Count by severity
-        switch (processed.severity) {
-          case "critical":
-            criticalCount++;
-            break;
-          case "high":
-            highCount++;
-            break;
-          case "medium":
-            mediumCount++;
-            break;
-          case "low":
-            lowCount++;
-            break;
-          case "info":
-            infoCount++;
-            break;
-        }
-
-        filesSet.add(processed.file);
       });
     });
 
-    const summary: ReportSummary = {
-      totalFindings,
-      criticalCount,
-      highCount,
-      mediumCount,
-      lowCount,
-      infoCount,
-      filesAffected: filesSet.size,
-      toolName,
-      toolVersion,
-    };
-
+    const summary = this.createSummary(results, toolName, toolVersion, "sarif");
     return { results, summary };
   }
 
@@ -124,42 +84,20 @@ export class SarifParser {
     return null;
   }
 
-  private static determineSeverity(
-    result: SarifResult,
-    rule: any,
-  ): "critical" | "high" | "medium" | "low" | "info" {
+  private static determineSeverity(result: SarifResult, rule: any) {
     // Check security-severity in result properties
     const resultSeverity = result.properties?.["security-severity"];
     if (resultSeverity) {
-      return this.mapSecuritySeverity(parseFloat(resultSeverity));
+      return mapSecuritySeverityScore(parseFloat(resultSeverity));
     }
 
     // Check security-severity in rule properties
     const ruleSeverity = rule?.properties?.["security-severity"];
     if (ruleSeverity) {
-      return this.mapSecuritySeverity(parseFloat(ruleSeverity));
+      return mapSecuritySeverityScore(parseFloat(ruleSeverity));
     }
 
     // Fallback to level mapping
-    switch (result.level) {
-      case "error":
-        return "high";
-      case "warning":
-        return "medium";
-      case "info":
-      case "note":
-      default:
-        return "low";
-    }
-  }
-
-  private static mapSecuritySeverity(
-    score: number,
-  ): "critical" | "high" | "medium" | "low" | "info" {
-    if (score >= 9.0) return "critical";
-    if (score >= 7.0) return "high";
-    if (score >= 4.0) return "medium";
-    if (score >= 1.0) return "low";
-    return "info";
+    return normalizeSeverity(result.level || "info");
   }
 }

@@ -1,41 +1,18 @@
 /**
- * Shared HTML export logic for SARIF reports.
+ * Shared HTML export logic for security reports.
  * This function is used by both the CLI and the UI to ensure identical output.
  */
 
-export interface Finding {
-  severity: string;
-  ruleId: string;
-  ruleName: string;
-  message: string;
-  file: string;
-  startLine?: number;
-  endLine?: number;
-  tags: string[];
-  description?: string;
-  snippet?: string;
-}
-
-export interface ReportSummary {
-  toolName: string;
-  toolVersion?: string;
-  totalFindings: number;
-  filesAffected: number;
-  criticalCount: number;
-  highCount: number;
-  mediumCount: number;
-  lowCount: number;
-  infoCount: number;
-}
+import { ProcessedResult, ReportSummary } from "../types/report";
 
 export interface GenerateHtmlOptions {
   summary: ReportSummary;
-  results: Finding[];
+  results: ProcessedResult[];
   generatedAt?: string; // ISO string or formatted date
 }
 
 /**
- * Generates static HTML for a SARIF report.
+ * Generates static HTML for a security report (SARIF, Semgrep, GitLab SAST).
  * @param options - The report summary, findings, and optional generated timestamp.
  * @returns HTML string
  */
@@ -302,10 +279,10 @@ export function generateHtml({
         <div class="p-3 bg-blue-600 rounded-xl shadow-lg">
           <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-        <h1 class="text-4xl font-bold text-white">SARIF Report Viewer</h1>
+        <h1 class="text-4xl font-bold text-white">Security Report Viewer</h1>
       </div>
       <p class="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
-        Upload your Semgrep SARIF files to generate comprehensive security analysis reports
+        Comprehensive security analysis report generated from ${summary.format ? summary.format.toUpperCase() : "security scan"} data
         with detailed findings, severity breakdowns, and actionable insights.
       </p>
       <div class="flex items-center justify-center mt-4">
@@ -323,7 +300,7 @@ export function generateHtml({
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
           <div>
             <span class="text-slate-400">Tool:</span>
-            <span class="ml-2 font-medium text-white">${summary.toolName} ${summary.toolVersion ? `v${summary.toolVersion}` : ""}</span>
+            <span class="ml-2 font-medium text-white">${summary.toolName} ${summary.toolVersion ? `v${summary.toolVersion}` : ""} (${summary.format ? summary.format.toUpperCase() : "Unknown Format"})</span>
           </div>
           <div>
             <span class="text-slate-400">Total Findings:</span>

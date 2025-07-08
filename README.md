@@ -1,6 +1,6 @@
-# ICF Sarif Viewer
+# ICF Security Report Viewer
 
-![ICF Sarif Viewer](./.docs/icf-sarif-viewer-file-upload.webp)
+![ICF Security Report Viewer](./.docs/icf-sarif-viewer-file-upload.webp)
 
 This can be used as:
 
@@ -13,19 +13,19 @@ This can be used as:
 - GitHub Action
   - Uses the CLI implementation under the hood.
 
-This is a small application for viewing Sarif JSON files. Either as a local running server to use for local development/debugging or as a CLI and GitHub Action for integration and automation of human readable Sarif JSON reports as static HTML files (like Trivy, same idea).
+This is a small application for viewing SARIF, Semgrep, and GitLab SAST JSON files. Either as a local running server to use for local development/debugging or as a CLI and GitHub Action for integration and automation of human readable security reports as static HTML files (like Trivy, same idea).
 
 # Sample Report(s)
 
-![ICF Sarif Viewer](./.docs/icf-sarif-viewer-report-sample.webp)
+![ICF Security Report Viewer](./.docs/icf-sarif-viewer-report-sample.webp)
 
 # Report Summaries
 
-You can also check the report summary of a Sarif JSON file, which will generate JSON data in the stdout that tells you how many `critial`, `high`, `medium`, `low`, and `info` levels exist within the Sarif JSON file. This is useful for checking, programmatically, if you need to notify someone of the existence of (for example) `critical` and `high` findings.
+You can also check the report summary of a SARIF, Semgrep, or GitLab SAST JSON file, which will generate JSON data in the stdout that tells you how many `critical`, `high`, `medium`, `low`, and `info` levels exist within the security report. This is useful for checking, programmatically, if you need to notify someone of the existence of (for example) `critical` and `high` findings.
 
-Below is a screenshot of a sample output from checking a Sarif JSON files summary:
+Below is a screenshot of a sample output from checking a security report summary:
 
-![ICF Sarif Viewer](./.docs/icf-sarif-viewer-report-summary-sample.webp)
+![ICF Security Report Viewer](./.docs/icf-sarif-viewer-report-summary-sample.webp)
 
 # Quick Start
 
@@ -56,17 +56,42 @@ This is best used for programmatically integrating the generation of these stati
 > Run from the root of the repo.
 
 ```bash
-bun src/cli/generate-html-report.ts --input <sarif_json_file> --output <report_html_file>
+bun src/cli/generate-html-report.ts --input <json_file> --output <report_html_file>
 ```
 
 Here is a working example:
 
 ```bash
-# If there is a "scan.sarif.json" file in the
-# root of the repo, then it will generate a
-# "report.html" file that contains the viewer
-# results.
+# If there is a "scan.sarif.json", "semgrep_output.json", or "gl-sast-report.json"
+# file in the root of the repo, then it will generate a
+# "report.html" file that contains the viewer results.
+
+# For SARIF files:
 bun src/cli/generate-html-report.ts --input scan.sarif.json --output report.html
+
+# For Semgrep JSON files:
+bun src/cli/generate-html-report.ts --input semgrep_output.json --output report.html
+
+# For GitLab SAST JSON files:
+bun src/cli/generate-html-report.ts --input gl-sast-report.json --output report.html
+```
+
+## Report Summary CLI
+
+The report summary CLI allows you to quickly get severity counts from a security report:
+
+```bash
+# Get summary from any supported format
+bun src/cli/report-summary.ts --input scan.sarif.json
+
+# Output:
+# {
+#   "critical": 0,
+#   "high": 5,
+#   "medium": 12,
+#   "low": 3,
+#   "info": 1
+# }
 ```
 
 ## As a GHA
@@ -74,7 +99,7 @@ bun src/cli/generate-html-report.ts --input scan.sarif.json --output report.html
 This is best for generating from within a GHA.
 
 ```yaml
-name: ICF Sarif Report Generator
+name: ICF Security Report Generator
 uses: ICF-Next-Government/icf-sarif-viewer@main
 with:
   in: scan.sarif.json

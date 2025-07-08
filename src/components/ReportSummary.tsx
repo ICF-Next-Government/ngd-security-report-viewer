@@ -1,6 +1,6 @@
 import React from "react";
 import { Shield, AlertTriangle, Info, CheckCircle } from "lucide-react";
-import { ReportSummary as ReportSummaryType } from "../types/sarif";
+import { ReportSummary as ReportSummaryType } from "../types/report";
 
 interface ReportSummaryProps {
   summary: ReportSummaryType;

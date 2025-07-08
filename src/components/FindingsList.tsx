@@ -8,7 +8,7 @@ import {
   Info,
   CheckCircle,
 } from "lucide-react";
-import { ProcessedResult } from "../types/sarif";
+import { ProcessedResult } from "../types/report";
 
 interface FindingsListProps {
   results: ProcessedResult[];

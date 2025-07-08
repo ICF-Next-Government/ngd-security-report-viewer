@@ -77,32 +77,3 @@ export type SarifRegion = {
     text: string;
   };
 };
-
-// Processed types for our application
-export type ProcessedResult = {
-  id: string;
-  ruleId: string;
-  ruleName: string;
-  message: string;
-  severity: "critical" | "high" | "medium" | "low" | "info";
-  level: string;
-  file: string;
-  startLine?: number;
-  endLine?: number;
-  snippet?: string;
-  description?: string;
-  tags: string[];
-};
-
-export type ReportSummary = {
-  totalFindings: number;
-  criticalCount: number;
-  highCount: number;
-  mediumCount: number;
-  lowCount: number;
-  infoCount: number;
-  filesAffected: number;
-  toolName: string;
-  toolVersion?: string;
-  timestamp?: string; // ISO string for upload/view time
-};

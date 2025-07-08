@@ -3,7 +3,7 @@ import { ArrowLeft, Download } from "lucide-react";
 import {
   ProcessedResult,
   ReportSummary as ReportSummaryType,
-} from "../types/sarif";
+} from "../types/report";
 import { ReportSummary } from "./ReportSummary";
 import { FindingsList } from "./FindingsList";
 import { generateHtml } from "../shared/generateHtml";

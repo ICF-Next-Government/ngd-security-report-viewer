@@ -85,14 +85,14 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
           <div className="space-y-2">
             <h3 className="text-xl font-semibold text-white">
-              {loading ? "Processing SARIF file..." : "Upload SARIF Report"}
+              {loading ? "Processing file..." : "Upload Security Report"}
             </h3>
             <p className="text-slate-300">
-              Drag and drop your Semgrep SARIF JSON file here, or click to
-              browse
+              Drag and drop your SARIF, Semgrep, or GitLab SAST JSON file here,
+              or click to browse
             </p>
             <p className="text-sm text-slate-400">
-              Supports .json files from Semgrep and other SARIF-compatible tools
+              Supports SARIF, Semgrep, and GitLab SAST JSON output formats
             </p>
           </div>
 
