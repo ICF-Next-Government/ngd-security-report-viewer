@@ -1,15 +1,15 @@
+import { SEVERITY_LEVELS, TOOL_NAMES } from "../constants";
+import type { SeverityLevel } from "../constants";
+import { ProcessedResult, ReportSummary } from "../types/report";
 import {
+  SemgrepMetadata,
   SemgrepOutput,
   SemgrepResult,
-  SemgrepMetadata,
 } from "../types/semgrep";
-import { ProcessedResult, ReportSummary } from "../types/report";
-import { SEVERITY_LEVELS, TOOL_NAMES } from "../constants";
 import {
   mapSecuritySeverityScore,
   normalizeSeverity,
 } from "./helpers/severity";
-import type { SeverityLevel } from "../constants";
 
 export class SemgrepParser {
   static parse(semgrepData: SemgrepOutput): {
@@ -62,6 +62,13 @@ export class SemgrepParser {
       mediumCount,
       lowCount,
       infoCount,
+      severityCounts: {
+        critical: criticalCount,
+        high: highCount,
+        medium: mediumCount,
+        low: lowCount,
+        info: infoCount,
+      },
       filesAffected: filesSet.size,
       toolName,
       toolVersion,
@@ -105,7 +112,7 @@ export class SemgrepParser {
     // Check security-severity in metadata
     const securitySeverity = result.metadata?.["security-severity"];
     if (securitySeverity) {
-      return mapSecuritySeverityScore(parseFloat(securitySeverity));
+      return mapSecuritySeverityScore(Number.parseFloat(securitySeverity));
     }
 
     // Check impact/likelihood combination

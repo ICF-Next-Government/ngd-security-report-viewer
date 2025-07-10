@@ -1,10 +1,7 @@
-import { SarifLog, SarifResult } from "../types/sarif";
 import { ProcessedResult, ReportSummary } from "../types/report";
+import { SarifLog, SarifResult } from "../types/sarif";
 import { BaseParser } from "./baseParser";
-import {
-  normalizeSeverity,
-  mapSecuritySeverityScore,
-} from "./helpers/severity";
+import { mapSecuritySeverityScore, normalizeSeverity } from "./helpers/severity";
 
 export class SarifParser extends BaseParser {
   static parse(sarifData: SarifLog): {
@@ -20,11 +17,7 @@ export class SarifParser extends BaseParser {
       toolVersion = run.tool.driver.version;
 
       run.results.forEach((result, resultIndex) => {
-        const processed = this.processResult(
-          result,
-          run,
-          `${runIndex}-${resultIndex}`,
-        );
+        const processed = this.processResult(result, run, `${runIndex}-${resultIndex}`);
         results.push(processed);
       });
     });
@@ -33,23 +26,15 @@ export class SarifParser extends BaseParser {
     return { results, summary };
   }
 
-  private static processResult(
-    result: SarifResult,
-    run: any,
-    id: string,
-  ): ProcessedResult {
+  private static processResult(result: SarifResult, run: any, id: string): ProcessedResult {
     const ruleId = result.ruleId || "unknown-rule";
     const rule = this.findRule(ruleId, run);
 
     const severity = this.determineSeverity(result, rule);
-    const file =
-      result.locations?.[0]?.physicalLocation?.artifactLocation.uri ||
-      "unknown-file";
-    const startLine =
-      result.locations?.[0]?.physicalLocation?.region?.startLine;
+    const file = result.locations?.[0]?.physicalLocation?.artifactLocation.uri || "unknown-file";
+    const startLine = result.locations?.[0]?.physicalLocation?.region?.startLine;
     const endLine = result.locations?.[0]?.physicalLocation?.region?.endLine;
-    const snippet =
-      result.locations?.[0]?.physicalLocation?.region?.snippet?.text;
+    const snippet = result.locations?.[0]?.physicalLocation?.region?.snippet?.text;
     const tags = rule?.properties?.tags || [];
 
     return {
@@ -88,13 +73,13 @@ export class SarifParser extends BaseParser {
     // Check security-severity in result properties
     const resultSeverity = result.properties?.["security-severity"];
     if (resultSeverity) {
-      return mapSecuritySeverityScore(parseFloat(resultSeverity));
+      return mapSecuritySeverityScore(Number.parseFloat(resultSeverity));
     }
 
     // Check security-severity in rule properties
     const ruleSeverity = rule?.properties?.["security-severity"];
     if (ruleSeverity) {
-      return mapSecuritySeverityScore(parseFloat(ruleSeverity));
+      return mapSecuritySeverityScore(Number.parseFloat(ruleSeverity));
     }
 
     // Fallback to level mapping

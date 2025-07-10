@@ -1,5 +1,5 @@
-import { VALID_FILE_EXTENSIONS, MAX_FILE_SIZE, ERROR_MESSAGES } from '../../constants';
-import { FileValidationResult } from '../../types/common';
+import { ERROR_MESSAGES, MAX_FILE_SIZE, VALID_FILE_EXTENSIONS } from "../../constants";
+import { FileValidationResult } from "../../types/common";
 
 /**
  * Validates a file based on extension and size
@@ -9,9 +9,7 @@ import { FileValidationResult } from '../../types/common';
 export function validateFile(file: File): FileValidationResult {
   // Check file extension
   const fileName = file.name.toLowerCase();
-  const hasValidExtension = VALID_FILE_EXTENSIONS.some(ext =>
-    fileName.endsWith(ext)
-  );
+  const hasValidExtension = VALID_FILE_EXTENSIONS.some((ext) => fileName.endsWith(ext));
 
   if (!hasValidExtension) {
     return {
@@ -39,9 +37,9 @@ export function validateFile(file: File): FileValidationResult {
  * @returns The file extension including the dot, or empty string if no extension
  */
 export function getFileExtension(filename: string): string {
-  const lastDotIndex = filename.lastIndexOf('.');
+  const lastDotIndex = filename.lastIndexOf(".");
   if (lastDotIndex === -1) {
-    return '';
+    return "";
   }
   return filename.slice(lastDotIndex).toLowerCase();
 }
@@ -52,22 +50,19 @@ export function getFileExtension(filename: string): string {
  * @param timestamp - Optional timestamp to include
  * @returns A sanitized filename safe for downloads
  */
-export function generateSafeFilename(
-  originalName: string,
-  timestamp?: Date
-): string {
+export function generateSafeFilename(originalName: string, timestamp?: Date): string {
   // Remove extension
-  const nameWithoutExt = originalName.replace(/\.[^/.]+$/, '');
+  const nameWithoutExt = originalName.replace(/\.[^/.]+$/, "");
 
   // Sanitize the name (remove special characters)
   const sanitized = nameWithoutExt
-    .replace(/[^a-zA-Z0-9-_]/g, '_')
-    .replace(/_+/g, '_')
-    .replace(/^_+|_+$/g, '');
+    .replace(/[^a-zA-Z0-9-_]/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_+|_+$/g, "");
 
   // Add timestamp if provided
   if (timestamp) {
-    const dateStr = timestamp.toISOString().split('T')[0];
+    const dateStr = timestamp.toISOString().split("T")[0];
     return `${sanitized}_${dateStr}`;
   }
 
@@ -80,13 +75,13 @@ export function generateSafeFilename(
  * @returns Formatted file size string
  */
 export function formatFileSize(bytes: number): string {
-  if (bytes === 0) return '0 Bytes';
+  if (bytes === 0) return "0 Bytes";
 
   const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const sizes = ["Bytes", "KB", "MB", "GB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
 }
 
 /**
@@ -95,7 +90,7 @@ export function formatFileSize(bytes: number): string {
  * @returns True if content appears to be valid JSON
  */
 export function isJsonContent(content: string): boolean {
-  if (!content || typeof content !== 'string') {
+  if (!content || typeof content !== "string") {
     return false;
   }
 
@@ -105,8 +100,8 @@ export function isJsonContent(content: string): boolean {
   }
 
   // Check if it starts with { or [ and ends with } or ]
-  const startsWithJson = trimmed[0] === '{' || trimmed[0] === '[';
-  const endsWithJson = trimmed[trimmed.length - 1] === '}' || trimmed[trimmed.length - 1] === ']';
+  const startsWithJson = trimmed[0] === "{" || trimmed[0] === "[";
+  const endsWithJson = trimmed[trimmed.length - 1] === "}" || trimmed[trimmed.length - 1] === "]";
 
   return startsWithJson && endsWithJson;
 }
@@ -122,15 +117,15 @@ export function readFileAsText(file: File): Promise<string> {
 
     reader.onload = (event) => {
       const result = event.target?.result;
-      if (typeof result === 'string') {
+      if (typeof result === "string") {
         resolve(result);
       } else {
-        reject(new Error('Failed to read file as text'));
+        reject(new Error("Failed to read file as text"));
       }
     };
 
     reader.onerror = () => {
-      reject(new Error('Failed to read file'));
+      reject(new Error("Failed to read file"));
     };
 
     reader.readAsText(file);
@@ -147,7 +142,7 @@ export function readFileAsText(file: File): Promise<string> {
 export function createFileFromText(
   content: string,
   filename: string,
-  mimeType: string = 'application/json'
+  mimeType = "application/json",
 ): File {
   const blob = new Blob([content], { type: mimeType });
   return new File([blob], filename, { type: mimeType });

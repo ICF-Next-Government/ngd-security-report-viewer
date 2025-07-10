@@ -1,10 +1,10 @@
-import { SarifParser } from "./sarifParser";
-import { SemgrepParser } from "./semgrepParser";
-import { GitLabSastParser } from "./gitlabSastParser";
+import { GitLabSastReport } from "../types/gitlab-sast";
+import { ReportFormat, UnifiedReport } from "../types/report";
 import { SarifLog } from "../types/sarif";
 import { SemgrepOutput } from "../types/semgrep";
-import { GitLabSastReport } from "../types/gitlab-sast";
-import { UnifiedReport, ReportFormat } from "../types/report";
+import { GitLabSastParser } from "./gitlabSastParser";
+import { SarifParser } from "./sarifParser";
+import { SemgrepParser } from "./semgrepParser";
 
 export class ReportParser {
   static parse(data: any): UnifiedReport {
@@ -52,19 +52,10 @@ export class ReportParser {
 
   private static detectFormat(data: any): ReportFormat | null {
     // Check for SARIF format
-    if (
-      data.version &&
-      typeof data.version === "string" &&
-      data.runs &&
-      Array.isArray(data.runs)
-    ) {
+    if (data.version && typeof data.version === "string" && data.runs && Array.isArray(data.runs)) {
       // Additional SARIF validation
       const hasValidRuns = data.runs.every(
-        (run: any) =>
-          run.tool &&
-          run.tool.driver &&
-          run.results &&
-          Array.isArray(run.results),
+        (run: any) => run.tool && run.tool.driver && run.results && Array.isArray(run.results),
       );
       if (hasValidRuns) {
         return "sarif";
@@ -72,11 +63,7 @@ export class ReportParser {
     }
 
     // Check for Semgrep format
-    if (
-      data.results &&
-      Array.isArray(data.results) &&
-      data.results.length > 0
-    ) {
+    if (data.results && Array.isArray(data.results) && data.results.length > 0) {
       // Check if results have Semgrep-specific fields
       const firstResult = data.results[0];
       if (
@@ -148,9 +135,7 @@ export class ReportParser {
       // Check file extension
       const validExtensions = [".json", ".sarif"];
       const fileName = file.name.toLowerCase();
-      const hasValidExtension = validExtensions.some((ext) =>
-        fileName.endsWith(ext),
-      );
+      const hasValidExtension = validExtensions.some((ext) => fileName.endsWith(ext));
 
       if (!hasValidExtension) {
         reject(new Error("Please upload a JSON or SARIF file"));

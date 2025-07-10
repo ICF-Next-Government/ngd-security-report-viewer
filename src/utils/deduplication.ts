@@ -27,7 +27,7 @@ export class DeduplicationService {
    */
   static deduplicateFindings(
     results: ProcessedResult[],
-    options: Partial<DeduplicationOptions> = {}
+    options: Partial<DeduplicationOptions> = {},
   ): DuplicateGroup[] {
     const opts = { ...DEFAULT_OPTIONS, ...options };
     const groups = new Map<string, DuplicateGroup>();
@@ -66,11 +66,13 @@ export class DeduplicationService {
           duplicates: [],
           occurrences: 1,
           affectedFiles: [result.file],
-          lineRanges: [{
-            file: result.file,
-            startLine: result.startLine,
-            endLine: result.endLine,
-          }],
+          lineRanges: [
+            {
+              file: result.file,
+              startLine: result.startLine,
+              endLine: result.endLine,
+            },
+          ],
         };
         groups.set(groupKey, newGroup);
       }
@@ -92,10 +94,7 @@ export class DeduplicationService {
   /**
    * Generate a unique key for grouping similar findings
    */
-  private static getGroupKey(
-    result: ProcessedResult,
-    options: DeduplicationOptions
-  ): string {
+  private static getGroupKey(result: ProcessedResult, options: DeduplicationOptions): string {
     const parts: string[] = [];
 
     if (options.groupByRuleId) {
@@ -119,7 +118,7 @@ export class DeduplicationService {
   private static findSimilarGroup(
     result: ProcessedResult,
     groups: Map<string, DuplicateGroup>,
-    threshold: number
+    threshold: number,
   ): DuplicateGroup | undefined {
     for (const group of groups.values()) {
       // Only compare within the same rule ID and severity
@@ -129,7 +128,7 @@ export class DeduplicationService {
       ) {
         const similarity = this.calculateSimilarity(
           result.message,
-          group.representativeResult.message
+          group.representativeResult.message,
         );
 
         if (similarity >= threshold) {
@@ -154,7 +153,7 @@ export class DeduplicationService {
     const tokens1 = this.tokenize(normalized1);
     const tokens2 = this.tokenize(normalized2);
 
-    const intersection = tokens1.filter(token => tokens2.includes(token));
+    const intersection = tokens1.filter((token) => tokens2.includes(token));
     const union = [...new Set([...tokens1, ...tokens2])];
 
     return union.length > 0 ? intersection.length / union.length : 0;
@@ -164,30 +163,30 @@ export class DeduplicationService {
    * Normalize a message by removing variable parts
    */
   private static normalizeMessage(message: string): string {
-    return message
-      .toLowerCase()
-      // Remove file paths
-      .replace(/[\/\\][\w\-\.\/\\]+\.\w+/g, "FILE_PATH")
-      // Remove line numbers
-      .replace(/line\s*\d+/gi, "LINE_NUMBER")
-      .replace(/:\d+:\d+/g, ":LINE:COL")
-      // Remove quoted strings
-      .replace(/"[^"]*"/g, "QUOTED_STRING")
-      .replace(/'[^']*'/g, "QUOTED_STRING")
-      // Remove numbers
-      .replace(/\b\d+\b/g, "NUMBER")
-      // Remove extra whitespace
-      .replace(/\s+/g, " ")
-      .trim();
+    return (
+      message
+        .toLowerCase()
+        // Remove file paths
+        .replace(/[\/\\][\w\-\.\/\\]+\.\w+/g, "FILE_PATH")
+        // Remove line numbers
+        .replace(/line\s*\d+/gi, "LINE_NUMBER")
+        .replace(/:\d+:\d+/g, ":LINE:COL")
+        // Remove quoted strings
+        .replace(/"[^"]*"/g, "QUOTED_STRING")
+        .replace(/'[^']*'/g, "QUOTED_STRING")
+        // Remove numbers
+        .replace(/\b\d+\b/g, "NUMBER")
+        // Remove extra whitespace
+        .replace(/\s+/g, " ")
+        .trim()
+    );
   }
 
   /**
    * Tokenize a message into words
    */
   private static tokenize(message: string): string[] {
-    return message
-      .split(/\s+/)
-      .filter(token => token.length > 2); // Ignore very short tokens
+    return message.split(/\s+/).filter((token) => token.length > 2); // Ignore very short tokens
   }
 
   /**
@@ -205,7 +204,7 @@ export class DeduplicationService {
     const occurrenceCount = group.occurrences;
 
     if (fileCount === 1) {
-      return `Found ${occurrenceCount} time${occurrenceCount > 1 ? 's' : ''} in ${group.affectedFiles[0]}`;
+      return `Found ${occurrenceCount} time${occurrenceCount > 1 ? "s" : ""} in ${group.affectedFiles[0]}`;
     } else {
       return `Found ${occurrenceCount} times across ${fileCount} files`;
     }
@@ -217,7 +216,7 @@ export class DeduplicationService {
   static getGroupLocations(group: DuplicateGroup): string[] {
     const locationMap = new Map<string, number[]>();
 
-    group.lineRanges.forEach(range => {
+    group.lineRanges.forEach((range) => {
       if (!locationMap.has(range.file)) {
         locationMap.set(range.file, []);
       }

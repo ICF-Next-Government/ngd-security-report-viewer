@@ -35,7 +35,7 @@ export interface FilterState {
 }
 
 // Sort types
-export type SortDirection = 'asc' | 'desc';
+export type SortDirection = "asc" | "desc";
 
 export interface SortState {
   field: string;
@@ -44,19 +44,17 @@ export interface SortState {
 
 // Export types
 export interface ExportOptions {
-  format: 'html' | 'pdf';
+  format: "html" | "pdf";
   includeFilters: boolean;
   includeSummary: boolean;
   includeDetails: boolean;
 }
 
 // Theme types
-export type Theme = 'light' | 'dark' | 'system';
+export type Theme = "light" | "dark" | "system";
 
 // Generic result type for operations
-export type Result<T, E = Error> =
-  | { success: true; data: T }
-  | { success: false; error: E };
+export type Result<T, E = Error> = { success: true; data: T } | { success: false; error: E };
 
 // Async operation state
 export interface AsyncState<T> {
@@ -102,7 +100,7 @@ export type SubmitHandler = (event: React.FormEvent<HTMLFormElement>) => void;
 export interface BaseComponentProps {
   className?: string;
   children?: React.ReactNode;
-  'data-testid'?: string;
+  "data-testid"?: string;
 }
 
 export interface BaseFormComponentProps extends BaseComponentProps {

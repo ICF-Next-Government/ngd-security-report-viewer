@@ -1,46 +1,142 @@
-name: Sarif JSON Report Generator
-description: Reads a Sarif JSON file and generates a static HTML file as a report.
+name: Security Report HTML Generator
+description: Reads security report files (SARIF, Semgrep, or GitLab SAST JSON) and generates a static HTML report.
 inputs:
   in:
-    description: Name of the Sarif JSON file to look for.
+    description: "Path to the security report file (SARIF, Semgrep JSON, or GitLab SAST JSON)"
     required: false
-    default: scan.sarif.json
+    default: report.json
   out:
-    description: Name of the generated HTML file for the report.
+    description: "Path for the generated HTML report file"
     required: false
     default: report.html
+  no-dedup:
+    description: "Disable automatic deduplication of similar findings"
+    required: false
+    default: "false"
 runs:
   using: composite
   steps:
-    - name: Install bash and dependencies
-      shell: sh
-      run: |
-        apk add --no-cache bash curl unzip libstdc++ libgcc
-
-    - name: Install Bun
+    - name: Validate inputs
       shell: bash
       run: |
-        # Try official installer first, fallback to manual
-        if curl -fsSL https://bun.sh/install | bash; then
-          echo "Bun installed via official installer"
-        else
-          echo "Official installer failed, installing manually"
-          mkdir -p "$HOME/.bun/bin"
-          curl -fsSL "https://github.com/oven-sh/bun/releases/latest/download/bun-linux-x64.zip" -o /tmp/bun.zip
-          unzip -q /tmp/bun.zip -d /tmp/
-          mv /tmp/bun-linux-x64/bun "$HOME/.bun/bin/bun"
-          chmod +x "$HOME/.bun/bin/bun"
-          rm -rf /tmp/bun.zip /tmp/bun-linux-x64
+        echo "🔍 Validating inputs..."
+        if [[ ! -f "${{ inputs.in }}" ]]; then
+          echo "❌ Error: Input file '${{ inputs.in }}' not found"
+          echo "Please ensure the security report file exists in the workspace"
+          exit 1
         fi
+
+        # Check file extension to provide helpful hints
+        case "${{ inputs.in }}" in
+          *.sarif.json|*.sarif)
+            echo "📄 Detected SARIF format"
+            ;;
+          *.json)
+            echo "📄 Detected JSON format (could be Semgrep or GitLab SAST)"
+            ;;
+          *)
+            echo "⚠️  Warning: File extension not recognized, but will attempt to process"
+            ;;
+        esac
+
+    - name: Install system dependencies
+      shell: sh
+      run: |
+        echo "📦 Installing system dependencies..."
+        apk add --no-cache bash curl unzip libstdc++ libgcc || {
+          echo "❌ Failed to install system dependencies"
+          exit 1
+        }
+
+    - name: Install Bun runtime
+      shell: bash
+      run: |
+        echo "🚀 Installing Bun runtime..."
+
+        # Try official installer first
+        if curl -fsSL https://bun.sh/install | bash; then
+          echo "✅ Bun installed via official installer"
+        else
+          echo "⚠️  Official installer failed, trying manual installation..."
+
+          # Manual installation as fallback
+          mkdir -p "$HOME/.bun/bin"
+          if curl -fsSL "https://github.com/oven-sh/bun/releases/latest/download/bun-linux-x64.zip" -o /tmp/bun.zip; then
+            unzip -q /tmp/bun.zip -d /tmp/ && \
+            mv /tmp/bun-linux-x64/bun "$HOME/.bun/bin/bun" && \
+            chmod +x "$HOME/.bun/bin/bun" && \
+            rm -rf /tmp/bun.zip /tmp/bun-linux-x64
+            echo "✅ Bun installed manually"
+          else
+            echo "❌ Failed to download Bun"
+            exit 1
+          fi
+        fi
+
+        # Add to PATH
         echo "$HOME/.bun/bin" >> $GITHUB_PATH
 
-    - name: Checkout code
+        # Verify installation
+        "$HOME/.bun/bin/bun" --version || {
+          echo "❌ Bun installation verification failed"
+          exit 1
+        }
+
+    - name: Checkout report generator
       uses: actions/checkout@v4
       with:
         repository: ICF-Next-Government/ngd-security-report-viewer
-        path: .sarif-viewer
+        path: .security-report-viewer
+        fetch-depth: 1
 
-    - name: Generate Sarif Report
-      run: bun src/cli/generate-html-report.ts --input ../${{ inputs.in }} --output ../${{ inputs.out }}
-      shell: sh
-      working-directory: .sarif-viewer
+    - name: Generate HTML report
+      shell: bash
+      working-directory: .security-report-viewer
+      run: |
+        echo "📊 Generating HTML report..."
+        echo "Input file: ${{ inputs.in }}"
+        echo "Output file: ${{ inputs.out }}"
+
+        # Build the command
+        CMD="bun src/cli/generate-html-report.ts --input ../${{ inputs.in }} --output ../${{ inputs.out }}"
+
+        # Add no-dedup flag if requested
+        if [[ "${{ inputs.no-dedup }}" == "true" ]]; then
+          CMD="$CMD --no-dedup"
+          echo "Deduplication: Disabled"
+        else
+          echo "Deduplication: Enabled"
+        fi
+
+        # Execute the command
+        if eval "$CMD"; then
+          echo "✅ HTML report generated successfully"
+
+          # Show file info
+          if [[ -f "../${{ inputs.out }}" ]]; then
+            file_size=$(stat -c%s "../${{ inputs.out }}" 2>/dev/null || stat -f%z "../${{ inputs.out }}" 2>/dev/null || echo "unknown")
+            echo "📄 Report file size: ${file_size} bytes"
+          fi
+        else
+          echo "❌ Failed to generate HTML report"
+          echo "Please check that the input file is a valid SARIF, Semgrep, or GitLab SAST JSON file"
+          exit 1
+        fi
+
+    - name: Verify output
+      shell: bash
+      run: |
+        echo "🔍 Verifying output file..."
+        if [[ -f "${{ inputs.out }}" ]]; then
+          echo "✅ Output file '${{ inputs.out }}' created successfully"
+
+          # Basic validation that it's an HTML file
+          if grep -q "<html" "${{ inputs.out }}"; then
+            echo "✅ Output appears to be valid HTML"
+          else
+            echo "⚠️  Warning: Output file may not be valid HTML"
+          fi
+        else
+          echo "❌ Output file '${{ inputs.out }}' was not created"
+          exit 1
+        fi

@@ -36,6 +36,13 @@ export type ReportSummary = {
   mediumCount: number;
   lowCount: number;
   infoCount: number;
+  severityCounts: {
+    critical: number;
+    high: number;
+    medium: number;
+    low: number;
+    info: number;
+  };
   filesAffected: number;
   toolName: string;
   toolVersion?: string;

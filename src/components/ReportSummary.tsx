@@ -1,8 +1,8 @@
+import { AlertTriangle, CheckCircle, Info, Layers, Shield } from "lucide-react";
 import React, { useMemo } from "react";
-import { Shield, AlertTriangle, Info, CheckCircle, Layers } from "lucide-react";
 import {
-  ReportSummary as ReportSummaryType,
   ProcessedResult,
+  ReportSummary as ReportSummaryType,
 } from "../types/report";
 import { DeduplicationService } from "../utils/deduplication";
 
@@ -15,10 +15,30 @@ export const ReportSummary: React.FC<ReportSummaryProps> = ({
   summary,
   results,
 }) => {
+  // Safeguard against undefined summary or missing properties
+  const safeSummary = {
+    criticalCount: 0,
+    highCount: 0,
+    mediumCount: 0,
+    lowCount: 0,
+    infoCount: 0,
+    totalFindings: 0,
+    filesAffected: 0,
+    toolName: "Unknown",
+    severityCounts: {
+      critical: 0,
+      high: 0,
+      medium: 0,
+      low: 0,
+      info: 0,
+    },
+    ...summary,
+  };
+
   const severityCards = [
     {
       label: "Critical",
-      count: summary.criticalCount,
+      count: safeSummary.criticalCount || 0,
       color: "bg-red-500",
       bgColor: "bg-red-900/20",
       textColor: "text-red-300",
@@ -27,7 +47,7 @@ export const ReportSummary: React.FC<ReportSummaryProps> = ({
     },
     {
       label: "High",
-      count: summary.highCount,
+      count: safeSummary.highCount || 0,
       color: "bg-orange-500",
       bgColor: "bg-orange-900/20",
       textColor: "text-orange-300",
@@ -36,7 +56,7 @@ export const ReportSummary: React.FC<ReportSummaryProps> = ({
     },
     {
       label: "Medium",
-      count: summary.mediumCount,
+      count: safeSummary.mediumCount || 0,
       color: "bg-amber-500",
       bgColor: "bg-amber-900/20",
       textColor: "text-amber-300",
@@ -45,7 +65,7 @@ export const ReportSummary: React.FC<ReportSummaryProps> = ({
     },
     {
       label: "Low",
-      count: summary.lowCount,
+      count: safeSummary.lowCount || 0,
       color: "bg-blue-500",
       bgColor: "bg-blue-900/20",
       textColor: "text-blue-300",
@@ -54,7 +74,7 @@ export const ReportSummary: React.FC<ReportSummaryProps> = ({
     },
     {
       label: "Info",
-      count: summary.infoCount,
+      count: safeSummary.infoCount || 0,
       color: "bg-slate-500",
       bgColor: "bg-slate-800/50",
       textColor: "text-slate-300",
@@ -95,20 +115,20 @@ export const ReportSummary: React.FC<ReportSummaryProps> = ({
           <div>
             <span className="text-slate-400">Tool:</span>
             <span className="ml-2 font-medium text-white">
-              {summary.toolName}{" "}
-              {summary.toolVersion && `v${summary.toolVersion}`}
+              {safeSummary.toolName}{" "}
+              {safeSummary.toolVersion && `v${safeSummary.toolVersion}`}
             </span>
           </div>
           <div>
             <span className="text-slate-400">Total Findings:</span>
             <span className="ml-2 font-medium text-white">
-              {summary.totalFindings}
+              {safeSummary.totalFindings}
             </span>
           </div>
           <div>
             <span className="text-slate-400">Files Affected:</span>
             <span className="ml-2 font-medium text-white">
-              {summary.filesAffected}
+              {safeSummary.filesAffected}
             </span>
           </div>
         </div>
@@ -187,8 +207,8 @@ export const ReportSummary: React.FC<ReportSummaryProps> = ({
           <div className="h-full flex">
             {severityCards.map((card) => {
               const percentage =
-                summary.totalFindings > 0
-                  ? (card.count / summary.totalFindings) * 100
+                safeSummary.totalFindings > 0
+                  ? (card.count / safeSummary.totalFindings) * 100
                   : 0;
               return (
                 <div
@@ -203,7 +223,7 @@ export const ReportSummary: React.FC<ReportSummaryProps> = ({
         </div>
         <div className="flex justify-between text-xs text-slate-400 mt-2">
           <span>0</span>
-          <span>{summary.totalFindings} total findings</span>
+          <span>{safeSummary.totalFindings} total findings</span>
         </div>
       </div>
     </div>

@@ -8,8 +8,8 @@
 
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { ReportParser } from "../utils/reportParser";
 import { DeduplicationService } from "../utils/deduplication";
+import { ReportParser } from "../utils/reportParser";
 
 // --- CLI Argument Parsing ---
 function parseArgs() {
@@ -88,11 +88,7 @@ function generateUnixTimestamp(): number {
   return Math.floor(Date.now() / 1000);
 }
 
-function formatToolInfo(
-  toolName: string,
-  toolVersion?: string,
-  format?: string,
-): string {
+function formatToolInfo(toolName: string, toolVersion?: string, format?: string): string {
   let toolInfo = toolName;
 
   if (toolVersion) {
@@ -124,12 +120,8 @@ async function main() {
   try {
     jsonData = JSON.parse(fileContent);
   } catch (err) {
-    console.error(
-      "❌ Failed to parse JSON. The file doesn't appear to be valid JSON.",
-    );
-    console.error(
-      `   Error: ${err instanceof Error ? err.message : "Unknown error"}`,
-    );
+    console.error("❌ Failed to parse JSON. The file doesn't appear to be valid JSON.");
+    console.error(`   Error: ${err instanceof Error ? err.message : "Unknown error"}`);
     process.exit(1);
   }
 
@@ -154,10 +146,7 @@ async function main() {
 
     const groups = DeduplicationService.deduplicateFindings(results);
     const totalDuplicates = results.length - groups.length;
-    const duplicatePercentage = (
-      (totalDuplicates / results.length) *
-      100
-    ).toFixed(1);
+    const duplicatePercentage = ((totalDuplicates / results.length) * 100).toFixed(1);
 
     return {
       unique_groups: groups.length,

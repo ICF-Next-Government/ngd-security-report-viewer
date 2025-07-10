@@ -1,5 +1,5 @@
+import { AlertCircle, FileText, Upload } from "lucide-react";
 import React, { useCallback, useState } from "react";
-import { Upload, FileText, AlertCircle } from "lucide-react";
 
 interface FileUploadProps {
   onFileUpload: (file: File) => void;
@@ -7,11 +7,7 @@ interface FileUploadProps {
   error?: string;
 }
 
-export const FileUpload: React.FC<FileUploadProps> = ({
-  onFileUpload,
-  loading,
-  error,
-}) => {
+export const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload, loading, error }) => {
   const [dragActive, setDragActive] = useState(false);
 
   const handleDrag = useCallback((e: React.DragEvent) => {
@@ -77,9 +73,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
             {loading ? (
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400"></div>
             ) : (
-              <Upload
-                className={`h-8 w-8 ${dragActive ? "text-blue-400" : "text-slate-400"}`}
-              />
+              <Upload className={`h-8 w-8 ${dragActive ? "text-blue-400" : "text-slate-400"}`} />
             )}
           </div>
 
@@ -88,8 +82,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
               {loading ? "Processing file..." : "Upload Security Report"}
             </h3>
             <p className="text-slate-300">
-              Drag and drop your SARIF, Semgrep, or GitLab SAST JSON file here,
-              or click to browse
+              Drag and drop your SARIF, Semgrep, or GitLab SAST JSON file here, or click to browse
             </p>
             <p className="text-sm text-slate-400">
               Supports SARIF, Semgrep, and GitLab SAST JSON output formats

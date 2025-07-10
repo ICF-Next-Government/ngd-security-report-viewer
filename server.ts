@@ -1,10 +1,28 @@
+import { existsSync } from "fs";
+import { extname, join, resolve } from "path";
 import { serve } from "bun";
 import { file } from "bun";
-import { join, extname, resolve } from "path";
-import { existsSync } from "fs";
 
 const PORT = process.env.PORT || 9876;
 const DIST_DIR = "./dist";
+
+// Simple logging utility
+const log = {
+  debug: (message: string) => {
+    if (process.env.DEBUG) {
+      console.log(`[DEBUG] ${new Date().toISOString()} - ${message}`);
+    }
+  },
+  info: (message: string) => {
+    console.log(`[INFO] ${new Date().toISOString()} - ${message}`);
+  },
+  warn: (message: string) => {
+    console.warn(`[WARN] ${new Date().toISOString()} - ${message}`);
+  },
+  error: (message: string) => {
+    console.error(`[ERROR] ${new Date().toISOString()} - ${message}`);
+  },
+};
 
 // MIME type mapping for common web assets
 const MIME_TYPES = {
@@ -39,12 +57,27 @@ const server = serve({
   port: PORT,
   hostname: "0.0.0.0",
   async fetch(req) {
+    const startTime = Date.now();
+    const clientIP =
+      req.headers.get("x-forwarded-for") ||
+      req.headers.get("x-real-ip") ||
+      "unknown";
+
     try {
       const url = new URL(req.url);
       let pathname = url.pathname;
 
+      log.debug(`${req.method} ${pathname} - IP: ${clientIP}`);
+
       // Remove leading slash and decode URI
-      pathname = decodeURIComponent(pathname.slice(1));
+      try {
+        pathname = decodeURIComponent(pathname.slice(1));
+      } catch (decodeError) {
+        log.warn(`Invalid URL encoding for path: ${pathname}`);
+        return new Response("Bad Request - Invalid URL encoding", {
+          status: 400,
+        });
+      }
 
       // Default to index.html for root path
       if (pathname === "" || pathname === "/") {
@@ -57,54 +90,155 @@ const server = serve({
 
       // Security check: ensure the resolved path doesn't escape the dist directory
       if (!filePath.startsWith(distPath + "/") && filePath !== distPath) {
-        return new Response("Forbidden", { status: 403 });
+        log.warn(
+          `Path traversal attempt blocked: ${pathname} (IP: ${clientIP})`,
+        );
+        return new Response("Forbidden - Path traversal not allowed", {
+          status: 403,
+        });
       }
 
       // Check if file exists
       const fileExists = existsSync(filePath);
 
       if (fileExists) {
-        // Serve the file
-        const fileContent = file(filePath);
-        const mimeType = getMimeType(filePath);
+        try {
+          // Serve the file
+          const fileContent = file(filePath);
+          const mimeType = getMimeType(filePath);
 
-        return new Response(fileContent, {
-          headers: {
-            "Content-Type": mimeType,
-            "Cache-Control": "public, max-age=31536000", // 1 year cache for assets
-          },
-        });
-      } else {
-        // For SPA routing, try to serve index.html for non-asset requests
-        const indexPath = join(DIST_DIR, "index.html");
-        const indexExists = existsSync(indexPath);
+          log.debug(`Serving file: ${pathname} (${mimeType})`);
 
-        if (indexExists && !pathname.includes(".")) {
+          return new Response(fileContent, {
+            headers: {
+              "Content-Type": mimeType,
+              "Cache-Control": pathname.includes(".")
+                ? "public, max-age=31536000"
+                : "no-cache",
+              "X-Content-Type-Options": "nosniff",
+              "X-Frame-Options": "DENY",
+              "X-XSS-Protection": "1; mode=block",
+            },
+          });
+        } catch (fileError) {
+          log.error(`Failed to read file ${filePath}: ${fileError}`);
+          return new Response("Internal Server Error - File read failed", {
+            status: 500,
+          });
+        }
+      }
+
+      // For SPA routing, try to serve index.html for non-asset requests
+      const indexPath = join(DIST_DIR, "index.html");
+      const indexExists = existsSync(indexPath);
+
+      if (indexExists && !pathname.includes(".")) {
+        try {
           const indexFile = file(indexPath);
+          log.debug(`Serving SPA fallback: index.html for ${pathname}`);
+
           return new Response(indexFile, {
             headers: {
               "Content-Type": "text/html",
-              "Cache-Control": "no-cache", // Don't cache HTML files
+              "Cache-Control": "no-cache",
+              "X-Content-Type-Options": "nosniff",
+              "X-Frame-Options": "DENY",
+              "X-XSS-Protection": "1; mode=block",
             },
           });
+        } catch (indexError) {
+          log.error(`Failed to read index.html: ${indexError}`);
+          return new Response(
+            "Internal Server Error - Index file read failed",
+            { status: 500 },
+          );
         }
-
-        // File not found
-        return new Response("Not Found", { status: 404 });
       }
+
+      // File not found
+      log.debug(`File not found: ${pathname}`);
+      return new Response("Not Found", { status: 404 });
     } catch (error) {
-      console.error("Server error:", error);
-      return new Response("Internal Server Error", { status: 500 });
+      const processingTime = Date.now() - startTime;
+      log.error(
+        `Server error (${processingTime}ms): ${error instanceof Error ? error.message : String(error)}`,
+      );
+
+      if (error instanceof Error) {
+        log.error(`Stack trace: ${error.stack}`);
+      }
+
+      return new Response("Internal Server Error", {
+        status: 500,
+        headers: {
+          "Content-Type": "text/plain",
+        },
+      });
+    } finally {
+      const processingTime = Date.now() - startTime;
+      if (processingTime > 100) {
+        // Log slow requests
+        log.warn(
+          `Slow request: ${req.method} ${req.url} took ${processingTime}ms`,
+        );
+      }
     }
   },
 });
 
-console.log(`🚀 Server running at http://localhost:${PORT}`);
-console.log(`📁 Serving files from: ${DIST_DIR}`);
+// Startup validation
+if (!existsSync(DIST_DIR)) {
+  log.error(`Distribution directory not found: ${DIST_DIR}`);
+  log.error("Please run 'bun run build' to create the distribution files");
+  process.exit(1);
+}
+
+const indexPath = join(DIST_DIR, "index.html");
+if (!existsSync(indexPath)) {
+  log.error(`Index file not found: ${indexPath}`);
+  log.error("Please ensure the build process completed successfully");
+  process.exit(1);
+}
+
+log.info(`🚀 Server starting on http://localhost:${PORT}`);
+log.info(`📁 Serving files from: ${resolve(DIST_DIR)}`);
+log.info(`🔧 Environment: ${process.env.NODE_ENV || "development"}`);
+log.info(`📊 Debug logging: ${process.env.DEBUG ? "enabled" : "disabled"}`);
+
+// Log available files for debugging
+if (process.env.DEBUG) {
+  try {
+    const files = require("fs").readdirSync(DIST_DIR);
+    log.debug(`Available files: ${files.join(", ")}`);
+  } catch (err) {
+    log.warn("Could not list directory contents");
+  }
+}
 
 // Graceful shutdown
-process.on("SIGINT", () => {
-  console.log("\n👋 Shutting down server...");
+const gracefulShutdown = (signal: string) => {
+  log.info(`\n🛑 Received ${signal}, shutting down gracefully...`);
+
   server.stop();
-  process.exit(0);
+
+  // Give the server a moment to finish handling requests
+  setTimeout(() => {
+    log.info("✅ Server shutdown complete");
+    process.exit(0);
+  }, 1000);
+};
+
+process.on("SIGINT", () => gracefulShutdown("SIGINT"));
+process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+
+// Handle uncaught exceptions
+process.on("uncaughtException", (error) => {
+  log.error(`Uncaught Exception: ${error.message}`);
+  log.error(`Stack: ${error.stack}`);
+  process.exit(1);
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  log.error(`Unhandled Rejection at: ${promise}, reason: ${reason}`);
+  process.exit(1);
 });
