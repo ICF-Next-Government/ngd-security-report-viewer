@@ -207,14 +207,14 @@ export function generateSeverityCardsHtml(summary: ReportSummary): string {
               : "0";
 
           return `
-          <div class="card transition-all hover:scale-105 cursor-default"
+          <div class="card transition-all hover:scale-105 cursor-default severity-card severity-${key}"
                style="background-color: ${colors.bg}; border-color: ${colors.border};">
             <div class="flex items-center justify-between mb-3">
               <div class="flex items-center space-x-2">
-                <div style="color: ${colors.icon};">
+                <div class="severity-icon" style="color: ${colors.icon};">
                   ${icon}
                 </div>
-                <h3 class="font-medium" style="color: ${colors.text};">${label}</h3>
+                <h3 class="font-medium severity-text" style="color: ${colors.text};">${label}</h3>
               </div>
             </div>
 
@@ -274,7 +274,7 @@ export function generateSeverityDistributionHtml(
   const distributionBar = segments
     .map(
       (segment) =>
-        `<div class="h-full transition-all"
+        `<div class="h-full transition-all severity-bar severity-${segment.severity}"
           style="width: ${segment.percentage}%; background-color: ${segment.color};"
           title="${segment.severity}: ${segment.count} (${segment.percentage.toFixed(1)}%)"></div>`,
     )
@@ -301,7 +301,7 @@ export function generateSeverityDistributionHtml(
           .map(
             (segment) => `
           <div class="flex items-center space-x-2">
-            <div class="w-3 h-3 rounded-full" style="background-color: ${segment.color};"></div>
+            <div class="w-3 h-3 rounded-full severity-legend-dot severity-${segment.severity}" style="background-color: ${segment.color};"></div>
             <span class="text-slate-300">
               ${segment.severity.charAt(0).toUpperCase() + segment.severity.slice(1)}:
               <span class="font-semibold">${segment.count}</span>

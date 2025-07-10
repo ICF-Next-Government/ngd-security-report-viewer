@@ -70,11 +70,11 @@ function generateTagsHtml(tags: string[]): string {
   if (!tags || tags.length === 0) return "";
 
   return `
-    <div class="flex flex-wrap gap-2 mt-4">
+    <div class="flex flex-wrap gap-2 mt-4 finding-tags">
       ${tags
         .map(
           (tag) => `
-        <span class="inline-flex px-2 py-1 text-xs bg-slate-700/50 text-slate-300 rounded border border-slate-600">
+        <span class="inline-flex px-2 py-1 text-xs bg-slate-700/50 text-slate-300 rounded border border-slate-600 finding-tag">
           ${escapeHtml(tag)}
         </span>
       `,
@@ -91,9 +91,9 @@ function generateSnippetHtml(snippet?: string): string {
   if (!snippet) return "";
 
   return `
-    <div class="mt-4">
-      <h4 class="font-medium text-white mb-3">Code Snippet</h4>
-      <pre class="bg-slate-900/80 text-slate-100 p-4 rounded-lg text-sm overflow-x-auto border border-slate-700"><code>${escapeHtml(snippet)}</code></pre>
+    <div class="mt-4 code-snippet-container">
+      <h4 class="font-medium text-white mb-3 snippet-title">Code Snippet</h4>
+      <pre class="bg-slate-900/80 text-slate-100 p-4 rounded-lg text-sm overflow-x-auto border border-slate-700 code-snippet"><code class="snippet-code">${escapeHtml(snippet)}</code></pre>
     </div>
   `;
 }
@@ -107,18 +107,22 @@ function generateGroupLocationsHtml(group: DuplicateGroup): string {
   if (locations.length === 0) return "";
 
   return `
-    <div class="group-locations">
-      <h4 class="font-medium text-white mb-3">All Occurrences (${group.occurrences})</h4>
-      ${locations
-        .map(
-          (location) => `
-        <div class="location-item">
-          ${getFileIcon()}
-          <span>${escapeHtml(location)}</span>
-        </div>
-      `,
-        )
-        .join("")}
+    <div class="group-locations mt-6 pt-6 border-t border-slate-600">
+      <h4 class="font-medium text-white mb-3 locations-title">All Occurrences (${group.occurrences})</h4>
+      <div class="locations-list">
+        ${locations
+          .map(
+            (location) => `
+          <div class="location-item">
+            <div class="location-icon">
+              ${getFileIcon()}
+            </div>
+            <span class="location-path font-mono">${escapeHtml(location)}</span>
+          </div>
+        `,
+          )
+          .join("")}
+      </div>
     </div>
   `;
 }
@@ -131,29 +135,29 @@ export function generateFindingHtml(result: ProcessedResult): string {
     SEVERITY_COLORS[result.severity as SeverityLevel] ?? SEVERITY_COLORS.info;
 
   return `
-    <div class="finding-result card animate-fade-in transition-all hover:shadow-lg hover:scale-[1.01]"
+    <div class="finding-result card animate-fade-in transition-all hover:shadow-lg hover:scale-[1.01] severity-${result.severity}"
          data-severity="${result.severity}"
          style="background-color: ${colors.bg}; border-color: ${colors.border};">
       <div class="flex items-start space-x-4">
-        <div class="flex-shrink-0 mt-1" style="color: ${colors.icon};">
+        <div class="flex-shrink-0 mt-1 severity-icon" style="color: ${colors.icon};">
           ${getSeverityIcon(result.severity)}
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center justify-between mb-3">
             <div class="flex items-center space-x-3 flex-wrap">
-              <span class="inline-flex px-3 py-1 text-xs font-medium rounded-full border"
+              <span class="inline-flex px-3 py-1 text-xs font-medium rounded-full border severity-badge severity-${result.severity}"
                     style="background-color: ${colors.badge}; color: ${colors.text}; border-color: ${colors.border};">
                 ${result.severity.toUpperCase()}
               </span>
-              <span class="text-sm text-slate-400 font-mono">${escapeHtml(result.ruleId)}</span>
+              <span class="text-sm text-slate-400 font-mono rule-id">${escapeHtml(result.ruleId)}</span>
             </div>
           </div>
 
-          <h3 class="text-xl font-semibold text-white mb-2">${escapeHtml(result.ruleName)}</h3>
-          <p class="text-slate-300 mb-4 leading-relaxed">${escapeHtml(result.message)}</p>
+          <h3 class="text-xl font-semibold text-white mb-2 finding-title">${escapeHtml(result.ruleName)}</h3>
+          <p class="text-slate-300 mb-4 leading-relaxed finding-message">${escapeHtml(result.message)}</p>
 
-          <div class="text-sm text-slate-400 space-y-2">
-            <div class="flex items-center space-x-2">
+          <div class="text-sm text-slate-400 space-y-2 finding-details">
+            <div class="flex items-center space-x-2 file-location">
               ${getFileIcon()}
               <span class="font-mono">${escapeHtml(result.file)}${result.startLine ? `:${result.startLine}` : ""}</span>
             </div>
@@ -161,7 +165,7 @@ export function generateFindingHtml(result: ProcessedResult): string {
             ${
               result.description
                 ? `
-            <div class="mt-4">
+            <div class="mt-4 finding-description">
               <h4 class="font-medium text-white mb-2">Description</h4>
               <p class="text-slate-300 text-sm leading-relaxed">${escapeHtml(result.description)}</p>
             </div>
@@ -188,7 +192,7 @@ export function generateGroupHtml(group: DuplicateGroup): string {
   const groupLocationsHtml = generateGroupLocationsHtml(group);
 
   return `
-    <div class="finding-result card animate-fade-in group-toggle transition-all hover:shadow-lg hover:scale-[1.01]"
+    <div class="finding-result card animate-fade-in group-toggle transition-all hover:shadow-lg hover:scale-[1.01] severity-${result.severity} group-finding"
          data-severity="${result.severity}"
          data-group-id="${group.id}"
          style="background-color: ${colors.bg}; border-color: ${colors.border};"
@@ -196,7 +200,7 @@ export function generateGroupHtml(group: DuplicateGroup): string {
          tabindex="0"
          aria-expanded="false">
       <div class="flex items-start space-x-4">
-        <div class="flex-shrink-0 mt-1" style="color: ${colors.icon};">
+        <div class="flex-shrink-0 mt-1 severity-icon" style="color: ${colors.icon};">
           ${getSeverityIcon(result.severity)}
         </div>
         <div class="flex-1 min-w-0">
