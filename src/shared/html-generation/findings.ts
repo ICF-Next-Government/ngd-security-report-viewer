@@ -91,9 +91,14 @@ function generateSnippetHtml(snippet?: string): string {
   if (!snippet) return "";
 
   return `
-    <div class="mt-4 code-snippet-container">
-      <h4 class="font-medium text-white mb-3 snippet-title">Code Snippet</h4>
-      <pre class="bg-slate-900/80 text-slate-100 p-4 rounded-lg text-sm overflow-x-auto border border-slate-700 code-snippet"><code class="snippet-code">${escapeHtml(snippet)}</code></pre>
+    <div class="mt-6 code-snippet-container">
+      <h4 class="font-semibold text-white mb-3 snippet-title flex items-center space-x-2">
+        <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+        </svg>
+        <span>Code Snippet</span>
+      </h4>
+      <pre class="bg-slate-900/80 text-slate-100 p-5 rounded-lg text-sm overflow-x-auto border border-slate-700/50 shadow-inner snippet-code font-mono">${escapeHtml(snippet)}</pre>
     </div>
   `;
 }
@@ -107,17 +112,19 @@ function generateGroupLocationsHtml(group: DuplicateGroup): string {
   if (locations.length === 0) return "";
 
   return `
-    <div class="group-locations mt-6 pt-6 border-t border-slate-600">
-      <h4 class="font-medium text-white mb-3 locations-title">All Occurrences (${group.occurrences})</h4>
-      <div class="locations-list">
+    <div class="group-locations mt-6 pt-6 border-t border-slate-700/50">
+      <h4 class="font-semibold text-white mb-4 locations-title text-lg">All Occurrences (${group.occurrences})</h4>
+      <div class="locations-list space-y-2">
         ${locations
           .map(
             (location) => `
-          <div class="location-item">
-            <div class="location-icon">
-              ${getFileIcon()}
+          <div class="location-item bg-slate-900/50 rounded-lg p-3 border border-slate-700/50 hover:bg-slate-900/70 transition-colors">
+            <div class="flex items-center space-x-3">
+              <div class="location-icon text-slate-400">
+                ${getFileIcon()}
+              </div>
+              <span class="location-path font-mono text-sm text-slate-300">${escapeHtml(location)}</span>
             </div>
-            <span class="location-path font-mono">${escapeHtml(location)}</span>
           </div>
         `,
           )
@@ -135,18 +142,19 @@ export function generateFindingHtml(result: ProcessedResult): string {
     SEVERITY_COLORS[result.severity as SeverityLevel] ?? SEVERITY_COLORS.info;
 
   return `
-    <div class="finding-result card animate-fade-in transition-all hover:shadow-lg hover:scale-[1.01] severity-${result.severity}"
-         data-severity="${result.severity}"
-         style="background-color: ${colors.bg}; border-color: ${colors.border};">
+    <div class="finding-result bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 p-6 shadow-xl animate-fade-in transition-all duration-300 hover:shadow-2xl hover:scale-[1.005] hover:border-slate-600/50 severity-${result.severity}"
+         data-severity="${result.severity}">
       <div class="flex items-start space-x-4">
-        <div class="flex-shrink-0 mt-1 severity-icon" style="color: ${colors.icon};">
-          ${getSeverityIcon(result.severity)}
+        <div class="flex-shrink-0 p-2 rounded-lg" style="background-color: ${colors.bg};">
+          <div style="color: ${colors.icon};">
+            ${getSeverityIcon(result.severity)}
+          </div>
         </div>
         <div class="flex-1 min-w-0">
-          <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center justify-between mb-4">
             <div class="flex items-center space-x-3 flex-wrap">
-              <span class="inline-flex px-3 py-1 text-xs font-medium rounded-full border severity-badge severity-${result.severity}"
-                    style="background-color: ${colors.badge}; color: ${colors.text}; border-color: ${colors.border};">
+              <span class="inline-flex px-3 py-1.5 text-xs font-semibold rounded-lg border severity-badge severity-${result.severity}"
+                    style="background: linear-gradient(135deg, ${colors.badge} 0%, ${colors.bg} 100%); color: ${colors.text}; border-color: ${colors.border};">
                 ${result.severity.toUpperCase()}
               </span>
               <span class="text-sm text-slate-400 font-mono rule-id">${escapeHtml(result.ruleId)}</span>
@@ -192,29 +200,33 @@ export function generateGroupHtml(group: DuplicateGroup): string {
   const groupLocationsHtml = generateGroupLocationsHtml(group);
 
   return `
-    <div class="finding-result card animate-fade-in group-toggle transition-all hover:shadow-lg hover:scale-[1.01] severity-${result.severity} group-finding"
+    <div class="finding-result bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 p-6 shadow-xl animate-fade-in group-toggle transition-all duration-300 hover:shadow-2xl hover:scale-[1.005] hover:border-slate-600/50 severity-${result.severity} group-finding"
          data-severity="${result.severity}"
          data-group-id="${group.id}"
-         style="background-color: ${colors.bg}; border-color: ${colors.border};"
          role="button"
          tabindex="0"
          aria-expanded="false">
       <div class="flex items-start space-x-4">
-        <div class="flex-shrink-0 mt-1 severity-icon" style="color: ${colors.icon};">
-          ${getSeverityIcon(result.severity)}
+        <div class="flex-shrink-0 p-2 rounded-lg" style="background-color: ${colors.bg};">
+          <div style="color: ${colors.icon};">
+            ${getSeverityIcon(result.severity)}
+          </div>
         </div>
         <div class="flex-1 min-w-0">
-          <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center justify-between mb-4">
             <div class="flex items-center space-x-3 flex-wrap">
-              <span class="inline-flex px-3 py-1 text-xs font-medium rounded-full border"
-                    style="background-color: ${colors.badge}; color: ${colors.text}; border-color: ${colors.border};">
+              <span class="inline-flex px-3 py-1.5 text-xs font-semibold rounded-lg border"
+                    style="background: linear-gradient(135deg, ${colors.badge} 0%, ${colors.bg} 100%); color: ${colors.text}; border-color: ${colors.border};">
                 ${result.severity.toUpperCase()}
               </span>
               <span class="text-sm text-slate-400 font-mono">${escapeHtml(result.ruleId)}</span>
               ${
                 group.occurrences > 1
                   ? `
-                <span class="duplicate-badge">
+                <span class="duplicate-badge bg-purple-600/20 text-purple-300 px-2.5 py-1 rounded-lg border border-purple-600/30 text-xs font-semibold">
+                  <svg class="inline-block h-3 w-3 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                  </svg>
                   ${group.occurrences} occurrences
                 </span>
               `
@@ -224,17 +236,19 @@ export function generateGroupHtml(group: DuplicateGroup): string {
             ${getChevronIcon()}
           </div>
 
-          <h3 class="text-xl font-semibold text-white mb-2">${escapeHtml(result.ruleName)}</h3>
-          <p class="text-slate-300 mb-4 leading-relaxed">${escapeHtml(result.message)}</p>
+          <h3 class="text-xl font-bold text-white mb-3">${escapeHtml(result.ruleName)}</h3>
+          <p class="text-slate-300 mb-5 leading-relaxed text-base">${escapeHtml(result.message)}</p>
 
-          <div class="text-sm text-slate-400">
-            <p class="mb-2">${DeduplicationService.getGroupSummary(group)}</p>
+          <div class="bg-slate-900/50 rounded-lg p-4 border border-slate-700/50">
+            <p class="text-sm text-slate-300 mb-3">${DeduplicationService.getGroupSummary(group)}</p>
             ${
               group.affectedFiles.length <= 3
                 ? `
-              <div class="flex items-center space-x-2">
-                ${getFileIcon()}
-                <span class="font-mono">${group.affectedFiles.map((file) => escapeHtml(file)).join(", ")}</span>
+              <div class="flex items-center space-x-2 text-sm">
+                <div class="text-slate-400">
+                  ${getFileIcon()}
+                </div>
+                <span class="font-mono text-slate-400">${group.affectedFiles.map((file) => escapeHtml(file)).join(", ")}</span>
               </div>
             `
                 : ""
@@ -366,11 +380,11 @@ export function generateFindingsSectionHtml(
         `
             : ""
         }
-      </div>
+        </div>
 
-      <!-- Search and Filter Controls -->
-      <div class="search-container">
-        <div class="search-input-wrapper">
+        <!-- Search and Filter Controls -->
+        <div class="search-container bg-slate-900/50 rounded-xl p-6 border border-slate-700/50">
+          <div class="search-input-wrapper">
           <input
             type="text"
             id="inline-findings-search"
