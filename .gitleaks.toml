@@ -1,0 +1,150 @@
+title = "gitleaks config"
+
+[extend]
+# useDefault will extend the base configuration with the default gitleaks config:
+# https://github.com/zricethezav/gitleaks/blob/master/config/gitleaks.toml
+useDefault = true
+
+[allowlist]
+description = "Allowlisted files and paths"
+paths = [
+  # Ignore test files
+  '''.*test.*''',
+  '''.*spec.*''',
+
+  # Ignore build and dependency directories
+  '''node_modules''',
+  '''dist''',
+  '''build''',
+  '''.next''',
+
+  # Ignore lock files
+  '''package-lock\.json''',
+  '''yarn\.lock''',
+  '''bun\.lockb''',
+
+  # Ignore documentation
+  '''.*\.md''',
+  '''docs/.*''',
+
+  # Ignore example/sample files
+  '''.*example.*''',
+  '''.*sample.*''',
+
+  # Ignore specific files that might have false positives
+  '''\.env\.example''',
+  '''\.env\.template''',
+]
+
+[[rules]]
+description = "AWS Access Key"
+id = "aws-access-key"
+regex = '''(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}'''
+tags = ["key", "AWS"]
+
+[[rules]]
+description = "AWS Secret Key"
+id = "aws-secret-key"
+regex = '''(?i)aws(.{0,20})?(?-i)['\"]?[0-9a-zA-Z\/+]{40}['\"]?'''
+tags = ["key", "AWS"]
+
+[[rules]]
+description = "GitHub Personal Access Token"
+id = "github-pat"
+regex = '''ghp_[0-9a-zA-Z]{36}'''
+tags = ["key", "GitHub"]
+
+[[rules]]
+description = "GitHub OAuth Access Token"
+id = "github-oauth"
+regex = '''gho_[0-9a-zA-Z]{36}'''
+tags = ["key", "GitHub"]
+
+[[rules]]
+description = "GitHub App Token"
+id = "github-app-token"
+regex = '''(ghu|ghs)_[0-9a-zA-Z]{36}'''
+tags = ["key", "GitHub"]
+
+[[rules]]
+description = "GitHub Refresh Token"
+id = "github-refresh-token"
+regex = '''ghr_[0-9a-zA-Z]{36}'''
+tags = ["key", "GitHub"]
+
+[[rules]]
+description = "Private Key"
+id = "private-key"
+regex = '''-----BEGIN ((EC|PGP|DSA|RSA|OPENSSH) )?PRIVATE KEY( BLOCK)?-----'''
+tags = ["key", "privatekey"]
+
+[[rules]]
+description = "Generic API Key"
+id = "generic-api-key"
+regex = '''(?i)(api_key|apikey|api-key|access_key|accesskey|secret_key|secretkey)(.{0,20})?['|"]([0-9a-zA-Z\-_]{20,})['|"]'''
+tags = ["key", "generic"]
+
+[[rules]]
+description = "Generic Secret"
+id = "generic-secret"
+regex = '''(?i)(password|passwd|pwd|secret|token)(.{0,20})?['|"]([0-9a-zA-Z\-_!@#$%^&*]{10,})['|"]'''
+tags = ["secret", "generic"]
+entropy = 3.5
+secretGroup = 3
+
+[[rules]]
+description = "Hardcoded Database Password"
+id = "db-password"
+regex = '''(?i)(db_password|database_password|db_pass|database_pass)(.{0,20})?['|"]([^'\"]{10,})['|"]'''
+tags = ["password", "database"]
+
+[[rules]]
+description = "JWT Token"
+id = "jwt-token"
+regex = '''eyJ[A-Za-z0-9-_=]+\.eyJ[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*'''
+tags = ["token", "jwt"]
+
+[[rules]]
+description = "NPM Access Token"
+id = "npm-access-token"
+regex = '''npm_[a-zA-Z0-9]{36}'''
+tags = ["key", "npm"]
+
+[[rules]]
+description = "Slack Token"
+id = "slack-token"
+regex = '''xox[baprs]-([0-9a-zA-Z]{10,48})'''
+tags = ["key", "slack"]
+
+[[rules]]
+description = "Stripe API Key"
+id = "stripe-api-key"
+regex = '''(?i)stripe(.{0,20})?['\"]sk_(live|test)_[0-9a-zA-Z]{24}['\"]'''
+tags = ["key", "stripe"]
+
+# Custom rules for this project
+[[rules]]
+description = "Potential hardcoded localhost URL with credentials"
+id = "localhost-with-creds"
+regex = '''https?:\/\/[^:]+:[^@]+@localhost'''
+tags = ["credential", "url"]
+
+[[rules]]
+description = "Base64 encoded potential secret"
+id = "base64-secret"
+regex = '''(?i)(secret|password|token|key).*['\"]([A-Za-z0-9+/]{40,}={0,2})['\"]'''
+tags = ["secret", "base64"]
+entropy = 4.5
+
+# Allowlist certain patterns that are safe
+[[rules.allowlist]]
+description = "Allowlist localhost URLs without credentials"
+regex = '''https?:\/\/localhost(:[0-9]+)?'''
+
+[[rules.allowlist]]
+description = "Allowlist example/template secrets"
+regex = '''(example|template|sample|test|dummy|fake|placeholder)'''
+
+[[rules.allowlist]]
+description = "Allowlist environment variable references"
+regex = '''(process\.env\.|ENV\[|getenv\(|os\.environ\[)'''
