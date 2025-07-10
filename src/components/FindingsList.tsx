@@ -7,8 +7,11 @@ import {
   AlertTriangle,
   Info,
   CheckCircle,
+  Layers,
+  List,
 } from "lucide-react";
-import { ProcessedResult } from "../types/report";
+import { ProcessedResult, ViewMode } from "../types/report";
+import { DeduplicationService, DuplicateGroup } from "../utils/deduplication";
 
 interface FindingsListProps {
   results: ProcessedResult[];
@@ -19,6 +22,8 @@ export const FindingsList: React.FC<FindingsListProps> = ({ results }) => {
   const [severityFilter, setSeverityFilter] = useState<string>("all");
   const [selectedFinding, setSelectedFinding] =
     useState<ProcessedResult | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>("deduplicated");
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
   const severityColors = {
     critical: {
@@ -87,13 +92,61 @@ export const FindingsList: React.FC<FindingsListProps> = ({ results }) => {
     });
   }, [results, searchTerm, severityFilter]);
 
+  const deduplicatedGroups = useMemo(() => {
+    if (viewMode === "all") return null;
+    return DeduplicationService.deduplicateFindings(filteredResults);
+  }, [filteredResults, viewMode]);
+
+  const displayCount =
+    viewMode === "deduplicated" && deduplicatedGroups
+      ? deduplicatedGroups.length
+      : filteredResults.length;
+
+  const toggleGroup = (groupId: string) => {
+    setExpandedGroups((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(groupId)) {
+        newSet.delete(groupId);
+      } else {
+        newSet.add(groupId);
+      }
+      return newSet;
+    });
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-white">Security Findings</h2>
-        <span className="text-slate-400">
-          {filteredResults.length} findings
-        </span>
+        <div className="flex items-center gap-4">
+          <div className="flex bg-slate-700/50 rounded-lg p-1">
+            <button
+              onClick={() => setViewMode("deduplicated")}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                viewMode === "deduplicated"
+                  ? "bg-blue-600 text-white"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <Layers className="h-4 w-4" />
+              Grouped
+            </button>
+            <button
+              onClick={() => setViewMode("all")}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                viewMode === "all"
+                  ? "bg-blue-600 text-white"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <List className="h-4 w-4" />
+              All
+            </button>
+          </div>
+          <span className="text-slate-400">
+            {displayCount} {viewMode === "deduplicated" ? "groups" : "findings"}
+          </span>
+        </div>
       </div>
 
       {/* Filters */}
@@ -137,112 +190,237 @@ export const FindingsList: React.FC<FindingsListProps> = ({ results }) => {
 
       {/* Results List */}
       <div className="space-y-6">
-        {filteredResults.map((result) => {
-          const colors =
-            severityColors[result.severity as keyof typeof severityColors];
-          const SeverityIcon = getSeverityIcon(result.severity);
+        {viewMode === "deduplicated" && deduplicatedGroups
+          ? deduplicatedGroups.map((group) => {
+              const result = group.representativeResult;
+              const colors =
+                severityColors[result.severity as keyof typeof severityColors];
+              const SeverityIcon = getSeverityIcon(result.severity);
+              const isExpanded = expandedGroups.has(group.id);
 
-          return (
-            <div
-              key={result.id}
-              className={`${colors.bg} ${colors.border} backdrop-blur-sm border rounded-lg p-6 cursor-pointer transition-all hover:shadow-lg hover:scale-[1.01]`}
-              onClick={() =>
-                setSelectedFinding(
-                  selectedFinding?.id === result.id ? null : result,
-                )
-              }
-            >
-              <div className="flex items-start space-x-4">
-                <SeverityIcon
-                  className={`h-6 w-6 ${colors.icon} mt-1 flex-shrink-0`}
-                />
+              return (
+                <div key={group.id} className="space-y-2">
+                  <div
+                    className={`${colors.bg} ${colors.border} backdrop-blur-sm border rounded-lg p-6 cursor-pointer transition-all hover:shadow-lg hover:scale-[1.01]`}
+                    onClick={() => toggleGroup(group.id)}
+                  >
+                    <div className="flex items-start space-x-4">
+                      <SeverityIcon
+                        className={`h-6 w-6 ${colors.icon} mt-1 flex-shrink-0`}
+                      />
 
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center space-x-3">
-                      <span
-                        className={`inline-flex px-3 py-1 text-xs font-medium rounded-full ${colors.badge} border`}
-                      >
-                        {result.severity.toUpperCase()}
-                      </span>
-                      <span className="text-sm text-slate-400">
-                        {result.ruleId}
-                      </span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center space-x-3">
+                            <span
+                              className={`inline-flex px-3 py-1 text-xs font-medium rounded-full ${colors.badge} border`}
+                            >
+                              {result.severity.toUpperCase()}
+                            </span>
+                            <span className="text-sm text-slate-400">
+                              {result.ruleId}
+                            </span>
+                            {group.occurrences > 1 && (
+                              <span className="inline-flex px-2 py-1 text-xs font-medium bg-slate-700/50 text-slate-300 rounded-full border border-slate-600">
+                                {group.occurrences} occurrences
+                              </span>
+                            )}
+                          </div>
+                          <ChevronDown
+                            className={`h-5 w-5 text-slate-400 transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                          />
+                        </div>
+
+                        <h3 className="text-xl font-semibold text-white mb-2">
+                          {result.ruleName}
+                        </h3>
+                        <p className="text-slate-300 mb-4 leading-relaxed">
+                          {result.message}
+                        </p>
+
+                        <div className="text-sm text-slate-400">
+                          <p className="mb-2">
+                            {DeduplicationService.getGroupSummary(group)}
+                          </p>
+                          {!isExpanded && group.affectedFiles.length <= 3 && (
+                            <div className="flex items-center space-x-2">
+                              <FileText className="h-4 w-4" />
+                              <span>{group.affectedFiles.join(", ")}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {result.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mt-4">
+                            {result.tags.map((tag, index) => (
+                              <span
+                                key={index}
+                                className="inline-flex px-2 py-1 text-xs bg-slate-700/50 text-slate-300 rounded border border-slate-600"
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <ChevronDown
-                      className={`h-5 w-5 text-slate-400 transition-transform ${selectedFinding?.id === result.id ? "rotate-180" : ""}`}
-                    />
-                  </div>
 
-                  <h3 className="text-xl font-semibold text-white mb-2">
-                    {result.ruleName}
-                  </h3>
-                  <p className="text-slate-300 mb-4 leading-relaxed">
-                    {result.message}
-                  </p>
+                    {/* Expanded Group Details */}
+                    {isExpanded && (
+                      <div className="mt-6 pt-6 border-t border-slate-600">
+                        {result.description && (
+                          <div className="mb-6">
+                            <h4 className="font-medium text-white mb-3">
+                              Description
+                            </h4>
+                            <p className="text-slate-300 text-sm leading-relaxed">
+                              {result.description}
+                            </p>
+                          </div>
+                        )}
 
-                  <div className="flex items-center space-x-6 text-sm text-slate-400">
-                    <div className="flex items-center space-x-2">
-                      <FileText className="h-4 w-4" />
-                      <span>{result.file}</span>
-                    </div>
-                    {result.startLine && (
-                      <span>
-                        Line {result.startLine}
-                        {result.endLine && result.endLine !== result.startLine
-                          ? `-${result.endLine}`
-                          : ""}
-                      </span>
+                        <div className="mb-6">
+                          <h4 className="font-medium text-white mb-3">
+                            All Occurrences
+                          </h4>
+                          <div className="space-y-2">
+                            {DeduplicationService.getGroupLocations(group).map(
+                              (location, idx) => (
+                                <div
+                                  key={idx}
+                                  className="flex items-center space-x-2 text-sm text-slate-400"
+                                >
+                                  <FileText className="h-4 w-4 flex-shrink-0" />
+                                  <span className="font-mono">{location}</span>
+                                </div>
+                              ),
+                            )}
+                          </div>
+                        </div>
+
+                        {result.snippet && (
+                          <div>
+                            <h4 className="font-medium text-white mb-3">
+                              Code Snippet (from first occurrence)
+                            </h4>
+                            <pre className="bg-slate-900/80 text-slate-100 p-4 rounded-lg text-sm overflow-x-auto border border-slate-700">
+                              <code>{result.snippet}</code>
+                            </pre>
+                          </div>
+                        )}
+                      </div>
                     )}
                   </div>
-
-                  {result.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-4">
-                      {result.tags.map((tag, index) => (
-                        <span
-                          key={index}
-                          className="inline-flex px-2 py-1 text-xs bg-slate-700/50 text-slate-300 rounded border border-slate-600"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
                 </div>
-              </div>
+              );
+            })
+          : filteredResults.map((result) => {
+              const colors =
+                severityColors[result.severity as keyof typeof severityColors];
+              const SeverityIcon = getSeverityIcon(result.severity);
 
-              {/* Expanded Details */}
-              {selectedFinding?.id === result.id && (
-                <div className="mt-6 pt-6 border-t border-slate-600">
-                  {result.description && (
-                    <div className="mb-6">
-                      <h4 className="font-medium text-white mb-3">
-                        Description
-                      </h4>
-                      <p className="text-slate-300 text-sm leading-relaxed">
-                        {result.description}
+              return (
+                <div
+                  key={result.id}
+                  className={`${colors.bg} ${colors.border} backdrop-blur-sm border rounded-lg p-6 cursor-pointer transition-all hover:shadow-lg hover:scale-[1.01]`}
+                  onClick={() =>
+                    setSelectedFinding(
+                      selectedFinding?.id === result.id ? null : result,
+                    )
+                  }
+                >
+                  <div className="flex items-start space-x-4">
+                    <SeverityIcon
+                      className={`h-6 w-6 ${colors.icon} mt-1 flex-shrink-0`}
+                    />
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center space-x-3">
+                          <span
+                            className={`inline-flex px-3 py-1 text-xs font-medium rounded-full ${colors.badge} border`}
+                          >
+                            {result.severity.toUpperCase()}
+                          </span>
+                          <span className="text-sm text-slate-400">
+                            {result.ruleId}
+                          </span>
+                        </div>
+                        <ChevronDown
+                          className={`h-5 w-5 text-slate-400 transition-transform ${selectedFinding?.id === result.id ? "rotate-180" : ""}`}
+                        />
+                      </div>
+
+                      <h3 className="text-xl font-semibold text-white mb-2">
+                        {result.ruleName}
+                      </h3>
+                      <p className="text-slate-300 mb-4 leading-relaxed">
+                        {result.message}
                       </p>
-                    </div>
-                  )}
 
-                  {result.snippet && (
-                    <div>
-                      <h4 className="font-medium text-white mb-3">
-                        Code Snippet
-                      </h4>
-                      <pre className="bg-slate-900/80 text-slate-100 p-4 rounded-lg text-sm overflow-x-auto border border-slate-700">
-                        <code>{result.snippet}</code>
-                      </pre>
+                      <div className="flex items-center space-x-6 text-sm text-slate-400">
+                        <div className="flex items-center space-x-2">
+                          <FileText className="h-4 w-4" />
+                          <span>{result.file}</span>
+                        </div>
+                        {result.startLine && (
+                          <span>
+                            Line {result.startLine}
+                            {result.endLine &&
+                            result.endLine !== result.startLine
+                              ? `-${result.endLine}`
+                              : ""}
+                          </span>
+                        )}
+                      </div>
+
+                      {result.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-4">
+                          {result.tags.map((tag, index) => (
+                            <span
+                              key={index}
+                              className="inline-flex px-2 py-1 text-xs bg-slate-700/50 text-slate-300 rounded border border-slate-600"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Expanded Details */}
+                  {selectedFinding?.id === result.id && (
+                    <div className="mt-6 pt-6 border-t border-slate-600">
+                      {result.description && (
+                        <div className="mb-6">
+                          <h4 className="font-medium text-white mb-3">
+                            Description
+                          </h4>
+                          <p className="text-slate-300 text-sm leading-relaxed">
+                            {result.description}
+                          </p>
+                        </div>
+                      )}
+
+                      {result.snippet && (
+                        <div>
+                          <h4 className="font-medium text-white mb-3">
+                            Code Snippet
+                          </h4>
+                          <pre className="bg-slate-900/80 text-slate-100 p-4 rounded-lg text-sm overflow-x-auto border border-slate-700">
+                            <code>{result.snippet}</code>
+                          </pre>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
-              )}
-            </div>
-          );
-        })}
+              );
+            })}
       </div>
 
-      {filteredResults.length === 0 && (
+      {displayCount === 0 && (
         <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-12 text-center shadow-lg">
           <svg
             className="h-12 w-12 text-slate-400 mx-auto mb-4"

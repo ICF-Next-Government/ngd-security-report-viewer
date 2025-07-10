@@ -2,6 +2,8 @@
 
 export type ReportFormat = "sarif" | "semgrep" | "gitlab-sast";
 
+export type ViewMode = "all" | "deduplicated";
+
 export type UnifiedReport = {
   format: ReportFormat;
   results: ProcessedResult[];

@@ -152,7 +152,7 @@ export const ReportView: React.FC<ReportViewProps> = ({
           </div>
         )}
         <div className="animate-fade-in" style={{ animation: "fadeIn 1s" }}>
-          <ReportSummary summary={summary} />
+          <ReportSummary summary={summary} results={results} />
         </div>
         <div className="animate-fade-in" style={{ animation: "fadeIn 1.3s" }}>
           <FindingsList results={results} />

@@ -9,6 +9,7 @@
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { ReportParser } from "../utils/reportParser";
+import { DeduplicationService } from "../utils/deduplication";
 
 // --- CLI Argument Parsing ---
 function parseArgs() {
@@ -50,6 +51,11 @@ Output:
       "medium": 12,
       "low": 3,
       "info": 1
+    },
+    "deduplication": {
+      "unique_groups": 256,
+      "duplicate_findings": 274,
+      "duplication_rate": "51.7%"
     }
   }
 
@@ -82,7 +88,11 @@ function generateUnixTimestamp(): number {
   return Math.floor(Date.now() / 1000);
 }
 
-function formatToolInfo(toolName: string, toolVersion?: string, format?: string): string {
+function formatToolInfo(
+  toolName: string,
+  toolVersion?: string,
+  format?: string,
+): string {
   let toolInfo = toolName;
 
   if (toolVersion) {
@@ -90,7 +100,7 @@ function formatToolInfo(toolName: string, toolVersion?: string, format?: string)
   }
 
   if (format) {
-    const formatLabel = format.toUpperCase().replace('-', '-');
+    const formatLabel = format.toUpperCase().replace("-", "-");
     toolInfo += ` (${formatLabel})`;
   }
 
@@ -138,8 +148,26 @@ async function main() {
     process.exit(1);
   }
 
+  // Calculate deduplication statistics
+  const deduplicationStats = (() => {
+    if (!results || results.length === 0) return null;
+
+    const groups = DeduplicationService.deduplicateFindings(results);
+    const totalDuplicates = results.length - groups.length;
+    const duplicatePercentage = (
+      (totalDuplicates / results.length) *
+      100
+    ).toFixed(1);
+
+    return {
+      unique_groups: groups.length,
+      duplicate_findings: totalDuplicates,
+      duplication_rate: `${duplicatePercentage}%`,
+    };
+  })();
+
   // Generate enhanced output with additional information
-  const output = {
+  const output: any = {
     timestamp: generateUnixTimestamp(),
     tool: formatToolInfo(summary.toolName, summary.toolVersion, summary.format),
     total_findings: summary.totalFindings,
@@ -152,6 +180,11 @@ async function main() {
       info: summary.infoCount,
     },
   };
+
+  // Add deduplication stats if duplicates exist
+  if (deduplicationStats && deduplicationStats.duplicate_findings > 0) {
+    output.deduplication = deduplicationStats;
+  }
 
   console.log(JSON.stringify(output, null, 2));
 }

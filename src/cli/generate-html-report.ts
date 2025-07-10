@@ -15,6 +15,7 @@ function parseArgs() {
   const args = process.argv.slice(2);
   let input: string | undefined;
   let output: string | undefined;
+  let deduplicate: boolean = true;
 
   // Check for help flag
   if (args.includes("--help") || args.includes("-h") || args.length === 0) {
@@ -22,11 +23,12 @@ function parseArgs() {
 Security Report HTML Generator
 
 Usage:
-  bun src/cli/generate-html-report.ts --input <file> [--output <file>]
+  bun src/cli/generate-html-report.ts --input <file> [--output <file>] [--no-dedup]
 
 Options:
   -i, --input <file>   Path to SARIF, Semgrep, or GitLab SAST JSON file (required)
   -o, --output <file>  Path for output HTML file (default: report.html)
+  --no-dedup           Disable automatic deduplication of similar findings
   -h, --help           Show this help message
 
 Examples:
@@ -54,6 +56,8 @@ Supported formats:
     } else if ((args[i] === "--output" || args[i] === "-o") && args[i + 1]) {
       output = args[i + 1];
       i++;
+    } else if (args[i] === "--no-dedup") {
+      deduplicate = false;
     }
   }
 
@@ -66,7 +70,7 @@ Supported formats:
     output = "report.html";
   }
 
-  return { input, output };
+  return { input, output, deduplicate };
 }
 
 // --- HTML Report Generation (matches in-app look) ---
@@ -76,7 +80,7 @@ import { generateHtml } from "../shared/generateHtml";
 
 // --- Main CLI Logic ---
 async function main() {
-  const { input, output } = parseArgs();
+  const { input, output, deduplicate } = parseArgs();
   const inputPath = resolve(process.cwd(), input);
   const outputPath = resolve(process.cwd(), output);
 
@@ -126,12 +130,18 @@ async function main() {
     summary,
     results,
     generatedAt: new Date().toISOString(),
+    enableDeduplication: deduplicate,
   });
 
   try {
     await writeFile(outputPath, html, "utf8");
     console.log(`✅ HTML report generated: ${outputPath}`);
     console.log(`   Total size: ${(html.length / 1024).toFixed(1)} KB`);
+    if (deduplicate) {
+      console.log(`   Deduplication: Enabled (use --no-dedup to disable)`);
+    } else {
+      console.log(`   Deduplication: Disabled`);
+    }
   } catch (err) {
     console.error(`❌ Failed to write output file: ${outputPath}`);
     console.error(

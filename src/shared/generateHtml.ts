@@ -4,11 +4,13 @@
  */
 
 import { ProcessedResult, ReportSummary } from "../types/report";
+import { DeduplicationService, DuplicateGroup } from "../utils/deduplication";
 
 export interface GenerateHtmlOptions {
   summary: ReportSummary;
   results: ProcessedResult[];
   generatedAt?: string; // ISO string or formatted date
+  enableDeduplication?: boolean; // Whether to show deduplication by default
 }
 
 /**
@@ -20,6 +22,7 @@ export function generateHtml({
   summary,
   results,
   generatedAt,
+  enableDeduplication = true,
 }: GenerateHtmlOptions): string {
   // Use the same HTML as the UI export button
   const formattedTimestamp = generatedAt
@@ -37,6 +40,276 @@ export function generateHtml({
         });
       })()
     : "";
+
+  // Calculate deduplication statistics
+  const deduplicationGroups = DeduplicationService.deduplicateFindings(results);
+  const deduplicationStats = {
+    uniqueGroups: deduplicationGroups.length,
+    totalDuplicates: results.length - deduplicationGroups.length,
+    duplicatePercentage:
+      results.length > 0
+        ? (
+            ((results.length - deduplicationGroups.length) / results.length) *
+            100
+          ).toFixed(1)
+        : "0",
+  };
+
+  const severityColors: Record<
+    string,
+    {
+      bg: string;
+      text: string;
+      border: string;
+      icon: string;
+      badge: string;
+    }
+  > = {
+    critical: {
+      bg: "bg-red-900/20",
+      text: "text-red-300",
+      border: "border-red-700",
+      icon: "text-red-400",
+      badge: "bg-red-900/40 text-red-300 border-red-700",
+    },
+    high: {
+      bg: "bg-orange-900/20",
+      text: "text-orange-300",
+      border: "border-orange-700",
+      icon: "text-orange-400",
+      badge: "bg-orange-900/40 text-orange-300 border-orange-700",
+    },
+    medium: {
+      bg: "bg-amber-900/20",
+      text: "text-amber-300",
+      border: "border-amber-700",
+      icon: "text-amber-400",
+      badge: "bg-amber-900/40 text-amber-300 border-amber-700",
+    },
+    low: {
+      bg: "bg-blue-900/20",
+      text: "text-blue-300",
+      border: "border-blue-700",
+      icon: "text-blue-400",
+      badge: "bg-blue-900/40 text-blue-300 border-blue-700",
+    },
+    info: {
+      bg: "bg-slate-800/50",
+      text: "text-slate-300",
+      border: "border-slate-600",
+      icon: "text-slate-400",
+      badge: "bg-slate-700/50 text-slate-300 border-slate-600",
+    },
+  };
+
+  // Generate grouped findings HTML
+  const groupedFindingsHtml = deduplicationGroups
+    .map((group) => {
+      const result = group.representativeResult;
+      const colors = severityColors[result.severity] ?? severityColors["info"];
+
+      const groupLocationsHtml = DeduplicationService.getGroupLocations(group)
+        .map(
+          (location) => `
+          <div class="location-item">
+            <svg class="h-4 w-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 9l5-5 5 5M12 4v12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>${location}</span>
+          </div>`,
+        )
+        .join("");
+
+      return `
+      <div class="finding-result ${colors.bg} ${colors.border} backdrop-blur-sm border rounded-lg p-6 transition-all hover:shadow-lg hover:scale-[1.01] group-toggle" data-severity="${result.severity}" data-group-id="${group.id}">
+        <div class="flex items-start space-x-4">
+          <div class="h-6 w-6 ${colors.icon} mt-1 flex-shrink-0"><!-- icon placeholder --></div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center space-x-3">
+                <span class="inline-flex px-3 py-1 text-xs font-medium rounded-full ${colors.badge} border">${result.severity.toUpperCase()}</span>
+                <span class="text-sm text-slate-400">${result.ruleId}</span>
+                ${group.occurrences > 1 ? `<span class="duplicate-badge">${group.occurrences} occurrences</span>` : ""}
+              </div>
+              <svg class="h-5 w-5 text-slate-400 transition-transform chevron" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-white mb-2">${result.ruleName}</h3>
+            <p class="text-slate-300 mb-4 leading-relaxed">${result.message}</p>
+            <div class="text-sm text-slate-400">
+              <p class="mb-2">${DeduplicationService.getGroupSummary(group)}</p>
+              ${
+                group.affectedFiles.length <= 3
+                  ? `
+              <div class="flex items-center space-x-2">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 9l5-5 5 5M12 4v12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span>${group.affectedFiles.join(", ")}</span>
+              </div>`
+                  : ""
+              }
+            </div>
+            ${result.tags.length > 0 ? `<div class="flex flex-wrap gap-2 mt-4">${result.tags.map((tag: string) => `<span class="inline-flex px-2 py-1 text-xs bg-slate-700/50 text-slate-300 rounded border border-slate-600">${tag}</span>`).join("")}</div>` : ""}
+          </div>
+        </div>
+        <div id="group-details-${group.id}" style="display: none;">
+          ${
+            result.description || groupLocationsHtml
+              ? `
+          <div class="mt-6 pt-6 border-t border-slate-600">
+            ${
+              result.description
+                ? `
+            <div class="mb-6">
+              <h4 class="font-medium text-white mb-3">Description</h4>
+              <p class="text-slate-300 text-sm leading-relaxed">${result.description}</p>
+            </div>`
+                : ""
+            }
+            <div class="group-locations">
+              <h4 class="font-medium text-white mb-3">All Occurrences</h4>
+              ${groupLocationsHtml}
+            </div>
+            ${
+              result.snippet
+                ? `
+            <div class="mt-4">
+              <h4 class="font-medium text-white mb-3">Code Snippet (from first occurrence)</h4>
+              <pre class="bg-slate-900/80 text-slate-100 p-4 rounded-lg text-sm overflow-x-auto border border-slate-700"><code>${result.snippet}</code></pre>
+            </div>`
+                : ""
+            }
+          </div>`
+              : ""
+          }
+        </div>
+      </div>`;
+    })
+    .join("\n");
+
+  // Generate all findings HTML
+  const allFindingsHtml = results
+    .map((result) => {
+      const colors = severityColors[result.severity] ?? severityColors["info"];
+      return `
+      <div class="finding-result ${colors.bg} ${colors.border} backdrop-blur-sm border rounded-lg p-6 transition-all hover:shadow-lg hover:scale-[1.01]" data-severity="${result.severity}">
+        <div class="flex items-start space-x-4">
+          <div class="h-6 w-6 ${colors.icon} mt-1 flex-shrink-0"><!-- icon placeholder --></div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center space-x-3">
+                <span class="inline-flex px-3 py-1 text-xs font-medium rounded-full ${colors.badge} border">${result.severity.toUpperCase()}</span>
+                <span class="text-sm text-slate-400">${result.ruleId}</span>
+              </div>
+            </div>
+            <h3 class="text-xl font-semibold text-white mb-2">${result.ruleName}</h3>
+            <p class="text-slate-300 mb-4 leading-relaxed">${result.message}</p>
+            <div class="flex items-center space-x-6 text-sm text-slate-400">
+              <div class="flex items-center space-x-2">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 9l5-5 5 5M12 4v12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span>${result.file}</span>
+              </div>
+              ${result.startLine ? `<span>Line ${result.startLine}${result.endLine && result.endLine !== result.startLine ? `-${result.endLine}` : ""}</span>` : ""}
+            </div>
+            ${result.tags.length > 0 ? `<div class="flex flex-wrap gap-2 mt-4">${result.tags.map((tag: string) => `<span class="inline-flex px-2 py-1 text-xs bg-slate-700/50 text-slate-300 rounded border border-slate-600">${tag}</span>`).join("")}</div>` : ""}
+          </div>
+        </div>
+        ${
+          result.description || result.snippet
+            ? `
+        <div class="mt-6 pt-6 border-t border-slate-600">
+          ${
+            result.description
+              ? `
+          <div class="mb-6">
+            <h4 class="font-medium text-white mb-3">Description</h4>
+            <p class="text-slate-300 text-sm leading-relaxed">${result.description}</p>
+          </div>`
+              : ""
+          }
+          ${
+            result.snippet
+              ? `
+          <div>
+            <h4 class="font-medium text-white mb-3">Code Snippet</h4>
+            <pre class="bg-slate-900/80 text-slate-100 p-4 rounded-lg text-sm overflow-x-auto border border-slate-700"><code>${result.snippet}</code></pre>
+          </div>`
+              : ""
+          }
+        </div>`
+            : ""
+        }
+      </div>`;
+    })
+    .join("\n");
+
+  // Generate severity cards
+  const severityCards = [
+    {
+      label: "Critical",
+      count: summary.criticalCount,
+      color: "bg-red-500",
+      bgColor: "bg-red-900/20",
+      textColor: "text-red-300",
+      borderColor: "border-red-700",
+    },
+    {
+      label: "High",
+      count: summary.highCount,
+      color: "bg-orange-500",
+      bgColor: "bg-orange-900/20",
+      textColor: "text-orange-300",
+      borderColor: "border-orange-700",
+    },
+    {
+      label: "Medium",
+      count: summary.mediumCount,
+      color: "bg-amber-500",
+      bgColor: "bg-amber-900/20",
+      textColor: "text-amber-300",
+      borderColor: "border-amber-700",
+    },
+    {
+      label: "Low",
+      count: summary.lowCount,
+      color: "bg-blue-500",
+      bgColor: "bg-blue-900/20",
+      textColor: "text-blue-300",
+      borderColor: "border-blue-700",
+    },
+    {
+      label: "Info",
+      count: summary.infoCount,
+      color: "bg-slate-500",
+      bgColor: "bg-slate-800/50",
+      textColor: "text-slate-300",
+      borderColor: "border-slate-600",
+    },
+  ];
+
+  const severityCardsHtml = severityCards
+    .map(
+      (card) => `
+    <div class="${card.bgColor} ${card.borderColor} backdrop-blur-sm rounded-lg border p-6 transition-all hover:scale-105 hover:shadow-lg">
+      <div class="flex items-center justify-between mb-3">
+        <div class="h-5 w-5 ${card.textColor}"><!-- icon placeholder --></div>
+        ${card.count > 0 ? `<div class="w-3 h-3 rounded-full ${card.color}"></div>` : ""}
+      </div>
+      <div class="space-y-1">
+        <p class="text-2xl font-bold text-white">${card.count}</p>
+        <p class="text-sm font-medium ${card.textColor}">${card.label}</p>
+      </div>
+    </div>`,
+    )
+    .join("");
+
+  const severityDistributionHtml = severityCards
+    .map((card) => {
+      const percentage =
+        summary.totalFindings > 0
+          ? (card.count / summary.totalFindings) * 100
+          : 0;
+      return `<div class="${card.color}" style="width: ${percentage}%"></div>`;
+    })
+    .join("");
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -202,10 +475,119 @@ export function generateHtml({
     body::-webkit-scrollbar-corner {
       background: #0f172a;
     }
+    /* Deduplication toggle styles */
+    .view-toggle {
+      display: inline-flex;
+      background: rgba(51,65,85,0.5);
+      border-radius: 0.5rem;
+      padding: 0.25rem;
+      gap: 0.25rem;
+    }
+    .view-toggle button {
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      background: transparent;
+      color: #94a3b8;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .view-toggle button:hover {
+      color: #fff;
+    }
+    .view-toggle button.active {
+      background: #3b82f6;
+      color: #fff;
+    }
+    .duplicate-badge {
+      display: inline-flex;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      background: rgba(71,85,105,0.5);
+      color: #e2e8f0;
+      border-radius: 9999px;
+      border: 1px solid #475569;
+    }
+    .group-locations {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: rgba(15,23,42,0.5);
+      border-radius: 0.5rem;
+      border: 1px solid #334155;
+    }
+    .location-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem 0;
+      color: #94a3b8;
+      font-size: 0.875rem;
+      font-family: monospace;
+    }
   </style>
   <script>
-    // Inline search/filter for findings with clear button, highlight, and no results message
+    // Deduplication and search/filter functionality
     window.addEventListener('DOMContentLoaded', function() {
+      // Deduplication toggle
+      var viewMode = '${enableDeduplication ? "deduplicated" : "all"}';
+      var groupedBtn = document.getElementById('grouped-view-btn');
+      var allBtn = document.getElementById('all-view-btn');
+      var groupedFindings = document.getElementById('grouped-findings');
+      var allFindings = document.getElementById('all-findings');
+
+      function updateView() {
+        if (viewMode === 'deduplicated') {
+          groupedBtn.classList.add('active');
+          allBtn.classList.remove('active');
+          groupedFindings.style.display = 'block';
+          allFindings.style.display = 'none';
+        } else {
+          groupedBtn.classList.remove('active');
+          allBtn.classList.add('active');
+          groupedFindings.style.display = 'none';
+          allFindings.style.display = 'block';
+        }
+        // Re-run filter for the active view
+        filterFindings();
+      }
+
+      if (groupedBtn) {
+        groupedBtn.addEventListener('click', function() {
+          viewMode = 'deduplicated';
+          updateView();
+        });
+      }
+      if (allBtn) {
+        allBtn.addEventListener('click', function() {
+          viewMode = 'all';
+          updateView();
+        });
+      }
+
+      // Expand/collapse groups
+      var groupToggles = document.querySelectorAll('.group-toggle');
+      groupToggles.forEach(function(toggle) {
+        toggle.addEventListener('click', function() {
+          var groupId = toggle.getAttribute('data-group-id');
+          var details = document.getElementById('group-details-' + groupId);
+          var chevron = toggle.querySelector('.chevron');
+          if (details.style.display === 'none') {
+            details.style.display = 'block';
+            chevron.style.transform = 'rotate(180deg)';
+          } else {
+            details.style.display = 'none';
+            chevron.style.transform = 'rotate(0deg)';
+          }
+        });
+      });
+
+      // Search/filter functionality
       var input = document.getElementById('inline-findings-search');
       var clearBtn = document.getElementById('inline-findings-clear');
       var findingsList = document.getElementById('findings-list');
@@ -215,7 +597,7 @@ export function generateHtml({
       function highlight(text, term) {
         if (!term) return text;
         // Escape regex special chars
-        var safeTerm = term.replace(/[.*+?^{}()|[\]\\]/g, '\\$&');
+        var safeTerm = term.replace(/[.*+?^{}()|[\\]\\\\]/g, '\\\\$&');
         return text.replace(new RegExp(safeTerm, 'gi'), function(match) {
           return '<mark class="inline-highlight">' + match + '</mark>';
         });
@@ -224,7 +606,12 @@ export function generateHtml({
         var term = input.value.trim().toLowerCase();
         var selectedSeverity = severitySelect ? severitySelect.value : "all";
         var anyVisible = false;
-        findings.forEach(function(finding) {
+        // Get findings based on current view mode
+        var currentFindings = viewMode === 'deduplicated'
+          ? document.querySelectorAll('#grouped-findings .finding-result')
+          : document.querySelectorAll('#all-findings .finding-result');
+
+        currentFindings.forEach(function(finding) {
           // Remove previous highlights
           finding.innerHTML = finding.getAttribute('data-raw');
           var text = finding.innerText.toLowerCase();
@@ -265,10 +652,13 @@ export function generateHtml({
         });
       }
       // Store raw HTML for each finding for highlight reset
-      findings.forEach(function(finding) {
+      var allFindingElements = document.querySelectorAll('.finding-result');
+      allFindingElements.forEach(function(finding) {
         finding.setAttribute('data-raw', finding.innerHTML);
       });
-      filterFindings();
+
+      // Initialize view
+      updateView();
     });
   </script>
 </head>
@@ -300,7 +690,7 @@ export function generateHtml({
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
           <div>
             <span class="text-slate-400">Tool:</span>
-            <span class="ml-2 font-medium text-white">${summary.toolName} ${summary.toolVersion ? `v${summary.toolVersion}` : ""} (${summary.format ? summary.format.toUpperCase() : "Unknown Format"})</span>
+            <span class="ml-2 font-medium text-white">${summary.toolName}${summary.toolVersion ? ` v${summary.toolVersion}` : ""}</span>
           </div>
           <div>
             <span class="text-slate-400">Total Findings:</span>
@@ -312,104 +702,46 @@ export function generateHtml({
           </div>
         </div>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        ${(() => {
-          const cards = [
-            {
-              label: "Critical",
-              count: summary.criticalCount,
-              color: "bg-red-500",
-              bgColor: "bg-red-900/20",
-              textColor: "text-red-300",
-              borderColor: "border-red-700",
-            },
-            {
-              label: "High",
-              count: summary.highCount,
-              color: "bg-orange-500",
-              bgColor: "bg-orange-900/20",
-              textColor: "text-orange-300",
-              borderColor: "border-orange-700",
-            },
-            {
-              label: "Medium",
-              count: summary.mediumCount,
-              color: "bg-amber-500",
-              bgColor: "bg-amber-900/20",
-              textColor: "text-amber-300",
-              borderColor: "border-amber-700",
-            },
-            {
-              label: "Low",
-              count: summary.lowCount,
-              color: "bg-blue-500",
-              bgColor: "bg-blue-900/20",
-              textColor: "text-blue-300",
-              borderColor: "border-blue-700",
-            },
-            {
-              label: "Info",
-              count: summary.infoCount,
-              color: "bg-slate-500",
-              bgColor: "bg-slate-800/50",
-              textColor: "text-slate-300",
-              borderColor: "border-slate-600",
-            },
-          ];
-          return cards
-            .map(
-              (card) => `
-            <div class="${card.bgColor} ${card.borderColor} backdrop-blur-sm rounded-lg border p-6 transition-all hover:scale-105 hover:shadow-lg">
-              <div class="flex items-center justify-between mb-3">
-                <div class="h-5 w-5 ${card.textColor}"><!-- icon placeholder --></div>
-                ${card.count > 0 ? `<div class="w-3 h-3 rounded-full ${card.color}"></div>` : ""}
-              </div>
-              <div class="space-y-1">
-                <p class="text-2xl font-bold text-white">${card.count}</p>
-                <p class="text-sm font-medium ${card.textColor}">${card.label}</p>
-              </div>
-            </div>
-          `,
-            )
-            .join("");
-        })()}
+
+      ${
+        deduplicationStats.totalDuplicates > 0
+          ? `
+      <div class="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-6 shadow-lg">
+        <div class="flex items-center space-x-3 mb-4">
+          <svg class="h-5 w-5 text-purple-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+          </svg>
+          <h3 class="text-lg font-semibold text-white">Deduplication Summary</h3>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+          <div>
+            <span class="text-slate-400">Unique Issue Groups:</span>
+            <span class="ml-2 font-medium text-white">${deduplicationStats.uniqueGroups}</span>
+          </div>
+          <div>
+            <span class="text-slate-400">Duplicate Findings:</span>
+            <span class="ml-2 font-medium text-orange-300">${deduplicationStats.totalDuplicates}</span>
+          </div>
+          <div>
+            <span class="text-slate-400">Duplication Rate:</span>
+            <span class="ml-2 font-medium text-orange-300">${deduplicationStats.duplicatePercentage}%</span>
+          </div>
+        </div>
+        <p class="text-xs text-slate-400 mt-4">Similar issues have been automatically grouped to reduce noise in the report.</p>
       </div>
+      `
+          : ""
+      }
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        ${severityCardsHtml}
+      </div>
+
       <div class="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-6 shadow-lg">
         <h3 class="text-lg font-semibold text-white mb-4">Severity Distribution</h3>
         <div class="w-full bg-slate-700 rounded-full h-3 overflow-hidden">
           <div class="h-full flex">
-            ${(() => {
-              const total = summary.totalFindings;
-              const cards = [
-                {
-                  label: "Critical",
-                  count: summary.criticalCount,
-                  color: "bg-red-500",
-                },
-                {
-                  label: "High",
-                  count: summary.highCount,
-                  color: "bg-orange-500",
-                },
-                {
-                  label: "Medium",
-                  count: summary.mediumCount,
-                  color: "bg-amber-500",
-                },
-                { label: "Low", count: summary.lowCount, color: "bg-blue-500" },
-                {
-                  label: "Info",
-                  count: summary.infoCount,
-                  color: "bg-slate-500",
-                },
-              ];
-              return cards
-                .map((card) => {
-                  const percentage = total > 0 ? (card.count / total) * 100 : 0;
-                  return `<div class="${card.color}" style="width: ${percentage}%"></div>`;
-                })
-                .join("");
-            })()}
+            ${severityDistributionHtml}
           </div>
         </div>
         <div class="flex justify-between text-xs text-slate-400 mt-2">
@@ -417,12 +749,33 @@ export function generateHtml({
           <span>${summary.totalFindings} total findings</span>
         </div>
       </div>
+
       <div class="space-y-8">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <div class="flex items-center gap-2">
             <h2 class="text-2xl font-bold text-white">Security Findings</h2>
-            <span class="text-slate-400">${results.length} findings</span>
+            <span class="text-slate-400">${enableDeduplication && deduplicationStats.totalDuplicates > 0 ? `${deduplicationGroups.length} groups` : `${results.length} findings`}</span>
           </div>
+          ${
+            deduplicationStats.totalDuplicates > 0
+              ? `
+          <div class="view-toggle">
+            <button id="grouped-view-btn" class="${enableDeduplication ? "active" : ""}">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+              </svg>
+              Grouped
+            </button>
+            <button id="all-view-btn" class="${!enableDeduplication ? "active" : ""}">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
+              </svg>
+              All
+            </button>
+          </div>
+          `
+              : ""
+          }
         </div>
         <div class="inline-search-bar">
           <svg class="inline-search-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -455,142 +808,50 @@ export function generateHtml({
           </span>
         </div>
         <div class="space-y-6" id="findings-list">
-          ${
-            results.length === 0
-              ? `<div class="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-12 text-center shadow-lg">
+          <!-- Grouped Findings -->
+          <div id="grouped-findings" style="display: ${enableDeduplication && deduplicationStats.totalDuplicates > 0 ? "block" : "none"};">
+            ${
+              deduplicationGroups.length === 0
+                ? `<div class="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-12 text-center shadow-lg">
                 <svg class="h-12 w-12 text-slate-400 mx-auto mb-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                   <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
                   <line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                   <line x1="8" y1="8" x2="16" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                 </svg>
                 <h3 class="text-lg font-medium text-white mb-2">No findings found</h3>
-                <p class="text-slate-400">This SARIF file contains no security findings.</p>
+                <p class="text-slate-400">This report contains no security findings.</p>
               </div>`
-              : `
-                <div id="inline-no-results" class="inline-no-results" style="display:none;">
-                  <svg class="h-12 w-12 text-slate-400 mx-auto mb-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    <line x1="8" y1="8" x2="16" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                  </svg>
-                  <h3 class="text-lg font-medium text-white mb-2">No results found</h3>
-                  <p class="text-slate-400">Try a different search term.</p>
-                </div>
-                ${results
-                  .map((result) => {
-                    const severityColors: Record<
-                      string,
-                      {
-                        bg: string;
-                        text: string;
-                        border: string;
-                        icon: string;
-                        badge: string;
-                      }
-                    > = {
-                      critical: {
-                        bg: "bg-red-900/20",
-                        text: "text-red-300",
-                        border: "border-red-700",
-                        icon: "text-red-400",
-                        badge: "bg-red-900/40 text-red-300 border-red-700",
-                      },
-                      high: {
-                        bg: "bg-orange-900/20",
-                        text: "text-orange-300",
-                        border: "border-orange-700",
-                        icon: "text-orange-400",
-                        badge:
-                          "bg-orange-900/40 text-orange-300 border-orange-700",
-                      },
-                      medium: {
-                        bg: "bg-amber-900/20",
-                        text: "text-amber-300",
-                        border: "border-amber-700",
-                        icon: "text-amber-400",
-                        badge:
-                          "bg-amber-900/40 text-amber-300 border-amber-700",
-                      },
-                      low: {
-                        bg: "bg-blue-900/20",
-                        text: "text-blue-300",
-                        border: "border-blue-700",
-                        icon: "text-blue-400",
-                        badge: "bg-blue-900/40 text-blue-300 border-blue-700",
-                      },
-                      info: {
-                        bg: "bg-slate-800/50",
-                        text: "text-slate-300",
-                        border: "border-slate-600",
-                        icon: "text-slate-400",
-                        badge:
-                          "bg-slate-700/50 text-slate-300 border-slate-600",
-                      },
-                    };
-                    const colors =
-                      severityColors[result.severity] ?? severityColors["info"];
-                    return `
-                  <div class="finding-result ${colors.bg} ${colors.border} backdrop-blur-sm border rounded-lg p-6 transition-all hover:shadow-lg hover:scale-[1.01]" data-severity="${result.severity}">
-                    <div class="flex items-start space-x-4">
-                      <div class="h-6 w-6 ${colors.icon} mt-1 flex-shrink-0"><!-- icon placeholder --></div>
-                      <div class="flex-1 min-w-0">
-                        <div class="flex items-center justify-between mb-3">
-                          <div class="flex items-center space-x-3">
-                            <span class="inline-flex px-3 py-1 text-xs font-medium rounded-full ${colors.badge} border">${result.severity.toUpperCase()}</span>
-                            <span class="text-sm text-slate-400">${result.ruleId}</span>
-                          </div>
-                        </div>
-                        <h3 class="text-xl font-semibold text-white mb-2">${result.ruleName}</h3>
-                        <p class="text-slate-300 mb-4 leading-relaxed">${result.message}</p>
-                        <div class="flex items-center space-x-6 text-sm text-slate-400">
-                          <div class="flex items-center space-x-2">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 9l5-5 5 5M12 4v12" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                            <span>${result.file}</span>
-                          </div>
-                          ${result.startLine ? `<span>Line ${result.startLine}${result.endLine && result.endLine !== result.startLine ? `-${result.endLine}` : ""}</span>` : ""}
-                        </div>
-                        ${result.tags.length > 0 ? `<div class="flex flex-wrap gap-2 mt-4">${result.tags.map((tag: string) => `<span class="inline-flex px-2 py-1 text-xs bg-slate-700/50 text-slate-300 rounded border border-slate-600">${tag}</span>`).join("")}</div>` : ""}
-                      </div>
-                    </div>
-                    ${
-                      result.description || result.snippet
-                        ? `
-                      <div class="mt-6 pt-6 border-t border-slate-600">
-                        ${
-                          result.description
-                            ? `
-                          <div class="mb-6">
-                            <h4 class="font-medium text-white mb-3">Description</h4>
-                            <p class="text-slate-300 text-sm leading-relaxed">${result.description}</p>
-                          </div>
-                        `
-                            : ""
-                        }
-                        ${
-                          result.snippet
-                            ? `
-                          <div>
-                            <h4 class="font-medium text-white mb-3">Code Snippet</h4>
-                            <pre class="bg-slate-900/80 text-slate-100 p-4 rounded-lg text-sm overflow-x-auto border border-slate-700"><code>${result.snippet}</code></pre>
-                          </div>
-                        `
-                            : ""
-                        }
-                      </div>
-                    `
-                        : ""
-                    }
-                  </div>
-                  `;
-                  })
-                  .join("")}
-              `
-          }
+                : groupedFindingsHtml
+            }
+          </div>
+          <!-- All Findings (Ungrouped) -->
+          <div id="all-findings" style="display: ${!enableDeduplication || deduplicationStats.totalDuplicates === 0 ? "block" : "none"};">
+            ${
+              results.length === 0
+                ? `<div class="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-12 text-center shadow-lg">
+                <svg class="h-12 w-12 text-slate-400 mx-auto mb-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <line x1="8" y1="8" x2="16" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <h3 class="text-lg font-medium text-white mb-2">No findings found</h3>
+                <p class="text-slate-400">This report contains no security findings.</p>
+              </div>`
+                : allFindingsHtml
+            }
+          </div>
+        </div>
+        <div id="inline-no-results" class="inline-no-results" style="display:none;">
+          <svg class="h-12 w-12 text-slate-400 mx-auto mb-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <h3 class="text-lg font-medium text-white mb-2">No results found</h3>
+          <p class="text-slate-400">Try adjusting your search criteria or filters.</p>
         </div>
       </div>
     </div>
   </div>
 </body>
-</html>
-  `;
+</html>`;
 }
