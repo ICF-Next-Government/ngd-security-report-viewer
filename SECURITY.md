@@ -17,9 +17,7 @@ We take the security of NGD Security Report Viewer seriously. If you have discov
 
 1. **DO NOT** report security vulnerabilities through public GitHub issues.
 
-2. Instead, please report them via one of the following methods:
-   - Email: security@example.com (replace with actual security email)
-   - GitHub Security Advisories: [Report a vulnerability](https://github.com/ICF-Next-Government/ngd-security-report-viewer/security/advisories/new)
+2. Instead, please report them by creating a private security advisory in the GitHub repository.
 
 3. Include the following information in your report:
    - Type of issue (e.g., XSS, SQL injection, authentication bypass, etc.)
@@ -40,23 +38,23 @@ We take the security of NGD Security Report Viewer seriously. If you have discov
 
 This project implements several security measures:
 
-### 1. **Automated Security Scanning**
-- **Secret Detection**: TruffleHog and Gitleaks scan for exposed secrets
-- **Dependency Scanning**: Trivy and npm audit check for vulnerable dependencies
-- **SAST**: CodeQL and Semgrep analyze code for security vulnerabilities
-- **Container Scanning**: Trivy scans Docker images (when applicable)
+### 1. **Client-Side Architecture**
+- All report processing happens in the browser
+- No server-side code execution
+- No data transmission to external servers
+- Reports remain local to the user's machine
 
 ### 2. **Secure Development Practices**
-- All commits are signed
-- Dependencies are regularly updated
-- Security headers are implemented
-- Input validation and sanitization
-- Output encoding to prevent XSS
-
-### 3. **Third-Party Security**
+- Input validation for uploaded files
+- Output encoding to prevent XSS attacks
+- Proper error handling without exposing sensitive information
 - Regular dependency updates
-- License compliance checks
-- Vulnerability monitoring via Dependabot
+- TypeScript for type safety
+
+### 3. **Dependency Management**
+- Minimal runtime dependencies
+- Regular security updates
+- Build-time dependency isolation
 
 ## Security Best Practices for Users
 
@@ -83,24 +81,25 @@ When using NGD Security Report Viewer:
 
 The application includes several security-focused features:
 
-1. **Client-Side Processing**: Reports are processed in the browser, reducing server-side attack surface
-2. **Input Validation**: File type and size validation
-3. **Content Security Policy**: Restricts resource loading
-4. **No External Dependencies**: Minimal third-party runtime dependencies
-5. **Secure Defaults**: Security-first configuration
+1. **Client-Side Processing**: All report processing happens in the browser
+2. **Input Validation**: File type and format validation
+3. **No External Resources**: Self-contained HTML exports with embedded fonts and styles
+4. **Data Isolation**: Reports are not stored or transmitted
+5. **Safe Rendering**: Proper escaping of all user-provided content
 
 ## Known Security Considerations
 
 1. **Large File Processing**: Very large report files may cause browser performance issues
-2. **Browser Storage**: Reports may be temporarily stored in browser memory
-3. **Export Features**: Exported HTML reports contain the full security data
+2. **Browser Storage**: Reports are processed in browser memory only
+3. **Export Features**: Exported HTML reports contain embedded security data
+4. **Sensitive Data**: Users should be aware that reports may contain sensitive security information
 
-## Security Headers
+## Security Headers (Production Deployment)
 
-When deploying, ensure these security headers are configured:
+When deploying the built application, configure these security headers:
 
 ```
-Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net; img-src 'self' data:;
+Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:;
 X-Content-Type-Options: nosniff
 X-Frame-Options: DENY
 X-XSS-Protection: 1; mode=block
@@ -108,11 +107,17 @@ Referrer-Policy: strict-origin-when-cross-origin
 Permissions-Policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
 ```
 
+## Data Privacy
+
+NGD Security Report Viewer respects user privacy:
+- No telemetry or analytics
+- No external API calls
+- No data collection
+- All processing is local
+
 ## Contact
 
-For any security concerns or questions about this policy, please contact:
-- Security Team: security@example.com (replace with actual email)
-- Project Maintainers: Via GitHub
+For security concerns, please use GitHub's private security advisory feature to report vulnerabilities.
 
 ## Acknowledgments
 

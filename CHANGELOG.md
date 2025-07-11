@@ -5,9 +5,18 @@ All notable changes to the NGD Security Report Viewer will be documented in this
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.1.0] - 2025-01-10
 
 ### Added
+- **Gitleaks Support**: Added support for Gitleaks JSON report format
+  - Full parsing support for secret detection findings
+  - Integration with existing severity and deduplication systems
+  
+- **Embedded Report Data**: HTML exports now include machine-readable data
+  - Base64-encoded JSON summary in `data-report-summary` attribute
+  - Contains timestamp, tool info, finding counts, and deduplication stats
+  - Enables programmatic extraction for automation workflows
+
 - **Enhanced Report Overview Section**: Redesigned the static HTML export's Report Overview
   - Minimal, compact design with professional appearance
   - Color-coordinated metric cards with matching icons and borders
@@ -17,6 +26,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Shield icon added to report header for better visual identity
 
 ### Changed
+- **Simplified Export Architecture**: Removed polyglot HTML/shell script approach
+  - HTML files are now standard, non-executable files
+  - Cleaner implementation focused on data embedding
+  - Improved security by removing executable components
+  
 - **Static HTML Export Improvements**
   - Updated card styling with subtle background colors
   - Improved typography with consistent white titles
@@ -32,6 +46,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **CSS Sizing Issues**: Added proper CSS reset and missing utility classes (w-1.5, h-1.5, gap-1.5, text-[10px])
 - **Font Size Consistency**: Added text-size-adjust properties to prevent mobile browser font inflation
 - **Severity Indicator**: Fixed missing colored dot next to severity level in static export
+
+### Removed
+- **Extraction Scripts**: Removed pre-built extraction scripts in favor of direct command usage
+  - Users can extract data using standard Unix tools
+  - Simplified maintenance and reduced complexity
 
 ## [1.1.0] - 2024-12
 
@@ -115,16 +134,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Added
+- Nothing yet
+
+### Changed
+- Nothing yet
+
+### Fixed
+- Nothing yet
+
 ## Summary
 
 The NGD Security Report Viewer provides a modern, efficient way to analyze security findings from various scanning tools. Key capabilities include:
 
 ### Core Features
-- **Multi-format Support**: Parse SARIF, Semgrep, and GitLab SAST reports
+- **Multi-format Support**: Parse SARIF, Semgrep, GitLab SAST, and Gitleaks reports
 - **Smart Deduplication**: Reduce noise by grouping similar findings
 - **Interactive UI**: Search, filter, and explore findings efficiently
-- **Offline Reports**: Export self-contained HTML with embedded fonts
+- **Offline Reports**: Export self-contained HTML with embedded fonts and data
 - **Professional Design**: Dark theme optimized for security workflows
+- **Embedded Data**: Machine-readable JSON summary in every HTML export
 
 ### Technical Highlights
 - **Modular Architecture**: Clean, maintainable codebase

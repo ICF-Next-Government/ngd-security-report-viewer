@@ -4,46 +4,33 @@
 
 The NGD Security Report Viewer implements comprehensive security measures to protect against vulnerabilities and ensure safe handling of security reports. This document outlines the security features, automated checks, and best practices implemented in the project.
 
-## Automated Security Scanning
+## Security Best Practices
 
-### GitHub Actions Security Workflow
+The project is designed with security in mind and supports integration with various security scanning tools. While no automated CI/CD is included in the repository, the following security practices are recommended:
 
-The project includes a comprehensive GitHub Actions workflow (`.github/workflows/security-scan.yml`) that runs multiple security checks:
+### 1. **Secret Detection**
+The project includes a `.gitleaks.toml` configuration file for use with Gitleaks to detect hardcoded secrets and credentials.
 
-#### 1. **Secret Detection**
-- **TruffleHog**: Scans for verified secrets in the codebase
-- **Gitleaks**: Detects hardcoded secrets and credentials
-- Configuration: `.gitleaks.toml` customizes detection rules
+### 2. **Dependency Management**
+- Regular dependency updates using Bun or npm
+- Vulnerability scanning with `npm audit` or similar tools
+- TypeScript for type safety and reduced runtime errors
 
-#### 2. **Dependency Vulnerability Scanning**
-- **Trivy**: Scans for vulnerabilities in dependencies and containers
-- **npm audit**: Checks for known vulnerabilities in npm packages
-- **Dependabot**: Automated dependency updates configured in `.github/dependabot.yml`
+### 3. **Code Quality**
+- ESLint/Biome for code quality and security linting
+- TypeScript strict mode enabled
+- Proper error handling throughout
 
-#### 3. **Static Application Security Testing (SAST)**
-- **CodeQL**: GitHub's semantic code analysis for security vulnerabilities
-- **Semgrep**: Custom security rules defined in `.semgrep.yml`
-- Covers JavaScript and TypeScript code
-
-#### 4. **Container Security** (when applicable)
-- Scans Docker images for vulnerabilities
-- Checks for insecure configurations
-
-#### 5. **License Compliance**
-- Verifies all dependencies use approved licenses
-- Flags non-standard or problematic licenses
-
-### Scan Schedule
-- **On Push**: To main and develop branches
-- **On Pull Request**: Before merging
-- **Weekly**: Every Monday at 9 AM UTC
-- **Manual**: Via workflow dispatch
+### 4. **Security by Design**
+- Client-side only processing (no server-side attack surface)
+- Input validation for all file uploads
+- Proper output encoding to prevent XSS
 
 ## Security Configurations
 
 ### 1. **Gitleaks Configuration** (`.gitleaks.toml`)
 
-Detects various types of secrets:
+The project includes a Gitleaks configuration that can detect various types of secrets:
 - AWS credentials
 - GitHub tokens
 - API keys
@@ -52,33 +39,19 @@ Detects various types of secrets:
 - JWT tokens
 - Base64 encoded secrets
 
-Excludes false positives from:
+The configuration excludes false positives from:
 - Test files
 - Documentation
 - Example/template files
 - Lock files
 
-### 2. **Semgrep Rules** (`.semgrep.yml`)
+### 2. **Development Security**
 
-Custom security rules for:
-- SQL injection detection
-- XSS vulnerabilities
-- Command injection
-- Path traversal
-- Weak cryptography
-- Hardcoded secrets
-- CSRF vulnerabilities
-- Open redirects
-- Unsafe deserialization
-
-### 3. **Pre-commit Hooks** (`.pre-commit-config.yaml`)
-
-Local security checks before commits:
-- Secret detection
-- Private key detection
-- Large file prevention
-- Vulnerability scanning
-- Code quality checks
+For local development, consider using:
+- Pre-commit hooks for secret detection
+- Regular dependency audits
+- Code quality checks with Biome
+- TypeScript strict mode
 
 ## Application Security Features
 
@@ -108,33 +81,35 @@ Local security checks before commits:
 
 1. **Never commit secrets**
    ```bash
-   # Install pre-commit hooks
-   pre-commit install
+   # Run Gitleaks manually
+   gitleaks detect --source . --config .gitleaks.toml
    ```
 
 2. **Keep dependencies updated**
    ```bash
    # Check for vulnerabilities
+   bun audit
+   # or
    npm audit
    
    # Update dependencies
-   npm update
+   bun update
    ```
 
-3. **Run security scans locally**
+3. **Code quality checks**
    ```bash
-   # Run Gitleaks
-   gitleaks detect --source .
+   # Run linter
+   bun run lint
    
-   # Run Semgrep
-   semgrep --config=.semgrep.yml
+   # Type checking
+   bun run type-check
    ```
 
 ### For Deployment
 
 1. **Configure Security Headers**
    ```nginx
-   add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;";
+   add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:;";
    add_header X-Content-Type-Options "nosniff";
    add_header X-Frame-Options "DENY";
    add_header X-XSS-Protection "1; mode=block";
@@ -165,30 +140,37 @@ Found a security issue? Please report it responsibly:
 
 See [SECURITY.md](../SECURITY.md) for full details.
 
-## Security Scan Results
+## Manual Security Testing
 
-### Viewing Results
+### Running Security Scans
 
-1. **GitHub Security Tab**
-   - Code scanning alerts
-   - Dependabot alerts
-   - Secret scanning alerts
+1. **Secret Detection**
+   ```bash
+   # Using Gitleaks
+   gitleaks detect --source . --config .gitleaks.toml
+   ```
 
-2. **Pull Request Comments**
-   - Automated security scan summaries
-   - Links to detailed results
+2. **Dependency Scanning**
+   ```bash
+   # Using npm/bun
+   bun audit
+   npm audit
+   ```
 
-3. **Workflow Summaries**
-   - Detailed scan outputs
-   - License check results
+3. **Code Quality**
+   ```bash
+   # Linting and type checking
+   bun run lint
+   bun run type-check
+   ```
 
-### Understanding Alerts
+### Understanding Security Issues
 
-- **Critical**: Immediate action required
-- **High**: Address as soon as possible
-- **Medium**: Plan to fix in next release
-- **Low**: Consider fixing
-- **Info**: Best practice recommendations
+- **Critical**: Immediate action required (e.g., exposed secrets, RCE vulnerabilities)
+- **High**: Address as soon as possible (e.g., XSS, SQL injection risks)
+- **Medium**: Plan to fix in next release (e.g., outdated dependencies)
+- **Low**: Consider fixing (e.g., best practice violations)
+- **Info**: Recommendations for improvement
 
 ## Compliance
 
@@ -204,15 +186,17 @@ See [SECURITY.md](../SECURITY.md) for full details.
 
 ## Monitoring and Maintenance
 
-### Automated Monitoring
-- Dependabot security updates
-- Weekly vulnerability scans
-- Real-time secret detection
+### Recommended Practices
+- Regular dependency updates
+- Periodic security audits
+- Manual secret scanning before releases
+- Security configuration reviews
 
-### Manual Reviews
-- Quarterly security audits
-- Dependency reviews
-- Security configuration updates
+### Maintenance Schedule
+- Weekly: Check for dependency updates
+- Monthly: Run full security audit
+- Quarterly: Review security configurations
+- Before releases: Complete security checklist
 
 ## Emergency Response
 
@@ -235,13 +219,12 @@ If a security incident occurs:
 
 ## Tools and Resources
 
-### Security Tools Used
-- [TruffleHog](https://github.com/trufflesecurity/trufflehog)
-- [Gitleaks](https://github.com/zricethezav/gitleaks)
-- [Trivy](https://github.com/aquasecurity/trivy)
-- [CodeQL](https://codeql.github.com/)
-- [Semgrep](https://semgrep.dev/)
-- [Dependabot](https://github.com/dependabot)
+### Recommended Security Tools
+- [Gitleaks](https://github.com/zricethezav/gitleaks) - Secret detection (config included)
+- [npm audit](https://docs.npmjs.com/cli/v8/commands/npm-audit) - Dependency scanning
+- [Biome](https://biomejs.dev/) - Code quality and linting (configured)
+- [TruffleHog](https://github.com/trufflesecurity/trufflehog) - Additional secret detection
+- [Trivy](https://github.com/aquasecurity/trivy) - Comprehensive vulnerability scanning
 
 ### Additional Resources
 - [OWASP Top 10](https://owasp.org/www-project-top-ten/)

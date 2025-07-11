@@ -1,8 +1,28 @@
 {
   "name": "ngd-security-report-viewer",
   "private": true,
-  "version": "0.0.0",
+  "version": "2.1.0",
   "type": "module",
+  "description": "A modern, interactive security report viewer and static HTML generator for SARIF, Semgrep, GitLab SAST, and Gitleaks JSON files",
+  "keywords": [
+    "security",
+    "sarif",
+    "semgrep",
+    "gitlab-sast",
+    "gitleaks",
+    "vulnerability",
+    "report-viewer",
+    "static-site-generator"
+  ],
+  "author": "NGD Security Team",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/ngd-security-report-viewer.git"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "bun": ">=1.0.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build && bun run inject-fonts",
