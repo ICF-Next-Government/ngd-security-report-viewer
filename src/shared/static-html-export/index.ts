@@ -356,19 +356,19 @@ function generateFindingsSection(
         <div class="flex flex-col sm:flex-row gap-4">
           <div class="flex-1">
             <div class="relative">
-              <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <svg class="absolute left-3 h-5 w-5 text-slate-400" style="top: 50%; transform: translateY(-50%);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
               </svg>
               <input type="text" id="search-input" placeholder="Search findings, files, or rule IDs..."
-                class="w-full pl-10 pr-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white placeholder-slate-400">
+                class="w-full pl-12 pr-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white placeholder-slate-400">
             </div>
           </div>
 
           <div class="relative">
-            <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <svg class="absolute left-3 h-5 w-5 text-slate-400" style="top: 50%; transform: translateY(-50%);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
             </svg>
-            <select id="severity-filter" class="pl-10 pr-8 py-3 bg-slate-700/50 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none text-white">
+            <select id="severity-filter" class="pl-12 pr-10 py-3 bg-slate-700/50 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none text-white">
               <option value="all">All Severities</option>
               <option value="critical">Critical</option>
               <option value="high">High</option>
@@ -376,7 +376,7 @@ function generateFindingsSection(
               <option value="low">Low</option>
               <option value="info">Info</option>
             </select>
-            <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <svg class="absolute right-3 h-5 w-5 text-slate-400 pointer-events-none" style="top: 50%; transform: translateY(-50%);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
             </svg>
           </div>
@@ -727,7 +727,7 @@ function getAllStyles(): string {
     .max-w-xs { max-width: 20rem; }
     .flex-1 { flex: 1 1 0%; }
     .flex-shrink-0 { flex-shrink: 0; }
-    .transform { transform: translateX(var(--tw-translate-x)) translateY(var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)); }
+    .transform { transform: translateX(var(--tw-translate-x, 0)) translateY(var(--tw-translate-y, 0)) rotate(var(--tw-rotate, 0)) skewX(var(--tw-skew-x, 0)) skewY(var(--tw-skew-y, 0)) scaleX(var(--tw-scale-x, 1)) scaleY(var(--tw-scale-y, 1)); }
     .-translate-x-1\/2 { --tw-translate-x: -50%; }
     .-translate-y-1\/2 { --tw-translate-y: -50%; }
     .rotate-180 { --tw-rotate: 180deg; }
@@ -802,6 +802,8 @@ function getAllStyles(): string {
     .py-12 { padding-top: 3rem; padding-bottom: 3rem; }
     .pt-6 { padding-top: 1.5rem; }
     .pl-10 { padding-left: 2.5rem; }
+    .pl-12 { padding-left: 3rem; }
+    .pr-10 { padding-right: 2.5rem; }
     .pr-4 { padding-right: 1rem; }
     .pr-8 { padding-right: 2rem; }
     .text-center { text-align: center; }
@@ -852,6 +854,8 @@ function getAllStyles(): string {
     .absolute { position: absolute; }
     .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
     .top-1\/2 { top: 50%; }
+    .top-0 { top: 0; }
+    .bottom-0 { bottom: 0; }
     .left-3 { left: 0.75rem; }
     .right-3 { right: 0.75rem; }
     .min-w-0 { min-width: 0; }
