@@ -395,15 +395,7 @@ export const COMPONENT_STYLES = `
     transform: scale(1.2);
   }
 
-  /* Enhanced card styles */
-  .card {
-    background: rgba(30, 41, 59, 0.5);
-    backdrop-filter: blur(4px);
-    border-radius: 0.75rem;
-    border: 1px solid rgba(51, 65, 85, 0.5);
-    padding: 1.5rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  }
+  /* Card styles - removed to use inline Tailwind classes that match React components */
 
   /* File upload component */
   .file-upload-area {
