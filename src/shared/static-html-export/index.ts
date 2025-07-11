@@ -56,6 +56,21 @@ export function generateStaticHtml({
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Security Analysis Report - ${escapeHtml(summary.toolName)}</title>
   <style>
+    /* Critical CSS Reset */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    html {
+      font-size: 16px;
+      -webkit-text-size-adjust: 100%;
+      -moz-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+    body {
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.5;
+    }
     ${getAllStyles()}
   </style>
 </head>

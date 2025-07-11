@@ -61,18 +61,34 @@ export const tailwindExportStyles = `/* Tailwind CSS v3.x - Compiled styles for 
 html {
   line-height: 1.5;
   -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   -moz-tab-size: 4;
   -o-tab-size: 4;
   tab-size: 4;
-  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol, "Noto Color Emoji";
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   font-feature-settings: normal;
   font-variation-settings: normal;
   -webkit-tap-highlight-color: transparent;
 }
 
+*, ::before, ::after {
+  box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+  border-color: #e5e7eb;
+}
+
+::before, ::after {
+  --tw-content: '';
+}
+
 body {
   margin: 0;
   line-height: inherit;
+  font-family: inherit;
+  font-feature-settings: inherit;
+  font-variation-settings: inherit;
 }
 
 hr {
@@ -84,6 +100,11 @@ hr {
 h1, h2, h3, h4, h5, h6 {
   font-size: inherit;
   font-weight: inherit;
+  margin: 0;
+}
+
+p {
+  margin: 0;
 }
 
 a {
@@ -99,7 +120,10 @@ code, kbd, samp, pre {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
   font-feature-settings: normal;
   font-variation-settings: normal;
-  font-size: 1em;
+  font-size: 100%;
+  font-weight: inherit;
+  line-height: inherit;
+  color: inherit;
 }
 
 small {
@@ -273,13 +297,14 @@ html::-webkit-scrollbar-corner, body::-webkit-scrollbar-corner {
 .align-text-top { vertical-align: text-top; }
 .align-text-bottom { vertical-align: text-bottom; }
 
+.gap-1 { gap: 0.25rem; }
+.gap-1\\.5 { gap: 0.375rem; }
 .gap-2 { gap: 0.5rem; }
 .gap-3 { gap: 0.75rem; }
 .gap-4 { gap: 1rem; }
 .gap-6 { gap: 1.5rem; }
 
 /* Spacing */
-.m-0 { margin: 0; }
 .mx-auto { margin-left: auto; margin-right: auto; }
 .my-2 { margin-top: 0.5rem; margin-bottom: 0.5rem; }
 .mt-0 { margin-top: 0; }
@@ -295,10 +320,9 @@ html::-webkit-scrollbar-corner, body::-webkit-scrollbar-corner {
 .mb-3 { margin-bottom: 0.75rem; }
 .mb-4 { margin-bottom: 1rem; }
 .mb-6 { margin-bottom: 1.5rem; }
-.ml-1 { margin-left: 0.25rem; }
-.ml-2 { margin-left: 0.5rem; }
 .mr-1 { margin-right: 0.25rem; }
 .mr-2 { margin-right: 0.5rem; }
+.ml-2 { margin-left: 0.5rem; }
 
 /* Negative margins for fine-tuning alignment */
 .-mt-0 { margin-top: 0; }
@@ -307,9 +331,10 @@ html::-webkit-scrollbar-corner, body::-webkit-scrollbar-corner {
 
 .space-x-2 > :not([hidden]) ~ :not([hidden]) { --tw-space-x-reverse: 0; margin-right: calc(0.5rem * var(--tw-space-x-reverse)); margin-left: calc(0.5rem * calc(1 - var(--tw-space-x-reverse))); }
 .space-x-3 > :not([hidden]) ~ :not([hidden]) { --tw-space-x-reverse: 0; margin-right: calc(0.75rem * var(--tw-space-x-reverse)); margin-left: calc(0.75rem * calc(1 - var(--tw-space-x-reverse))); }
-.space-x-4 > :not([hidden]) ~ :not([hidden]) { --tw-space-x-reverse: 0; margin-right: calc(1rem * var(--tw-space-x-reverse)); margin-left: calc(1rem * calc(1 - var(--tw-space-x-reverse))); }
-.space-y-1 > :not([hidden]) ~ :not([hidden]) { --tw-space-y-reverse: 0; margin-top: calc(0.25rem * calc(1 - var(--tw-space-y-reverse))); margin-bottom: calc(0.25rem * var(--tw-space-y-reverse)); }
-.space-y-2 > :not([hidden]) ~ :not([hidden]) { --tw-space-y-reverse: 0; margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse))); margin-bottom: calc(0.5rem * var(--tw-space-y-reverse)); }
+.space-x-1 > :not([hidden]) ~ :not([hidden]) { --tw-space-x-reverse: 0; margin-right: calc(0.25rem * var(--tw-space-x-reverse)); margin-left: calc(0.25rem * calc(1 - var(--tw-space-x-reverse))); }
+.space-x-1\\.5 > :not([hidden]) ~ :not([hidden]) { --tw-space-x-reverse: 0; margin-right: calc(0.375rem * var(--tw-space-x-reverse)); margin-left: calc(0.375rem * calc(1 - var(--tw-space-x-reverse))); }
+.space-x-2 > :not([hidden]) ~ :not([hidden]) { --tw-space-x-reverse: 0; margin-right: calc(0.5rem * var(--tw-space-x-reverse)); margin-left: calc(0.5rem * calc(1 - var(--tw-space-x-reverse))); }
+.space-x-3 > :not([hidden]) ~ :not([hidden]) { --tw-space-x-reverse: 0; margin-right: calc(0.75rem * var(--tw-space-x-reverse)); margin-left: calc(0.75rem * calc(1 - var(--tw-space-x-reverse))); }
 .divide-x > :not([hidden]) ~ :not([hidden]) { --tw-divide-x-reverse: 0; border-right-width: calc(1px * var(--tw-divide-x-reverse)); border-left-width: calc(1px * calc(1 - var(--tw-divide-x-reverse))); }
 .divide-slate-600\\/50 > :not([hidden]) ~ :not([hidden]) { border-color: rgb(71 85 105 / 0.5); }
 .space-y-4 > :not([hidden]) ~ :not([hidden]) { --tw-space-y-reverse: 0; margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse))); margin-bottom: calc(1rem * var(--tw-space-y-reverse)); }
@@ -421,18 +446,22 @@ html::-webkit-scrollbar-corner, body::-webkit-scrollbar-corner {
 
 /* Padding */
 .p-0 { padding: 0; }
+.p-0\\.5 { padding: 0.125rem; }
 .p-1 { padding: 0.25rem; }
+.p-1\\.5 { padding: 0.375rem; }
 .p-2 { padding: 0.5rem; }
 .p-3 { padding: 0.75rem; }
 .p-4 { padding: 1rem; }
 .p-6 { padding: 1.5rem; }
 .p-8 { padding: 2rem; }
 .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+.px-1 { padding-left: 0.25rem; padding-right: 0.25rem; }
+.px-1\\.5 { padding-left: 0.375rem; padding-right: 0.375rem; }
+.px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
 .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
-.first\\:pl-0:first-child { padding-left: 0px; }
-.last\\:pr-0:last-child { padding-right: 0px; }
 .px-4 { padding-left: 1rem; padding-right: 1rem; }
 .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+.py-0\\.5 { padding-top: 0.125rem; padding-bottom: 0.125rem; }
 .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
 .py-1\\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
 .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
@@ -440,16 +469,21 @@ html::-webkit-scrollbar-corner, body::-webkit-scrollbar-corner {
 .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
 .py-6 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
 .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
-.pt-2 { padding-top: 0.5rem; }
+.py-12 { padding-top: 3rem; padding-bottom: 3rem; }
 .pt-4 { padding-top: 1rem; }
 .pt-6 { padding-top: 1.5rem; }
-.pl-2 { padding-left: 0.5rem; }
+.pr-4 { padding-right: 1rem; }
+.pr-8 { padding-right: 2rem; }
 .pl-10 { padding-left: 2.5rem; }
+.pl-3 { padding-left: 0.75rem; }
+.last\\:pr-0:last-child { padding-right: 0px; }
+.first\\:pl-0:first-child { padding-left: 0px; }
 .pr-4 { padding-right: 1rem; }
 .pr-8 { padding-right: 2rem; }
 
 /* Typography */
 .font-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace; }
+.text-\\[10px\\] { font-size: 10px; line-height: 0.75rem; }
 .text-xs { font-size: 0.75rem; line-height: 1rem; }
 .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
 .text-base { font-size: 1rem; line-height: 1.5rem; }
@@ -462,6 +496,7 @@ html::-webkit-scrollbar-corner, body::-webkit-scrollbar-corner {
 .font-bold { font-weight: 700; }
 .uppercase { text-transform: uppercase; }
 .tracking-wider { letter-spacing: 0.05em; }
+.leading-none { line-height: 1; }
 .leading-relaxed { line-height: 1.625; }
 .text-left { text-align: left; }
 .text-center { text-align: center; }
@@ -627,8 +662,10 @@ html::-webkit-scrollbar-corner, body::-webkit-scrollbar-corner {
   }
   .sm\\:p-4 { padding: 1rem; }
   .sm\\:p-6 { padding: 1.5rem; }
+  .sm\\:px-0 { padding-left: 0; padding-right: 0; }
   .sm\\:px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
   .sm\\:px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+  .sm\\:px-4 { padding-left: 1rem; padding-right: 1rem; }
   .sm\\:px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
   .sm\\:py-0 { padding-top: 0; padding-bottom: 0; }
   .sm\\:py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
