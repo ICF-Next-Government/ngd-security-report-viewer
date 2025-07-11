@@ -122,6 +122,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       color: "from-blue-500 to-cyan-500",
       bgColor: "bg-blue-500/10",
       iconColor: "text-blue-500",
+      hoverBg: "hover:bg-blue-500/20",
     },
     {
       icon: Eye,
@@ -130,6 +131,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       color: "from-emerald-500 to-green-500",
       bgColor: "bg-emerald-500/10",
       iconColor: "text-emerald-500",
+      hoverBg: "hover:bg-emerald-500/20",
     },
     {
       icon: Download,
@@ -138,6 +140,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       color: "from-purple-500 to-pink-500",
       bgColor: "bg-purple-500/10",
       iconColor: "text-purple-500",
+      hoverBg: "hover:bg-purple-500/20",
     },
   ];
 
@@ -172,9 +175,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               href="https://github.com/ICF-Next-Government/ngd-security-report-viewer"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+              className="p-2 rounded-lg hover:bg-white/10 transition-all duration-200 group"
+              aria-label="View on GitHub"
             >
-              <Github className="w-5 h-5 text-slate-400 hover:text-white" />
+              <Github className="w-5 h-5 text-slate-400 group-hover:text-white transition-colors" />
             </a>
           </div>
         </nav>
@@ -192,7 +196,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   </span>
                 </div>
 
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
                   Security insights
                   <span className="block bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                     made beautiful
@@ -209,7 +213,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   {features.map((feature, index) => (
                     <div
                       key={index}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 backdrop-blur-sm rounded-full border border-white/10"
+                      className={`inline-flex items-center gap-2 px-4 py-2 bg-white/5 backdrop-blur-sm rounded-full border border-white/10 transition-all duration-200 ${feature.hoverBg} hover:border-white/20 cursor-default`}
                     >
                       <feature.icon
                         className={`w-4 h-4 ${feature.iconColor}`}
@@ -258,7 +262,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                       <Upload className="w-4 h-4 inline-block mr-2" />
                       Upload File
                       {inputMode === "upload" && (
-                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500" />
+                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300" />
                       )}
                     </button>
                     <button
@@ -273,7 +277,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                       <FileText className="w-4 h-4 inline-block mr-2" />
                       Paste JSON
                       {inputMode === "paste" && (
-                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500" />
+                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300" />
                       )}
                     </button>
                   </div>
@@ -332,7 +336,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                             or{" "}
                             <button
                               onClick={() => fileInputRef.current?.click()}
-                              className="text-blue-400 hover:text-blue-300 font-medium"
+                              className="text-blue-400 hover:text-blue-300 font-medium transition-colors duration-200 hover:underline underline-offset-2"
                               disabled={loading}
                             >
                               click to browse
@@ -353,7 +357,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                             value={jsonInput}
                             onChange={(e) => setJsonInput(e.target.value)}
                             placeholder='{"version": "2.1.0", "runs": [...] }'
-                            className="w-full h-64 px-4 py-3 bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-lg text-white font-mono text-sm placeholder-slate-500 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-all duration-200 resize-none"
+                            className="w-full h-56 px-4 py-3 bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-lg text-white font-mono text-sm placeholder-slate-500 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-all duration-200 resize-none"
                             spellCheck={false}
                             disabled={loading}
                           />
@@ -375,7 +379,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                           <button
                             onClick={handleParse}
                             disabled={loading || !jsonInput.trim()}
-                            className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-blue-500 disabled:hover:to-purple-500 flex items-center justify-center gap-2 group"
                           >
                             {loading ? (
                               <>
@@ -386,7 +390,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                               <>
                                 <Sparkles className="w-4 h-4" />
                                 Generate Report
-                                <ArrowRight className="w-4 h-4" />
+                                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                               </>
                             )}
                           </button>
@@ -397,7 +401,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
                   {/* Error Display */}
                   {(error || jsonError) && (
-                    <div className="mx-8 -mt-2 mb-6 p-4 bg-red-500/10 backdrop-blur-sm border border-red-500/20 rounded-lg flex items-start gap-3">
+                    <div className="mx-8 -mt-2 mb-6 p-4 bg-red-500/10 backdrop-blur-sm border border-red-500/20 rounded-lg flex items-start gap-3 animate-fade-in">
                       <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
                       <div className="flex-1">
                         <h4 className="text-sm font-medium text-red-300 mb-1">
@@ -443,8 +447,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
       {/* Loading Overlay */}
       {loading && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center">
-          <div className="text-center">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center animate-fade-in">
+          <div className="text-center animate-scale-in">
             <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4" />
             <p className="text-white text-lg font-medium">
               Analyzing security report...
@@ -476,6 +480,30 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         }
         .animation-delay-4000 {
           animation-delay: 4s;
+        }
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+        @keyframes scale-in {
+          from {
+            opacity: 0;
+            transform: scale(0.9);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+        .animate-fade-in {
+          animation: fade-in 0.2s ease-out;
+        }
+        .animate-scale-in {
+          animation: scale-in 0.3s ease-out;
         }
       `}</style>
     </div>
