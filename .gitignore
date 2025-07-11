@@ -7,57 +7,97 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+dist-ssr/
+build/
+out/
 *.local
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-.env
-
-# Sarif JSON Generator
-scan.sarif.json
-report.html
-
-# Test coverage
-coverage/
-.nyc_output/
+*.swp
+*.swo
 
 # Environment files
 .env
 .env.local
 .env.*.local
+.env.development
+.env.production
+.env.test
 
 # OS files
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # Temporary files
 *.tmp
 *.temp
 .cache/
+tmp/
+temp/
+
+# Test coverage
+coverage/
+.nyc_output/
+*.lcov
 
 # Build artifacts
 *.tsbuildinfo
+.parcel-cache/
+.next/
+.nuxt/
+.vuepress/dist/
+.serverless/
+.fusebox/
 
-# Lock files (keep only bun.lockb)
+# Package manager lock files (keep only bun.lockb)
 package-lock.json
 yarn.lock
 pnpm-lock.yaml
 
-# Test report files
+# Test files and reports
 *.sarif
+*.sarif.json
+report.html
+test-report*.html
+ui-export-test.html
+test-outputs/
+
+# Security scan reports
+scan-results/
+security-reports/
+
+# Sample data (except the one we keep)
 *.json
 !package.json
 !tsconfig*.json
 !biome.json
-!Data SAST.json
+!sample-sast.json
+
+# Misc
+*.bak
+*.orig
+*~
+.history/
+.vscode-test/
+*.vsix
+
+# Debug
+debug/
+*.map
+*.map.json
