@@ -77,13 +77,13 @@ Convert security scan results to static HTML reports:
 
 ```bash
 # SARIF format
-bun src/cli/generate-html-report.ts --input scan.sarif.json --output report.html
+bun src/cli/generate-html-report.ts --input sarif.json --output report.html
 
 # Semgrep format
-bun src/cli/generate-html-report.ts --input semgrep_output.json --output report.html
+bun src/cli/generate-html-report.ts --input semgrep.json --output report.html
 
 # GitLab SAST format
-bun src/cli/generate-html-report.ts --input gl-sast-report.json --output report.html
+bun src/cli/generate-html-report.ts --input gitlab-semgrep.json --output report.html
 ```
 
 #### Get Report Summary
@@ -91,16 +91,7 @@ bun src/cli/generate-html-report.ts --input gl-sast-report.json --output report.
 Quickly analyze severity distribution:
 
 ```bash
-bun src/cli/report-summary.ts --input scan.sarif.json
-
-# Output:
-# {
-#   "critical": 0,
-#   "high": 5,
-#   "medium": 12,
-#   "low": 3,
-#   "info": 1
-# }
+bun src/cli/report-summary.ts --input scan.json
 ```
 
 ### 3. GitHub Action
