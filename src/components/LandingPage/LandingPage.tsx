@@ -283,120 +283,122 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   </div>
 
                   {/* Content Area */}
-                  <div className="p-8">
-                    {inputMode === "upload" ? (
-                      <div
-                        className={`relative rounded-xl border-2 border-dashed transition-all duration-300 ${
-                          dragActive
-                            ? "border-blue-400 bg-blue-500/10"
-                            : "border-white/20 hover:border-white/30"
-                        } ${loading ? "opacity-50 pointer-events-none" : ""}`}
-                        onDragEnter={handleDrag}
-                        onDragLeave={handleDrag}
-                        onDragOver={handleDrag}
-                        onDrop={handleDrop}
-                      >
-                        <input
-                          ref={fileInputRef}
-                          type="file"
-                          accept=".json,application/json"
-                          onChange={handleFileSelect}
-                          className="sr-only"
-                          disabled={loading}
-                        />
-
-                        <div className="p-12 text-center">
-                          <div
-                            className={`inline-flex p-4 rounded-full mb-6 transition-all duration-300 ${
-                              dragActive
-                                ? "bg-blue-500/20 scale-110"
-                                : "bg-white/10"
-                            }`}
-                          >
-                            {loading ? (
-                              <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                            ) : (
-                              <Upload
-                                className={`w-10 h-10 transition-colors duration-300 ${
-                                  dragActive
-                                    ? "text-blue-400"
-                                    : "text-slate-400"
-                                }`}
-                              />
-                            )}
-                          </div>
-
-                          <h3 className="text-lg font-semibold text-white mb-2">
-                            {loading
-                              ? "Processing your file..."
-                              : "Drop your file here"}
-                          </h3>
-
-                          <p className="text-slate-400 mb-6">
-                            or{" "}
-                            <button
-                              onClick={() => fileInputRef.current?.click()}
-                              className="text-blue-400 hover:text-blue-300 font-medium transition-colors duration-200 hover:underline underline-offset-2"
-                              disabled={loading}
-                            >
-                              click to browse
-                            </button>
-                          </p>
-
-                          <div className="flex items-center justify-center gap-2 text-xs text-slate-500">
-                            <FileText className="w-3 h-3" />
-                            <span>JSON files only • Max 50MB</span>
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div>
-                        <div className="relative">
-                          <textarea
-                            ref={textareaRef}
-                            value={jsonInput}
-                            onChange={(e) => setJsonInput(e.target.value)}
-                            placeholder='{"version": "2.1.0", "runs": [...] }'
-                            className="w-full h-56 px-4 py-3 bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-lg text-white font-mono text-sm placeholder-slate-500 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-all duration-200 resize-none"
-                            spellCheck={false}
+                  <div className="p-8 min-h-[380px] flex items-center">
+                    <div className="w-full">
+                      {inputMode === "upload" ? (
+                        <div
+                          className={`relative rounded-xl border-2 border-dashed transition-all duration-300 ${
+                            dragActive
+                              ? "border-blue-400 bg-blue-500/10"
+                              : "border-white/20 hover:border-white/30"
+                          } ${loading ? "opacity-50 pointer-events-none" : ""}`}
+                          onDragEnter={handleDrag}
+                          onDragLeave={handleDrag}
+                          onDragOver={handleDrag}
+                          onDrop={handleDrop}
+                        >
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept=".json,application/json"
+                            onChange={handleFileSelect}
+                            className="sr-only"
                             disabled={loading}
                           />
 
-                          <button
-                            onClick={handleCopy}
-                            className="absolute top-3 right-3 p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-200 group"
-                            disabled={!jsonInput || loading}
-                          >
-                            {copied ? (
-                              <CheckCircle className="w-4 h-4 text-emerald-400" />
-                            ) : (
-                              <Copy className="w-4 h-4 text-slate-400 group-hover:text-white" />
-                            )}
-                          </button>
-                        </div>
+                          <div className="p-12 text-center">
+                            <div
+                              className={`inline-flex p-4 rounded-full mb-6 transition-all duration-300 ${
+                                dragActive
+                                  ? "bg-blue-500/20 scale-110"
+                                  : "bg-white/10"
+                              }`}
+                            >
+                              {loading ? (
+                                <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                              ) : (
+                                <Upload
+                                  className={`w-10 h-10 transition-colors duration-300 ${
+                                    dragActive
+                                      ? "text-blue-400"
+                                      : "text-slate-400"
+                                  }`}
+                                />
+                              )}
+                            </div>
 
-                        <div className="mt-6">
-                          <button
-                            onClick={handleParse}
-                            disabled={loading || !jsonInput.trim()}
-                            className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-blue-500 disabled:hover:to-purple-500 flex items-center justify-center gap-2 group"
-                          >
-                            {loading ? (
-                              <>
-                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                Parsing...
-                              </>
-                            ) : (
-                              <>
-                                <Sparkles className="w-4 h-4" />
-                                Generate Report
-                                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                              </>
-                            )}
-                          </button>
+                            <h3 className="text-lg font-semibold text-white mb-2">
+                              {loading
+                                ? "Processing your file..."
+                                : "Drop your file here"}
+                            </h3>
+
+                            <p className="text-slate-400 mb-6">
+                              or{" "}
+                              <button
+                                onClick={() => fileInputRef.current?.click()}
+                                className="text-blue-400 hover:text-blue-300 font-medium transition-colors duration-200 hover:underline underline-offset-2"
+                                disabled={loading}
+                              >
+                                click to browse
+                              </button>
+                            </p>
+
+                            <div className="flex items-center justify-center gap-2 text-xs text-slate-500">
+                              <FileText className="w-3 h-3" />
+                              <span>JSON files only • Max 50MB</span>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      ) : (
+                        <div>
+                          <div className="relative">
+                            <textarea
+                              ref={textareaRef}
+                              value={jsonInput}
+                              onChange={(e) => setJsonInput(e.target.value)}
+                              placeholder='{"version": "2.1.0", "runs": [...] }'
+                              className="w-full h-[240px] px-4 py-3 bg-slate-900/50 backdrop-blur-sm border border-white/10 rounded-lg text-white font-mono text-sm placeholder-slate-500 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-all duration-200 resize-none"
+                              spellCheck={false}
+                              disabled={loading}
+                            />
+
+                            <button
+                              onClick={handleCopy}
+                              className="absolute top-3 right-3 p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-200 group"
+                              disabled={!jsonInput || loading}
+                            >
+                              {copied ? (
+                                <CheckCircle className="w-4 h-4 text-emerald-400" />
+                              ) : (
+                                <Copy className="w-4 h-4 text-slate-400 group-hover:text-white" />
+                              )}
+                            </button>
+                          </div>
+
+                          <div className="mt-6">
+                            <button
+                              onClick={handleParse}
+                              disabled={loading || !jsonInput.trim()}
+                              className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-blue-500 disabled:hover:to-purple-500 flex items-center justify-center gap-2 group"
+                            >
+                              {loading ? (
+                                <>
+                                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                  Parsing...
+                                </>
+                              ) : (
+                                <>
+                                  <Sparkles className="w-4 h-4" />
+                                  Generate Report
+                                  <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   {/* Error Display */}

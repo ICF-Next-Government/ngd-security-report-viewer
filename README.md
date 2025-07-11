@@ -4,6 +4,8 @@ A modern, interactive security report viewer and static HTML generator for SARIF
 
 ![ICF Security Report Viewer](./.docs/file-upload.webp)
 
+![ICF Security Report Viewer](./.docs/json-paste.webp)
+
 ## Features
 
 - **🖥️ Local Web UI** - Interactive viewer with real-time search, filtering, and severity-based sorting
@@ -69,6 +71,7 @@ bun run dev
 Visit [http://localhost:5173](http://localhost:5173) in your browser, then drag and drop or select a security report file.
 
 **Features available in the web UI:**
+
 - Upload SARIF, Semgrep, or GitLab SAST JSON files
 - Filter by severity, file path, or rule
 - Search findings by content
@@ -94,6 +97,7 @@ bun src/cli/generate-html-report.ts --help
 ```
 
 The generated HTML files are completely self-contained with:
+
 - All styles and fonts embedded
 - No external dependencies
 - Machine-readable report summary in `data-report-summary` attribute
@@ -112,6 +116,7 @@ grep -o 'data-report-summary="[^"]*"' report.html | cut -d'"' -f2 | base64 -d | 
 ```
 
 Example output:
+
 ```json
 {
   "timestamp": 1234567890,
@@ -193,7 +198,9 @@ ngd-security-report-viewer/
 ## Key Features Explained
 
 ### Smart Deduplication
+
 The viewer automatically groups similar findings based on:
+
 - Rule ID and severity
 - File path patterns
 - Code snippets and messages
@@ -201,7 +208,9 @@ The viewer automatically groups similar findings based on:
 This reduces noise in large reports and helps focus on unique issues.
 
 ### Embedded Report Data
+
 All generated HTML files include a `data-report-summary` attribute containing:
+
 - Timestamp and tool information
 - Finding counts by severity
 - Deduplication statistics
@@ -210,7 +219,9 @@ All generated HTML files include a `data-report-summary` attribute containing:
 This enables programmatic extraction and analysis of report data.
 
 ### Self-Contained HTML
+
 Generated reports include:
+
 - All CSS styles inline
 - Base64-encoded font files
 - No external JavaScript dependencies
