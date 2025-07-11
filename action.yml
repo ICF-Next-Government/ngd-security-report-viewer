@@ -20,6 +20,7 @@ runs:
       shell: bash
       run: |
         echo "🔍 Validating inputs..."
+
         if [[ ! -f "${{ inputs.in }}" ]]; then
           echo "❌ Error: Input file '${{ inputs.in }}' not found"
           echo "Please ensure the security report file exists in the workspace"
