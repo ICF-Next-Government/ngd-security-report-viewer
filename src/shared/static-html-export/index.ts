@@ -503,8 +503,8 @@ function generateGroupCard(group: DuplicateGroup): string {
   const colors = getSeverityColors(result.severity);
 
   return `
-    <div class="finding-card group-card ${colors.bg} ${colors.border} backdrop-blur-sm border rounded-lg p-4 sm:p-6 cursor-pointer transition-all hover:shadow-lg hover:scale-[1.01]"
-         data-severity="${result.severity}" data-group-id="${group.id}">
+    <div class="finding-card group-card ${colors.border} backdrop-blur-sm border rounded-lg p-4 sm:p-6 cursor-pointer transition-all hover:shadow-lg hover:scale-[1.01]"
+         data-severity="${result.severity}" data-group-id="${group.id}" style="${colors.bgStyle}">
       <div class="flex items-start space-x-3 sm:space-x-4">
         <svg class="h-5 w-5 sm:h-6 sm:w-6 ${colors.icon} flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           ${getSeverityIcon(result.severity)}
@@ -513,7 +513,7 @@ function generateGroupCard(group: DuplicateGroup): string {
         <div class="flex-1 min-w-0">
           <div class="flex items-start sm:items-center justify-between mb-2 sm:mb-3">
             <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-0 sm:space-x-3">
-              <span class="inline-flex px-2 sm:px-3 py-1 text-xs font-medium rounded-full ${colors.badge} border w-fit">
+              <span class="inline-flex px-2 sm:px-3 py-1 text-xs font-medium rounded-full border w-fit" style="${colors.badgeStyle}">
                 ${result.severity.toUpperCase()}
               </span>
               <span class="text-xs sm:text-sm text-slate-400">${escapeHtml(result.ruleId)}</span>
@@ -602,8 +602,8 @@ function generateFindingCard(result: ProcessedResult): string {
   const colors = getSeverityColors(result.severity);
 
   return `
-    <div class="finding-card ${colors.bg} ${colors.border} backdrop-blur-sm border rounded-lg p-4 sm:p-6 cursor-pointer transition-all hover:shadow-lg hover:scale-[1.01]"
-         data-severity="${result.severity}">
+    <div class="finding-card ${colors.border} backdrop-blur-sm border rounded-lg p-4 sm:p-6 cursor-pointer transition-all hover:shadow-lg hover:scale-[1.01]"
+         data-severity="${result.severity}" style="${colors.bgStyle}">
       <div class="flex items-start space-x-3 sm:space-x-4">
         <svg class="h-5 w-5 sm:h-6 sm:w-6 ${colors.icon} flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           ${getSeverityIcon(result.severity)}
@@ -612,7 +612,7 @@ function generateFindingCard(result: ProcessedResult): string {
         <div class="flex-1 min-w-0">
           <div class="flex items-start sm:items-center justify-between mb-2 sm:mb-3">
             <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-0 sm:space-x-3">
-              <span class="inline-flex px-2 sm:px-3 py-1 text-xs font-medium rounded-full ${colors.badge} border w-fit">
+              <span class="inline-flex px-2 sm:px-3 py-1 text-xs font-medium rounded-full border w-fit" style="${colors.badgeStyle}">
                 ${result.severity.toUpperCase()}
               </span>
               <span class="text-xs sm:text-sm text-slate-400">${escapeHtml(result.ruleId)}</span>
@@ -689,45 +689,60 @@ function generateFindingCard(result: ProcessedResult): string {
 }
 
 function getSeverityColors(severity: string) {
-  const colors = {
+  const colors: Record<string, any> = {
     critical: {
       bg: "bg-red-900/20",
+      bgStyle: "background-color: rgba(127, 29, 29, 0.2);",
       text: "text-red-300",
       border: "border-red-700",
       icon: "text-red-400",
       badge: "bg-red-900/40 text-red-300 border-red-700",
+      badgeStyle:
+        "background-color: rgba(127, 29, 29, 0.4); color: #fca5a5; border-color: #b91c1c;",
     },
     high: {
       bg: "bg-orange-900/20",
+      bgStyle: "background-color: rgba(124, 45, 18, 0.2);",
       text: "text-orange-300",
       border: "border-orange-700",
       icon: "text-orange-400",
       badge: "bg-orange-900/40 text-orange-300 border-orange-700",
+      badgeStyle:
+        "background-color: rgba(124, 45, 18, 0.4); color: #fdba74; border-color: #c2410c;",
     },
     medium: {
       bg: "bg-amber-900/20",
+      bgStyle: "background-color: rgba(120, 53, 15, 0.2);",
       text: "text-amber-300",
       border: "border-amber-700",
       icon: "text-amber-400",
       badge: "bg-amber-900/40 text-amber-300 border-amber-700",
+      badgeStyle:
+        "background-color: rgba(120, 53, 15, 0.4); color: #fcd34d; border-color: #a16207;",
     },
     low: {
       bg: "bg-blue-900/20",
+      bgStyle: "background-color: rgba(30, 58, 138, 0.2);",
       text: "text-blue-300",
       border: "border-blue-700",
       icon: "text-blue-400",
       badge: "bg-blue-900/40 text-blue-300 border-blue-700",
+      badgeStyle:
+        "background-color: rgba(30, 58, 138, 0.4); color: #93c5fd; border-color: #1d4ed8;",
     },
     info: {
       bg: "bg-slate-800/50",
+      bgStyle: "background-color: rgba(30, 41, 59, 0.5);",
       text: "text-slate-300",
       border: "border-slate-600",
       icon: "text-slate-400",
       badge: "bg-slate-700/50 text-slate-300 border-slate-600",
+      badgeStyle:
+        "background-color: rgba(51, 65, 85, 0.5); color: #cbd5e1; border-color: #475569;",
     },
   };
 
-  return colors[severity as keyof typeof colors] || colors.info;
+  return colors[severity] || colors.info;
 }
 
 function getSeverityIcon(severity: string): string {
