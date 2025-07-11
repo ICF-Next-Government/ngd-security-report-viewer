@@ -74,6 +74,7 @@ export function generateStaticHtml({
   // Base64 encode the JSON for HTML attribute
   const reportSummaryJson = btoa(JSON.stringify(reportSummaryData));
 
+  // Create the HTML file with embedded report summary
   return `<!DOCTYPE html>
 <html lang="en" class="scroll-smooth" data-report-summary="${reportSummaryJson}">
 <head>
