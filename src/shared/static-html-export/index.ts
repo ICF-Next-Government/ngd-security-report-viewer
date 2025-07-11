@@ -359,7 +359,7 @@ function generateFindingsSection(
               class="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                 showDeduplication
                   ? "bg-blue-600 text-white"
-                  : "text-slate-400 hover:text-white hover:bg-slate-600/50"
+                  : "bg-transparent text-slate-400 hover:text-white"
               }"
               type="button"
             >
@@ -373,7 +373,7 @@ function generateFindingsSection(
               class="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                 !showDeduplication
                   ? "bg-blue-600 text-white"
-                  : "text-slate-400 hover:text-white hover:bg-slate-600/50"
+                  : "bg-transparent text-slate-400 hover:text-white"
               }"
               type="button"
             >
@@ -719,9 +719,9 @@ function getAllScripts(): string {
     if (groupedBtn && allBtn && groupedFindings && allFindings) {
       groupedBtn.addEventListener('click', () => {
         groupedBtn.classList.add('bg-blue-600', 'text-white');
-        groupedBtn.classList.remove('text-slate-400', 'hover:text-white', 'hover:bg-slate-600/50');
+        groupedBtn.classList.remove('bg-transparent', 'text-slate-400', 'hover:text-white');
         allBtn.classList.remove('bg-blue-600', 'text-white');
-        allBtn.classList.add('text-slate-400', 'hover:text-white', 'hover:bg-slate-600/50');
+        allBtn.classList.add('bg-transparent', 'text-slate-400', 'hover:text-white');
         groupedFindings.style.display = '';
         allFindings.style.display = 'none';
         filterFindings();
@@ -729,9 +729,9 @@ function getAllScripts(): string {
 
       allBtn.addEventListener('click', () => {
         allBtn.classList.add('bg-blue-600', 'text-white');
-        allBtn.classList.remove('text-slate-400', 'hover:text-white', 'hover:bg-slate-600/50');
+        allBtn.classList.remove('bg-transparent', 'text-slate-400', 'hover:text-white');
         groupedBtn.classList.remove('bg-blue-600', 'text-white');
-        groupedBtn.classList.add('text-slate-400', 'hover:text-white', 'hover:bg-slate-600/50');
+        groupedBtn.classList.add('bg-transparent', 'text-slate-400', 'hover:text-white');
         allFindings.style.display = '';
         groupedFindings.style.display = 'none';
         filterFindings();

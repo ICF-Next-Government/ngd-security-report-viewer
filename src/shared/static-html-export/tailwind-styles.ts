@@ -382,6 +382,7 @@ html::-webkit-scrollbar-corner, body::-webkit-scrollbar-corner {
 .bg-slate-500 { --tw-bg-opacity: 1; background-color: rgb(100 116 139 / var(--tw-bg-opacity)); }
 .bg-slate-700 { --tw-bg-opacity: 1; background-color: rgb(51 65 85 / var(--tw-bg-opacity)); }
 .bg-slate-700\\/50 { background-color: rgb(51 65 85 / 0.5); }
+.bg-slate-600\\/50 { background-color: rgb(71 85 105 / 0.5); }
 .bg-slate-800 { --tw-bg-opacity: 1; background-color: rgb(30 41 59 / var(--tw-bg-opacity)); }
 .bg-slate-800\\/50 { background-color: rgb(30 41 59 / 0.5); }
 .bg-slate-800\\/70 { background-color: rgb(30 41 59 / 0.7); }
@@ -540,8 +541,10 @@ html::-webkit-scrollbar-corner, body::-webkit-scrollbar-corner {
   --tw-scale-y: 1.01;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
+.hover\\:bg-slate-500\\/50:hover { background-color: rgb(100 116 139 / 0.5); }
 .hover\\:bg-slate-600\\/50:hover { background-color: rgb(71 85 105 / 0.5); }
 .hover\\:bg-slate-700\\/90:hover { background-color: rgb(51 65 85 / 0.9); }
+.hover\\:text-black:hover { --tw-text-opacity: 1; color: rgb(0 0 0 / var(--tw-text-opacity)); }
 .hover\\:text-white:hover { --tw-text-opacity: 1; color: rgb(255 255 255 / var(--tw-text-opacity)); }
 .hover\\:text-blue-300:hover { --tw-text-opacity: 1; color: rgb(147 197 253 / var(--tw-text-opacity)); }
 .hover\\:shadow-lg:hover {
