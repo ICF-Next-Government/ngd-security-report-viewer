@@ -1,4 +1,4 @@
-import { AlertTriangle, CheckCircle, Info, Layers, Shield } from "lucide-react";
+import { AlertTriangle, CheckCircle, Info, Layers } from "lucide-react";
 import React, { useMemo } from "react";
 import {
   ProcessedResult,
@@ -102,75 +102,202 @@ export const ReportSummary: React.FC<ReportSummaryProps> = ({
 
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-6 shadow-lg">
-        <div className="flex items-center space-x-3 mb-4">
-          <Shield className="h-6 w-6 text-blue-400" />
-          <h2 className="text-2xl font-bold text-white">
-            Security Analysis Report
-          </h2>
+      {/* Report Overview */}
+      <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-4 shadow-lg">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <svg
+              className="h-5 w-5 text-blue-400"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h8l4 4v12a2 2 0 01-2 2z"
+              />
+            </svg>
+            <h2 className="text-lg font-semibold text-white">Overview</h2>
+          </div>
+          <span className="text-xs text-slate-400">
+            {safeSummary.toolName}
+            {safeSummary.toolVersion ? ` v${safeSummary.toolVersion}` : ""}
+          </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-          <div>
-            <span className="text-slate-400">Tool:</span>
-            <span className="ml-2 font-medium text-white">
-              {safeSummary.toolName}{" "}
-              {safeSummary.toolVersion && `v${safeSummary.toolVersion}`}
-            </span>
+        <div className="grid grid-cols-3 gap-3">
+          <div className="bg-blue-900/20 rounded-md p-3 border border-blue-500 border-opacity-50 hover:border-opacity-70 transition-all">
+            <div className="flex items-start gap-2">
+              <div className="p-2 bg-blue-500/20 rounded-lg flex-shrink-0">
+                <svg
+                  className="h-4 w-4 text-blue-400"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <p className="text-[10px] text-white uppercase tracking-wider font-medium mb-1">
+                  Findings
+                </p>
+                <p className="text-2xl font-bold text-white leading-none">
+                  {safeSummary.totalFindings.toLocaleString()}
+                </p>
+              </div>
+            </div>
           </div>
-          <div>
-            <span className="text-slate-400">Total Findings:</span>
-            <span className="ml-2 font-medium text-white">
-              {safeSummary.totalFindings}
-            </span>
+
+          <div className="bg-amber-900/20 rounded-md p-3 border border-amber-500 border-opacity-50 hover:border-opacity-70 transition-all">
+            <div className="flex items-start gap-2">
+              <div className="p-2 bg-amber-500/20 rounded-lg flex-shrink-0">
+                <svg
+                  className="h-4 w-4 text-amber-400"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <p className="text-[10px] text-white uppercase tracking-wider font-medium mb-1">
+                  Files
+                </p>
+                <p className="text-2xl font-bold text-white leading-none">
+                  {safeSummary.filesAffected.toLocaleString()}
+                </p>
+              </div>
+            </div>
           </div>
-          <div>
-            <span className="text-slate-400">Files Affected:</span>
-            <span className="ml-2 font-medium text-white">
-              {safeSummary.filesAffected}
-            </span>
+
+          <div className="bg-purple-900/20 rounded-md p-3 border border-purple-500 border-opacity-50 hover:border-opacity-70 transition-all">
+            <div className="flex items-start gap-2">
+              <div className="p-2 bg-purple-500/20 rounded-lg flex-shrink-0">
+                <svg
+                  className="h-4 w-4 text-purple-400"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <p className="text-[10px] text-white uppercase tracking-wider font-medium mb-1">
+                  Severity
+                </p>
+                <div className="flex items-center gap-1.5">
+                  <span
+                    className={`text-xl font-bold leading-none ${
+                      safeSummary.criticalCount > 0
+                        ? "text-red-400"
+                        : safeSummary.highCount > 0
+                          ? "text-orange-400"
+                          : safeSummary.mediumCount > 0
+                            ? "text-amber-400"
+                            : safeSummary.lowCount > 0
+                              ? "text-blue-400"
+                              : "text-slate-400"
+                    }`}
+                  >
+                    {safeSummary.criticalCount > 0
+                      ? "Critical"
+                      : safeSummary.highCount > 0
+                        ? "High"
+                        : safeSummary.mediumCount > 0
+                          ? "Medium"
+                          : safeSummary.lowCount > 0
+                            ? "Low"
+                            : "Info"}
+                  </span>
+                  <div
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      safeSummary.criticalCount > 0
+                        ? "bg-red-500"
+                        : safeSummary.highCount > 0
+                          ? "bg-orange-500"
+                          : safeSummary.mediumCount > 0
+                            ? "bg-amber-500"
+                            : safeSummary.lowCount > 0
+                              ? "bg-blue-500"
+                              : "bg-slate-500"
+                    }`}
+                  ></div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+
+        {/* Deduplication Stats Integrated */}
+        {deduplicationStats && deduplicationStats.totalDuplicates > 0 && (
+          <div className="mt-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <svg
+                  className="h-4 w-4 text-purple-400"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
+                  />
+                </svg>
+                <span className="text-xs font-medium text-white">
+                  Deduplication Analysis
+                </span>
+              </div>
+              <div className="flex items-center divide-x divide-slate-600/50 text-xs">
+                <div className="flex items-center gap-2 px-3 first:pl-0">
+                  <span className="text-slate-400">Groups:</span>
+                  <span className="font-medium text-white">
+                    {deduplicationStats.uniqueGroups}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 px-3">
+                  <span className="text-slate-400">Duplicates:</span>
+                  <span className="font-medium text-orange-300">
+                    {deduplicationStats.totalDuplicates}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 px-3 last:pr-0">
+                  <span className="text-slate-400">Rate:</span>
+                  <span className="font-medium text-orange-300">
+                    {deduplicationStats.duplicatePercentage}%
+                  </span>
+                </div>
+              </div>
+            </div>
+            <p className="text-[10px] text-slate-400 mt-2">
+              Similar issues have been automatically grouped to reduce noise in
+              the report.
+            </p>
+          </div>
+        )}
       </div>
-
-      {/* Deduplication Stats */}
-      {deduplicationStats && deduplicationStats.totalDuplicates > 0 && (
-        <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-6 shadow-lg">
-          <div className="flex items-center space-x-3 mb-4">
-            <Layers className="h-5 w-5 text-purple-400" />
-            <h3 className="text-lg font-semibold text-white">
-              Deduplication Summary
-            </h3>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-            <div>
-              <span className="text-slate-400">Unique Issue Groups:</span>
-              <span className="ml-2 font-medium text-white">
-                {deduplicationStats.uniqueGroups}
-              </span>
-            </div>
-            <div>
-              <span className="text-slate-400">Duplicate Findings:</span>
-              <span className="ml-2 font-medium text-orange-300">
-                {deduplicationStats.totalDuplicates}
-              </span>
-            </div>
-            <div>
-              <span className="text-slate-400">Duplication Rate:</span>
-              <span className="ml-2 font-medium text-orange-300">
-                {deduplicationStats.duplicatePercentage}%
-              </span>
-            </div>
-          </div>
-
-          <p className="text-xs text-slate-400 mt-4">
-            Similar issues have been automatically grouped to reduce noise in
-            the report.
-          </p>
-        </div>
-      )}
 
       {/* Severity Summary */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">

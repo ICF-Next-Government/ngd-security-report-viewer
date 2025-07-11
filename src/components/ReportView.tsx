@@ -1,4 +1,4 @@
-import { ArrowLeft, Download } from "lucide-react";
+import { ArrowLeft, Download, Shield } from "lucide-react";
 import React, { useState } from "react";
 import { generateStaticHtml } from "../shared/static-html-export";
 import {
@@ -273,9 +273,12 @@ export const ReportView: React.FC<ReportViewProps> = ({
 
               <div className="h-6 border-l border-slate-600 hidden sm:block"></div>
 
-              <h1 className="text-base xs:text-lg sm:text-xl font-semibold text-white truncate max-w-[60vw] sm:max-w-none">
-                Security Analysis Report
-              </h1>
+              <div className="flex items-center gap-2">
+                <Shield className="h-5 w-5 text-blue-400 flex-shrink-0" />
+                <h1 className="text-base xs:text-lg sm:text-xl font-semibold text-white truncate max-w-[60vw] sm:max-w-none">
+                  Security Analysis Report
+                </h1>
+              </div>
             </div>
 
             <div className="flex items-center justify-end w-full sm:w-auto mt-2 sm:mt-0 space-x-2">
