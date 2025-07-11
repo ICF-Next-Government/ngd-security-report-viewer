@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Integrated Deduplication Analysis within the Overview card
   - Responsive layout optimized for all screen sizes
   - Improved visual hierarchy and spacing
+  - Shield icon added to report header for better visual identity
 
 ### Changed
 - **Static HTML Export Improvements**
@@ -21,10 +22,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Improved typography with consistent white titles
   - Added visual separators between deduplication metrics
   - Enhanced hover states and transitions
+  - Aligned icon positioning using proper flexbox layout
+  - Normalized proportions between React app and static export
 
 ### Fixed
 - **Tailwind CSS Classes**: Added missing border color utilities to static export styles
 - **Border Rendering**: Fixed border colors appearing as white in exported HTML
+- **Icon Background Colors**: Fixed missing background colors in static export by using inline styles
+- **CSS Sizing Issues**: Added proper CSS reset and missing utility classes (w-1.5, h-1.5, gap-1.5, text-[10px])
+- **Font Size Consistency**: Added text-size-adjust properties to prevent mobile browser font inflation
+- **Severity Indicator**: Fixed missing colored dot next to severity level in static export
 
 ## [1.1.0] - 2024-12
 
