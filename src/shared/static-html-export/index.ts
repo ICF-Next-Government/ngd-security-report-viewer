@@ -125,7 +125,7 @@ function escapeHtml(text: string): string {
 
 function generateReportHeader(summary: ReportSummary): string {
   return `
-    <div class="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-4 shadow-lg">
+    <div class="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-6 shadow-lg">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-lg font-semibold text-white">Report Overview</h2>
         <div class="flex items-center gap-2">
@@ -323,7 +323,7 @@ function generateSeverityDistribution(summary: ReportSummary): string {
     .join("");
 
   return `
-    <div class="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-4 shadow-lg">
+    <div class="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-6 shadow-lg">
       <h3 class="text-lg font-semibold text-white mb-4">Severity Distribution</h3>
       <div class="w-full bg-slate-700 rounded-full h-3 overflow-hidden">
         <div class="h-full flex">
@@ -393,7 +393,7 @@ function generateFindingsSection(
       </div>
 
       <!-- Search and Filters -->
-      <div class="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-4 shadow-lg">
+      <div class="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-6 shadow-lg">
         <div class="flex flex-col sm:flex-row gap-4">
           <div class="flex-1">
             <div class="relative">
@@ -401,7 +401,7 @@ function generateFindingsSection(
                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
               </svg>
               <input type="text" id="search-input" placeholder="Search findings, files, or rule IDs..."
-                class="w-full pl-12 pr-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white placeholder-slate-400">
+                class="w-full pl-10 pr-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white placeholder-slate-400">
             </div>
           </div>
 
@@ -409,7 +409,7 @@ function generateFindingsSection(
             <svg class="absolute left-3 h-5 w-5 text-slate-400 pointer-events-none" style="top: 50%; transform: translateY(-50%);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
             </svg>
-            <select id="severity-filter" class="pl-12 pr-10 py-3 bg-slate-700/50 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none text-white">
+            <select id="severity-filter" class="w-full pl-10 pr-8 py-3 bg-slate-700/50 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none text-white">
               <option value="all">All Severities</option>
               <option value="critical">Critical</option>
               <option value="high">High</option>
