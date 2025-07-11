@@ -342,6 +342,7 @@ html::-webkit-scrollbar-corner, body::-webkit-scrollbar-corner {
 .space-y-8 > :not([hidden]) ~ :not([hidden]) { --tw-space-y-reverse: 0; margin-top: calc(2rem * calc(1 - var(--tw-space-y-reverse))); margin-bottom: calc(2rem * var(--tw-space-y-reverse)); }
 
 /* Sizing */
+.h-1\\.5 { height: 0.375rem; }
 .h-3 { height: 0.75rem; }
 .h-4 { height: 1rem; }
 .h-5 { height: 1.25rem; }
@@ -351,6 +352,7 @@ html::-webkit-scrollbar-corner, body::-webkit-scrollbar-corner {
 .h-full { height: 100%; }
 .min-h-screen { min-height: 100vh; }
 
+.w-1\\.5 { width: 0.375rem; }
 .w-3 { width: 0.75rem; }
 .w-4 { width: 1rem; }
 .w-5 { width: 1.25rem; }
