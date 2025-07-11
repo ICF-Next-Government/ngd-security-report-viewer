@@ -156,7 +156,7 @@ function generateReportHeader(summary: ReportSummary): string {
       </div>
 
       <div class="grid grid-cols-3 gap-3">
-        <div class="group relative overflow-hidden rounded-md bg-blue-900/20 p-3 border border-blue-400/50 hover:border-blue-400/70 transition-all">
+        <div class="group relative overflow-hidden rounded-md bg-blue-900/20 p-3 border border-blue-500 border-opacity-50 hover:border-opacity-70 transition-all">
           <div class="absolute top-0 right-0 w-20 h-20 bg-blue-500/10 rounded-full blur-2xl transform translate-x-8 -translate-y-8 group-hover:bg-blue-400/20 transition-colors"></div>
           <div class="relative flex items-start gap-2">
             <svg class="h-4 w-4 text-blue-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -169,7 +169,7 @@ function generateReportHeader(summary: ReportSummary): string {
           </div>
         </div>
 
-        <div class="group relative overflow-hidden rounded-md bg-amber-900/20 p-3 border border-amber-400/50 hover:border-amber-400/70 transition-all">
+        <div class="group relative overflow-hidden rounded-md bg-amber-900/20 p-3 border border-amber-500 border-opacity-50 hover:border-opacity-70 transition-all">
           <div class="absolute top-0 right-0 w-20 h-20 bg-amber-500/10 rounded-full blur-2xl transform translate-x-8 -translate-y-8 group-hover:bg-amber-400/20 transition-colors"></div>
           <div class="relative flex items-start gap-2">
             <svg class="h-4 w-4 text-amber-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -182,7 +182,7 @@ function generateReportHeader(summary: ReportSummary): string {
           </div>
         </div>
 
-        <div class="group relative overflow-hidden rounded-md bg-purple-900/20 p-3 border border-purple-400/50 hover:border-purple-400/70 transition-all">
+        <div class="group relative overflow-hidden rounded-md bg-purple-900/20 p-3 border border-purple-500 border-opacity-50 hover:border-opacity-70 transition-all">
           <div class="absolute top-0 right-0 w-20 h-20 bg-purple-500/10 rounded-full blur-2xl transform translate-x-8 -translate-y-8 group-hover:bg-purple-400/20 transition-colors"></div>
           <div class="relative flex items-start gap-2">
             <svg class="h-4 w-4 text-purple-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
