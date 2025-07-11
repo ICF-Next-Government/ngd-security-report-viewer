@@ -13,7 +13,6 @@ A modern, interactive security report viewer and static HTML generator for SARIF
 - **🔍 Smart Deduplication** - Automatically groups similar findings to reduce noise
 - **📊 Embedded Report Data** - Machine-readable JSON summary embedded in HTML exports
 - **🎨 Modern UI** - Dark theme with responsive design and smooth animations
-- **🖨️ Exportable** - Download reports as a static HTML file.
 - **⚡ High Performance** - Handles large security reports with thousands of findings
 
 ## Supported Formats
