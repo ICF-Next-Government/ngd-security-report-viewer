@@ -16,6 +16,15 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Install system dependencies
+      shell: sh
+      run: |
+        echo "📦 Installing system dependencies..."
+        apk add --no-cache bash curl unzip libstdc++ libgcc || {
+          echo "❌ Failed to install system dependencies"
+          exit 1
+        }
+
     - name: Validate inputs
       shell: bash
       run: |
@@ -39,15 +48,6 @@ runs:
             echo "⚠️  Warning: File extension not recognized, but will attempt to process"
             ;;
         esac
-
-    - name: Install system dependencies
-      shell: sh
-      run: |
-        echo "📦 Installing system dependencies..."
-        apk add --no-cache bash curl unzip libstdc++ libgcc || {
-          echo "❌ Failed to install system dependencies"
-          exit 1
-        }
 
     - name: Install Bun runtime
       shell: bash
