@@ -60,12 +60,12 @@ export function generateStaticHtml({
 </head>
 <body class="min-h-screen bg-slate-900 antialiased">
   <!-- Main content -->
-  <div id="report-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+  <div id="report-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fade-in">
 
     ${formattedTimestamp ? generateTimestampBadge(formattedTimestamp) : ""}
 
     <!-- Report Summary -->
-    <div class="space-y-8">
+    <div class="space-y-8 animate-fade-in">
       ${generateReportHeader(summary)}
       ${hasDeduplication ? generateDeduplicationSummary(groups.length, totalDuplicates, duplicatePercentage) : ""}
       ${generateSeverityCards(summary)}
@@ -73,7 +73,9 @@ export function generateStaticHtml({
     </div>
 
     <!-- Findings -->
-    ${generateFindingsSection(results, groups, showDeduplication)}
+    <div class="animate-fade-in" style="animation-delay: 0.3s">
+      ${generateFindingsSection(results, groups, showDeduplication)}
+    </div>
   </div>
 
   <script>
@@ -257,24 +259,27 @@ function generateSeverityCards(summary: ReportSummary): string {
 }
 
 function generateSeverityDistribution(summary: ReportSummary): string {
-  const severities = ["critical", "high", "medium", "low", "info"];
-  const colorClasses = {
-    critical: "bg-red-500",
-    high: "bg-orange-500",
-    medium: "bg-amber-500",
-    low: "bg-blue-500",
-    info: "bg-slate-500",
-  };
+  const severities = [
+    { key: "critical", color: "bg-red-500" },
+    { key: "high", color: "bg-orange-500" },
+    { key: "medium", color: "bg-amber-500" },
+    { key: "low", color: "bg-blue-500" },
+    { key: "info", color: "bg-slate-500" },
+  ];
 
-  let bars = "";
-  severities.forEach((sev) => {
-    const count =
-      summary.severityCounts?.[sev as keyof typeof summary.severityCounts] || 0;
-    if (count > 0 && summary.totalFindings > 0) {
-      const percentage = (count / summary.totalFindings) * 100;
-      bars += `<div class="h-full ${colorClasses[sev as keyof typeof colorClasses]}" style="width: ${percentage}%;" title="${sev}: ${count} (${percentage.toFixed(1)}%)"></div>`;
-    }
-  });
+  const bars = severities
+    .map((sev) => {
+      const count =
+        summary.severityCounts?.[
+          sev.key as keyof typeof summary.severityCounts
+        ] || 0;
+      if (count > 0 && summary.totalFindings > 0) {
+        const percentage = (count / summary.totalFindings) * 100;
+        return `<div class="${sev.color}" style="width: ${percentage}%;" title="${sev.key}: ${count} (${percentage.toFixed(1)}%)"></div>`;
+      }
+      return "";
+    })
+    .join("");
 
   return `
     <div class="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-6 shadow-lg">
@@ -301,35 +306,48 @@ function generateFindingsSection(
 
   return `
     <div class="space-y-8">
-      <div class="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-6 shadow-lg">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div class="flex items-center gap-3">
-            <h2 class="text-2xl font-bold text-white">Security Findings</h2>
-            <span class="text-slate-400 text-sm">
-              ${showDeduplication && hasGroups ? `${groups.length} groups` : `${results.length} findings`}
-            </span>
-          </div>
-
+      <div class="flex items-center justify-between">
+        <h2 class="text-2xl font-bold text-white">Security Findings</h2>
+        <div class="flex items-center gap-4">
           ${
             hasGroups
               ? `
-            <div class="view-toggle">
-              <button id="grouped-view-btn" class="${showDeduplication ? "active" : ""}" type="button">
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-                </svg>
-                Grouped View
-              </button>
-              <button id="all-view-btn" class="${!showDeduplication ? "active" : ""}" type="button">
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
-                </svg>
-                All Findings
-              </button>
-            </div>
+          <div class="flex bg-slate-700/50 rounded-lg p-1">
+            <button
+              id="grouped-view-btn"
+              class="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                showDeduplication
+                  ? "bg-blue-600 text-white"
+                  : "text-slate-400 hover:text-white"
+              }"
+              type="button"
+            >
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+              </svg>
+              Grouped
+            </button>
+            <button
+              id="all-view-btn"
+              class="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                !showDeduplication
+                  ? "bg-blue-600 text-white"
+                  : "text-slate-400 hover:text-white"
+              }"
+              type="button"
+            >
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+              </svg>
+              All
+            </button>
+          </div>
           `
               : ""
           }
+          <span class="text-slate-400">
+            ${showDeduplication && hasGroups ? `${groups.length} groups` : `${results.length} findings`}
+          </span>
         </div>
       </div>
 
@@ -363,10 +381,14 @@ function generateFindingsSection(
             </svg>
           </div>
         </div>
+
+        <div class="mt-4 text-sm text-slate-400">
+          Showing <span id="filtered-count">${showDeduplication && hasGroups ? groups.length : results.length}</span> of ${results.length} findings
+        </div>
       </div>
 
       <!-- Findings List -->
-      <div id="findings-container" class="space-y-4">
+      <div id="findings-container" class="space-y-6">
         <div id="grouped-findings" style="${showDeduplication ? "" : "display: none;"}">
           ${generateGroupedFindings(groups)}
         </div>
@@ -417,7 +439,7 @@ function generateGroupCard(group: DuplicateGroup): string {
               ${
                 group.occurrences > 1
                   ? `
-                <span class="duplicate-badge">
+                <span class="inline-flex px-2 py-1 text-xs font-medium bg-slate-700/50 text-slate-300 rounded-full border border-slate-600">
                   ${group.occurrences} occurrences
                 </span>
               `
@@ -483,9 +505,7 @@ function generateGroupCard(group: DuplicateGroup): string {
                 ? `
               <div>
                 <h4 class="font-medium text-white mb-3">Code Snippet (from first occurrence)</h4>
-                <pre class="bg-slate-900/80 text-slate-100 p-4 rounded-lg text-sm overflow-x-auto border border-slate-700">
-                  <code>${escapeHtml(result.snippet)}</code>
-                </pre>
+                <pre class="bg-slate-900/80 text-slate-100 p-4 rounded-lg text-sm overflow-x-auto border border-slate-700"><code>${escapeHtml(result.snippet)}</code></pre>
               </div>
             `
                 : ""
@@ -575,9 +595,7 @@ function generateFindingCard(result: ProcessedResult): string {
                 ? `
               <div>
                 <h4 class="font-medium text-white mb-3">Code Snippet</h4>
-                <pre class="bg-slate-900/80 text-slate-100 p-4 rounded-lg text-sm overflow-x-auto border border-slate-700">
-                  <code>${escapeHtml(result.snippet)}</code>
-                </pre>
+                <pre class="bg-slate-900/80 text-slate-100 p-4 rounded-lg text-sm overflow-x-auto border border-slate-700"><code>${escapeHtml(result.snippet)}</code></pre>
               </div>
             `
                 : ""
@@ -668,7 +686,7 @@ function getAllStyles(): string {
     body {
       margin: 0;
       line-height: inherit;
-      background: linear-gradient(to bottom right, #0f172a, #1e293b 80%);
+      background: #0f172a;
       color: #e2e8f0;
     }
 
@@ -698,6 +716,7 @@ function getAllStyles(): string {
     .h-5 { height: 1.25rem; }
     .h-6 { height: 1.5rem; }
     .h-12 { height: 3rem; }
+    .h-full { height: 100%; }
     .w-3 { width: 0.75rem; }
     .w-4 { width: 1rem; }
     .w-5 { width: 1.25rem; }
@@ -705,6 +724,7 @@ function getAllStyles(): string {
     .w-12 { width: 3rem; }
     .w-full { width: 100%; }
     .max-w-7xl { max-width: 80rem; }
+    .max-w-xs { max-width: 20rem; }
     .flex-1 { flex: 1 1 0%; }
     .flex-shrink-0 { flex-shrink: 0; }
     .transform { transform: translateX(var(--tw-translate-x)) translateY(var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)); }
@@ -726,6 +746,7 @@ function getAllStyles(): string {
     .gap-2 { gap: 0.5rem; }
     .gap-3 { gap: 0.75rem; }
     .gap-4 { gap: 1rem; }
+    .rounded-md { border-radius: 0.375rem; }
     .space-x-2 > * + * { margin-left: 0.5rem; }
     .space-x-3 > * + * { margin-left: 0.75rem; }
     .space-x-4 > * + * { margin-left: 1rem; }
@@ -743,6 +764,7 @@ function getAllStyles(): string {
     .border-t { border-top-width: 1px; }
     .border-slate-600 { border-color: #475569; }
     .border-slate-700 { border-color: #334155; }
+    .border-red-600 { border-color: #dc2626; }
     .border-red-700 { border-color: #b91c1c; }
     .border-orange-700 { border-color: #c2410c; }
     .border-amber-700 { border-color: #a16207; }
@@ -765,12 +787,15 @@ function getAllStyles(): string {
     .bg-blue-900\\/20 { background-color: rgba(30, 58, 138, 0.2); }
     .bg-blue-900\\/40 { background-color: rgba(30, 58, 138, 0.4); }
     .bg-slate-500 { background-color: #64748b; }
+    .bg-blue-600 { background-color: #2563eb; }
     .p-1 { padding: 0.25rem; }
     .p-4 { padding: 1rem; }
     .p-6 { padding: 1.5rem; }
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
     .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
     .px-4 { padding-left: 1rem; padding-right: 1rem; }
     .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .py-1\\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
     .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
     .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
     .py-12 { padding-top: 3rem; padding-bottom: 3rem; }
@@ -803,6 +828,7 @@ function getAllStyles(): string {
     .text-amber-400 { color: #fbbf24; }
     .text-blue-300 { color: #93c5fd; }
     .text-purple-400 { color: #c084fc; }
+    .text-center { text-align: center; }
     .placeholder-slate-400::placeholder { color: #94a3b8; }
     .shadow { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); }
     .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
@@ -815,6 +841,8 @@ function getAllStyles(): string {
     .hover\:scale-105:hover { transform: scale(1.05); }
     .hover\:scale-\[1\.01\]:hover { transform: scale(1.01); }
     .hover\:shadow-lg:hover { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+    .hover\:text-white:hover { color: #ffffff; }
+    .transition-colors { transition-property: color, background-color, border-color, text-decoration-color, fill, stroke; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
     .focus\:ring-2:focus { box-shadow: 0 0 0 0px #fff, 0 0 0 2px #3b82f6, 0 0 #0000; }
     .focus\:ring-blue-500:focus { --tw-ring-color: #3b82f6; }
     .focus\:border-blue-500:focus { border-color: #3b82f6; }
@@ -858,57 +886,25 @@ function getAllStyles(): string {
     pre {
       margin: 0;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      white-space: pre-wrap;
+      word-break: break-word;
     }
 
     code {
       font-family: inherit;
     }
 
-    .view-toggle {
-      display: inline-flex;
-      background: rgba(51, 65, 85, 0.5);
-      border-radius: 0.5rem;
-      padding: 0.25rem;
-      gap: 0.25rem;
-      border: 1px solid #475569;
-    }
-
-    .view-toggle button {
-      padding: 0.5rem 1rem;
-      border-radius: 0.375rem;
-      font-size: 0.875rem;
-      font-weight: 500;
-      transition: all 0.2s ease;
-      background: transparent;
-      color: #94a3b8;
-      border: none;
+    button {
+      font-family: inherit;
+      font-size: inherit;
+      font-weight: inherit;
+      line-height: inherit;
+      color: inherit;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .view-toggle button:hover {
-      color: #ffffff;
-      background: rgba(71, 85, 105, 0.3);
-    }
-
-    .view-toggle button.active {
-      background: #3b82f6;
-      color: #ffffff;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-    }
-
-    .duplicate-badge {
-      display: inline-flex;
-      align-items: center;
-      padding: 0.125rem 0.5rem;
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: #d8b4fe;
-      background-color: rgba(147, 51, 234, 0.2);
-      border: 1px solid rgba(147, 51, 234, 0.3);
-      border-radius: 0.5rem;
+      background: transparent;
+      border: none;
+      padding: 0;
+      margin: 0;
     }
 
     .chevron {
@@ -933,30 +929,41 @@ function getAllStyles(): string {
     .animate-fade-in {
       animation: fadeIn 0.7s ease-out;
     }
+
+    .animate-fade-in[style*="animation-delay"] {
+      opacity: 0;
+      animation-fill-mode: forwards;
+    }
   `;
 }
 
 function getAllScripts(): string {
   return `
     // View toggle functionality
-    const groupedViewBtn = document.getElementById('grouped-view-btn');
-    const allViewBtn = document.getElementById('all-view-btn');
+    const groupedBtn = document.getElementById('grouped-view-btn');
+    const allBtn = document.getElementById('all-view-btn');
     const groupedFindings = document.getElementById('grouped-findings');
     const allFindings = document.getElementById('all-findings');
 
-    if (groupedViewBtn && allViewBtn) {
-      groupedViewBtn.addEventListener('click', () => {
-        groupedViewBtn.classList.add('active');
-        allViewBtn.classList.remove('active');
+    if (groupedBtn && allBtn && groupedFindings && allFindings) {
+      groupedBtn.addEventListener('click', () => {
+        groupedBtn.classList.add('bg-blue-600', 'text-white');
+        groupedBtn.classList.remove('text-slate-400', 'hover:text-white');
+        allBtn.classList.remove('bg-blue-600', 'text-white');
+        allBtn.classList.add('text-slate-400', 'hover:text-white');
         groupedFindings.style.display = '';
         allFindings.style.display = 'none';
+        filterFindings();
       });
 
-      allViewBtn.addEventListener('click', () => {
-        allViewBtn.classList.add('active');
-        groupedViewBtn.classList.remove('active');
+      allBtn.addEventListener('click', () => {
+        allBtn.classList.add('bg-blue-600', 'text-white');
+        allBtn.classList.remove('text-slate-400', 'hover:text-white');
+        groupedBtn.classList.remove('bg-blue-600', 'text-white');
+        groupedBtn.classList.add('text-slate-400', 'hover:text-white');
         allFindings.style.display = '';
         groupedFindings.style.display = 'none';
+        filterFindings();
       });
     }
 
@@ -981,8 +988,10 @@ function getAllScripts(): string {
     function filterFindings() {
       const searchTerm = searchInput.value.toLowerCase();
       const severity = severityFilter.value;
+      const filteredCount = document.getElementById('filtered-count');
 
       let hasVisibleFindings = false;
+      let visibleCount = 0;
 
       document.querySelectorAll('.finding-card').forEach(card => {
         const cardSeverity = card.dataset.severity;
@@ -994,12 +1003,16 @@ function getAllScripts(): string {
         if (matchesSeverity && matchesSearch) {
           card.style.display = '';
           hasVisibleFindings = true;
+          visibleCount++;
         } else {
           card.style.display = 'none';
         }
       });
 
       noResults.classList.toggle('hidden', hasVisibleFindings);
+      if (filteredCount) {
+        filteredCount.textContent = visibleCount;
+      }
     }
 
     searchInput.addEventListener('input', filterFindings);
