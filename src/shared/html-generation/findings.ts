@@ -109,9 +109,17 @@ function generateGroupLocationsHtml(group: DuplicateGroup): string {
   if (locations.length === 0) return "";
 
   return `
-    <div class="group-locations mt-6 pt-6 border-t border-slate-600">
-      <h4 class="font-medium text-white mb-3">All Occurrences</h4>
-      <div class="space-y-2">
+    <div class="mt-6 pt-6 border-t border-slate-600">
+      <div class="mb-6">
+        <h4 class="font-medium text-white mb-3">Description</h4>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          ${group.representativeResult.description || "No description available"}
+        </p>
+      </div>
+
+      <div class="mb-6">
+        <h4 class="font-medium text-white mb-3">All Occurrences</h4>
+        <div class="space-y-2">
         ${locations
           .map(
             (location) => `
@@ -122,7 +130,21 @@ function generateGroupLocationsHtml(group: DuplicateGroup): string {
         `,
           )
           .join("")}
+        </div>
       </div>
+
+      ${
+        group.representativeResult.snippet
+          ? `
+        <div>
+          <h4 class="font-medium text-white mb-3">Code Snippet (from first occurrence)</h4>
+          <pre class="bg-slate-900/80 text-slate-100 p-4 rounded-lg text-sm overflow-x-auto border border-slate-700">
+            <code>${escapeHtml(group.representativeResult.snippet)}</code>
+          </pre>
+        </div>
+      `
+          : ""
+      }
     </div>
   `;
 }
@@ -367,37 +389,40 @@ export function generateFindingsSectionHtml(
       </div>
 
       <!-- Search and Filter Controls -->
-      <div class="search-container">
-        <div class="search-input-wrapper">
-          <input
-            type="text"
-            id="inline-findings-search"
-            class="search-input"
-            placeholder="Search findings by message, file, or rule ID..."
-            autocomplete="off"
-          />
-          <button
-            type="button"
-            id="inline-findings-clear"
-            class="search-clear"
-            style="display: none;"
-            title="Clear search"
-          >
-            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <line x1="18" y1="6" x2="6" y2="18"/>
-              <line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-          </button>
-        </div>
+      <div class="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-6 shadow-lg">
+        <div class="flex flex-col sm:flex-row gap-4">
+          <div class="flex-1">
+            <div class="relative">
+              <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+              <input
+                type="text"
+                id="inline-findings-search"
+                placeholder="Search findings, files, or rule IDs..."
+                class="w-full pl-10 pr-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white placeholder-slate-400"
+                autocomplete="off"
+              />
+            </div>
+          </div>
 
-        <select id="inline-severity-filter" class="severity-filter">
-          <option value="all">All Severities</option>
-          <option value="critical">Critical</option>
-          <option value="high">High</option>
-          <option value="medium">Medium</option>
-          <option value="low">Low</option>
-          <option value="info">Info</option>
-        </select>
+          <div class="relative">
+            <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+            </svg>
+            <select id="inline-severity-filter" class="pl-10 pr-8 py-3 bg-slate-700/50 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none text-white">
+              <option value="all">All Severities</option>
+              <option value="critical">Critical</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+              <option value="info">Info</option>
+            </select>
+            <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </div>
+
       </div>
 
       <!-- Findings Content -->

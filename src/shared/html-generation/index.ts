@@ -223,32 +223,34 @@ ${documentHead}
 
   <!-- Main content wrapper -->
   <div id="main-content" class="min-h-screen bg-slate-900">
-    <!-- Report header -->
-    <header role="banner" class="bg-slate-800/70 backdrop-blur-xl border-b border-slate-700 sticky top-0 z-10">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between h-auto sm:h-16 py-2 sm:py-0 gap-2 sm:gap-0">
-          <h1 class="text-base xs:text-lg sm:text-xl font-semibold text-white truncate max-w-[60vw] sm:max-w-none">
-            Security Analysis Report
-          </h1>
+    <!-- Main Title Section -->
+    <div class="container mx-auto px-4 py-6">
+      <div class="text-center mb-6">
+        <div class="flex items-center justify-center space-x-2 mb-3">
+          <div class="p-2 bg-blue-600 rounded-xl shadow-lg">
+            <svg class="h-7 w-7 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+          </div>
+          <h1 class="text-3xl font-bold text-white">Security Report Viewer</h1>
         </div>
+        <p class="text-lg text-slate-300 mb-4 max-w-2xl mx-auto">
+          Comprehensive security analysis report generated from ${summary.format ? escapeHtml(summary.format.toUpperCase()) : "security scan"} data
+        </p>
       </div>
-    </header>
+    </div>
 
-    <!-- Report summary section -->
-    <section aria-labelledby="summary-heading" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h2 id="summary-heading" class="sr-only">Report Summary</h2>
-
-      <div class="space-y-8">
-        ${reportHeader}
-        ${reportMetadata}
-        ${deduplicationSummary}
-        ${severityCards}
-        ${severityDistribution}
-      </div>
-    </section>
+    <!-- Report content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      ${reportHeader}
+      ${reportMetadata}
+      ${deduplicationSummary}
+      ${severityCards}
+      ${severityDistribution}
+    </div>
 
     <!-- Findings section -->
-    <main role="main" aria-labelledby="findings-heading" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main role="main" aria-labelledby="findings-heading" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
       <h2 id="findings-heading" class="sr-only">Security Findings</h2>
       ${findingsSection}
     </main>

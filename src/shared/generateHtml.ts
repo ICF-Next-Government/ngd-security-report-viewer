@@ -1,48 +1,38 @@
 /**
  * Shared HTML export logic for security reports.
- * This function is used by both the CLI and the UI to ensure identical output.
- *
- * This file now uses a modular architecture with components broken up into:
- * - styles.ts: CSS styles and theming
- * - findings.ts: Individual and grouped findings HTML generation
- * - summary.ts: Report summary and metadata HTML generation
- * - scripts.ts: Interactive JavaScript functionality
- * - index.ts: Main orchestrator that combines all components
+ * This creates a complete static HTML file that exactly replicates the React application.
+ * All assets are embedded for offline use.
  */
 
-// Re-export the main function and types from the modular implementation
-export {
-  generateHtml,
-  type GenerateHtmlOptions,
-  type DeduplicationStats,
-  generateFindingsSectionHtml,
-  generateSummaryHtml,
-  generateReportHeaderHtml,
-  DeduplicationService,
-} from "./html-generation";
+import {
+  generateStaticHtml,
+  type GenerateStaticHtmlOptions,
+} from "./static-html-export";
 
-// Re-export specific components for advanced usage
-export {
-  generateFindingHtml,
-  generateGroupHtml,
-  generateGroupedFindingsHtml,
-  generateAllFindingsHtml,
-} from "./html-generation/findings";
+// Main export with compatibility wrapper
+export function generateHtml({
+  summary,
+  results,
+  generatedAt,
+  enableDeduplication = true,
+  offlineMode = true,
+}: GenerateHtmlOptions): string {
+  return generateStaticHtml({
+    summary,
+    results,
+    generatedAt,
+    enableDeduplication,
+  });
+}
 
-export {
-  generateReportMetadataHtml,
-  generateDeduplicationSummaryHtml,
-  generateSeverityCardsHtml,
-  generateSeverityDistributionHtml,
-} from "./html-generation/summary";
+// Type exports for compatibility
+export interface GenerateHtmlOptions {
+  summary: import("../types/report").ReportSummary;
+  results: import("../types/report").ProcessedResult[];
+  generatedAt?: string;
+  enableDeduplication?: boolean;
+  offlineMode?: boolean;
+}
 
-export {
-  getAllStyles,
-  SEVERITY_COLORS,
-  type SeverityLevel,
-} from "./html-generation/styles";
-
-export {
-  generateReportScripts,
-  generateInlineHandlers,
-} from "./html-generation/scripts";
+// Re-export DeduplicationService for compatibility
+export { DeduplicationService } from "../utils/deduplication";

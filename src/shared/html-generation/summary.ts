@@ -39,9 +39,10 @@ export function generateReportHeaderHtml(
 
   return `
     <div class="flex justify-center mb-6">
-      <span class="inline-flex items-center px-4 py-2 rounded-full bg-slate-800/50 border border-slate-700 text-slate-300 text-sm">
-        <svg class="h-4 w-4 mr-2 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      <span class="inline-flex items-center px-3 py-1 rounded-full bg-slate-800/50 border border-slate-700 text-slate-300 text-xs font-medium shadow">
+        <svg class="h-4 w-4 mr-1 text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 8v4l2 2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         Report generated: ${escapeHtml(formattedTimestamp)}
       </span>
@@ -165,7 +166,7 @@ export function generateSeverityCardsHtml(summary: ReportSummary): string {
     ];
 
   return `
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 animate-fade-in">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
       ${severities
         .map(({ key, label, icon }) => {
           const count =
@@ -179,28 +180,28 @@ export function generateSeverityCardsHtml(summary: ReportSummary): string {
           return `
           <div class="${colors.bg} ${colors.border} backdrop-blur-sm rounded-lg border p-6 transition-all hover:scale-105 hover:shadow-lg">
             <div class="flex items-center justify-between mb-3">
-              <div style="color: ${colors.icon};">
+              <div class="${colors.icon}">
                 ${icon}
               </div>
               ${
                 count > 0
-                  ? `<div class="w-3 h-3 rounded-full" style="background-color: ${
+                  ? `<div class="w-3 h-3 rounded-full ${
                       key === "critical"
-                        ? "#ef4444"
+                        ? "bg-red-500"
                         : key === "high"
-                          ? "#f97316"
+                          ? "bg-orange-500"
                           : key === "medium"
-                            ? "#f59e0b"
+                            ? "bg-amber-500"
                             : key === "low"
-                              ? "#3b82f6"
-                              : "#6b7280"
+                              ? "bg-blue-500"
+                              : "bg-slate-500"
                     }"></div>`
                   : ""
               }
             </div>
             <div class="space-y-1">
               <p class="text-2xl font-bold text-white">${count}</p>
-              <p class="text-sm font-medium" style="color: ${colors.text};">${label}</p>
+              <p class="text-sm font-medium ${colors.text}">${label}</p>
             </div>
           </div>
         `;
@@ -254,8 +255,18 @@ export function generateSeverityDistributionHtml(
   const distributionBar = segments
     .map(
       (segment) =>
-        `<div class="h-full transition-all severity-bar severity-${segment.severity}"
-          style="width: ${segment.percentage}%; background-color: ${segment.color};"
+        `<div class="h-full transition-all severity-bar severity-${segment.severity} ${
+          segment.severity === "critical"
+            ? "bg-red-500"
+            : segment.severity === "high"
+              ? "bg-orange-500"
+              : segment.severity === "medium"
+                ? "bg-amber-500"
+                : segment.severity === "low"
+                  ? "bg-blue-500"
+                  : "bg-slate-500"
+        }"
+          style="width: ${segment.percentage}%;"
           title="${segment.severity}: ${segment.count} (${segment.percentage.toFixed(1)}%)"></div>`,
     )
     .join("");
@@ -281,7 +292,17 @@ export function generateSeverityDistributionHtml(
           .map(
             (segment) => `
           <div class="flex items-center space-x-2">
-            <div class="w-3 h-3 rounded-full severity-legend-dot severity-${segment.severity}" style="background-color: ${segment.color};"></div>
+            <div class="w-3 h-3 rounded-full severity-legend-dot severity-${segment.severity} ${
+              segment.severity === "critical"
+                ? "bg-red-500"
+                : segment.severity === "high"
+                  ? "bg-orange-500"
+                  : segment.severity === "medium"
+                    ? "bg-amber-500"
+                    : segment.severity === "low"
+                      ? "bg-blue-500"
+                      : "bg-slate-500"
+            }"></div>
             <span class="text-slate-300">
               ${segment.severity.charAt(0).toUpperCase() + segment.severity.slice(1)}:
               <span class="font-semibold">${segment.count}</span>
