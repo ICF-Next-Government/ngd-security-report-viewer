@@ -3,7 +3,7 @@
   "private": true,
   "version": "2.1.0",
   "type": "module",
-  "description": "A modern, interactive security report viewer and static HTML generator for SARIF, Semgrep, GitLab SAST, and Gitleaks JSON files",
+  "description": "A modern, interactive security report viewer and static HTML generator for SARIF, Semgrep, and GitLab SAST JSON files",
   "keywords": [
     "security",
     "sarif",

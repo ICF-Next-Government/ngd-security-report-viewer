@@ -8,10 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.1.0] - 2025-01-10
 
 ### Added
-- **Gitleaks Support**: Added support for Gitleaks JSON report format
-  - Full parsing support for secret detection findings
-  - Integration with existing severity and deduplication systems
-  
 - **Embedded Report Data**: HTML exports now include machine-readable data
   - Base64-encoded JSON summary in `data-report-summary` attribute
   - Contains timestamp, tool info, finding counts, and deduplication stats
@@ -150,7 +146,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 The NGD Security Report Viewer provides a modern, efficient way to analyze security findings from various scanning tools. Key capabilities include:
 
 ### Core Features
-- **Multi-format Support**: Parse SARIF, Semgrep, GitLab SAST, and Gitleaks reports
+- **Multi-format Support**: Parse SARIF, Semgrep, and GitLab SAST reports
 - **Smart Deduplication**: Reduce noise by grouping similar findings
 - **Interactive UI**: Search, filter, and explore findings efficiently
 - **Offline Reports**: Export self-contained HTML with embedded fonts and data

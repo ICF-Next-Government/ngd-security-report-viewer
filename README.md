@@ -1,6 +1,6 @@
 # NGD Security Report Viewer
 
-A modern, interactive security report viewer and static HTML generator for SARIF, Semgrep, GitLab SAST, and Gitleaks JSON files. View reports locally with advanced filtering and deduplication, or export as self-contained HTML files for sharing.
+A modern, interactive security report viewer and static HTML generator for SARIF, Semgrep, and GitLab SAST JSON files. View reports locally with advanced filtering and deduplication, or export as self-contained HTML files for sharing.
 
 ![ICF Security Report Viewer](./.docs/file-upload.webp)
 
@@ -19,7 +19,6 @@ A modern, interactive security report viewer and static HTML generator for SARIF
 - **SARIF** (Static Analysis Results Interchange Format) v2.1.0
 - **Semgrep** JSON output
 - **GitLab SAST** JSON reports
-- **Gitleaks** JSON output
 
 ## Screenshots
 
@@ -70,7 +69,7 @@ bun run dev
 Visit [http://localhost:5173](http://localhost:5173) in your browser, then drag and drop or select a security report file.
 
 **Features available in the web UI:**
-- Upload SARIF, Semgrep, GitLab SAST, or Gitleaks JSON files
+- Upload SARIF, Semgrep, or GitLab SAST JSON files
 - Filter by severity, file path, or rule
 - Search findings by content
 - Group similar findings with deduplication
