@@ -265,6 +265,14 @@ html::-webkit-scrollbar-corner, body::-webkit-scrollbar-corner {
 .justify-center { justify-content: center; }
 .justify-between { justify-content: space-between; }
 
+/* Vertical alignment */
+.align-baseline { vertical-align: baseline; }
+.align-top { vertical-align: top; }
+.align-middle { vertical-align: middle; }
+.align-bottom { vertical-align: bottom; }
+.align-text-top { vertical-align: text-top; }
+.align-text-bottom { vertical-align: text-bottom; }
+
 .gap-2 { gap: 0.5rem; }
 .gap-3 { gap: 0.75rem; }
 .gap-4 { gap: 1rem; }
@@ -291,6 +299,11 @@ html::-webkit-scrollbar-corner, body::-webkit-scrollbar-corner {
 .ml-2 { margin-left: 0.5rem; }
 .mr-1 { margin-right: 0.25rem; }
 .mr-2 { margin-right: 0.5rem; }
+
+/* Negative margins for fine-tuning alignment */
+.-mt-0 { margin-top: 0; }
+.-mt-0\.5 { margin-top: -0.125rem; }
+.-mt-1 { margin-top: -0.25rem; }
 
 .space-x-2 > :not([hidden]) ~ :not([hidden]) { --tw-space-x-reverse: 0; margin-right: calc(0.5rem * var(--tw-space-x-reverse)); margin-left: calc(0.5rem * calc(1 - var(--tw-space-x-reverse))); }
 .space-x-3 > :not([hidden]) ~ :not([hidden]) { --tw-space-x-reverse: 0; margin-right: calc(0.75rem * var(--tw-space-x-reverse)); margin-left: calc(0.75rem * calc(1 - var(--tw-space-x-reverse))); }

@@ -6,7 +6,7 @@
 
 import { writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { generateHtml } from "./src/shared/html-generation";
+import { generateStaticHtml } from "./src/shared/static-html-export";
 import { ProcessedResult, ReportSummary } from "./src/types/report";
 
 // Create sample data that would be typical in the UI
@@ -135,12 +135,11 @@ const simulateUIExport = async () => {
 
   try {
     // This is the exact same logic as in ReportView.tsx handleExportHTML
-    const htmlContent = generateHtml({
+    const htmlContent = generateStaticHtml({
       summary,
       results,
       generatedAt: uploadTimestamp.toISOString(),
       enableDeduplication: true,
-      offlineMode: true,
     });
 
     console.log(
@@ -148,19 +147,17 @@ const simulateUIExport = async () => {
     );
 
     // Verify the HTML contains expected UI-specific elements
+    // Verify key HTML elements
     const requiredElements = [
       "<!DOCTYPE html>",
       '<html lang="en"',
-      "Security Report - UI Test Security Scanner",
+      "Security Analysis Report - UI Test Security Scanner",
       "Security Findings",
-      "window.ReportViewer",
-      "@font-face",
       "grouped-findings",
       "all-findings",
-      "inline-findings-search",
-      "view-toggle",
+      "grouped-view-btn",
+      "all-view-btn",
       "severity-filter",
-      "NGD Security Report Viewer",
     ];
 
     console.log("\n🔍 Verifying HTML content:");
@@ -212,12 +209,11 @@ const testUIExportFeatures = async () => {
 
   // Test 1: Export with deduplication enabled (default UI setting)
   console.log("\n1. Testing export with deduplication enabled:");
-  const htmlWithDedup = generateHtml({
+  const htmlWithDedup = generateStaticHtml({
     summary,
     results,
     generatedAt: new Date().toISOString(),
     enableDeduplication: true,
-    offlineMode: true,
   });
 
   if (
@@ -303,12 +299,11 @@ const testUIExportPerformance = async () => {
   for (let i = 0; i < iterations; i++) {
     const startTime = performance.now();
 
-    generateHtml({
+    generateStaticHtml({
       summary,
       results,
       generatedAt: new Date().toISOString(),
       enableDeduplication: true,
-      offlineMode: true,
     });
 
     const endTime = performance.now();

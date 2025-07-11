@@ -1,6 +1,6 @@
 import { ArrowLeft, Download } from "lucide-react";
 import React, { useState } from "react";
-import { generateHtml } from "../shared/html-generation";
+import { generateStaticHtml } from "../shared/static-html-export";
 import {
   ProcessedResult,
   ReportSummary as ReportSummaryType,
@@ -115,14 +115,13 @@ export const ReportView: React.FC<ReportViewProps> = ({
           const startTime = performance.now();
 
           // Generate HTML content
-          const htmlContent = generateHtml({
+          const htmlContent = generateStaticHtml({
             summary: safeSummary,
             results: safeResults,
             generatedAt: uploadTimestamp
               ? uploadTimestamp.toISOString()
               : undefined,
             enableDeduplication: true,
-            offlineMode: true,
           });
 
           const generateTime = performance.now() - startTime;

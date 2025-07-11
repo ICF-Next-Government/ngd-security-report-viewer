@@ -136,7 +136,7 @@ function generateReportHeader(summary: ReportSummary): string {
 
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <div class="flex items-start gap-3">
-          <svg class="h-5 w-5 text-blue-400 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <svg class="h-5 w-5 text-blue-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
           <div>
@@ -145,7 +145,7 @@ function generateReportHeader(summary: ReportSummary): string {
           </div>
         </div>
         <div class="flex items-start gap-3">
-          <svg class="h-5 w-5 text-amber-400 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <svg class="h-5 w-5 text-amber-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
           </svg>
           <div>
@@ -154,7 +154,7 @@ function generateReportHeader(summary: ReportSummary): string {
           </div>
         </div>
         <div class="flex items-start gap-3">
-          <svg class="h-5 w-5 text-purple-400 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <svg class="h-5 w-5 text-purple-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
           </svg>
           <div>
@@ -185,10 +185,10 @@ function generateDeduplicationSummary(
   percentage: string,
 ): string {
   return `
-    <div class="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-4 shadow-lg">
+    <div class="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-6 shadow-lg">
       <div class="flex items-center space-x-3 mb-4">
-        <svg class="h-5 w-5 text-purple-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+        <svg class="h-5 w-5 text-purple-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
         </svg>
         <h3 class="text-lg font-semibold text-white">Deduplication Summary</h3>
       </div>
@@ -280,9 +280,9 @@ function generateSeverityCards(summary: ReportSummary): string {
                 : '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>';
 
           return `
-          <div class="${sev.bgColor} ${sev.borderColor} backdrop-blur-sm rounded-lg border p-4 transition-all hover:scale-105 hover:shadow-lg">
+          <div class="${sev.bgColor} ${sev.borderColor} backdrop-blur-sm rounded-lg border p-6 transition-all hover:scale-105 hover:shadow-lg">
             <div class="flex items-center justify-between mb-3">
-              <svg class="h-5 w-5 ${sev.textColor}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <svg class="h-5 w-5 ${sev.textColor} flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 ${icon}
               </svg>
               ${count > 0 ? `<div class="w-3 h-3 rounded-full ${sev.color}"></div>` : ""}
@@ -363,8 +363,8 @@ function generateFindingsSection(
               }"
               type="button"
             >
-              <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+              <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
               </svg>
               Grouped
             </button>
@@ -377,7 +377,7 @@ function generateFindingsSection(
               }"
               type="button"
             >
-              <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
               </svg>
               All
@@ -397,7 +397,7 @@ function generateFindingsSection(
         <div class="flex flex-col sm:flex-row gap-4">
           <div class="flex-1">
             <div class="relative">
-              <svg class="absolute left-3 h-5 w-5 text-slate-400" style="top: 50%; transform: translateY(-50%);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <svg class="absolute left-3 h-5 w-5 text-slate-400 pointer-events-none" style="top: 50%; transform: translateY(-50%);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
               </svg>
               <input type="text" id="search-input" placeholder="Search findings, files, or rule IDs..."
@@ -406,7 +406,7 @@ function generateFindingsSection(
           </div>
 
           <div class="relative">
-            <svg class="absolute left-3 h-5 w-5 text-slate-400" style="top: 50%; transform: translateY(-50%);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <svg class="absolute left-3 h-5 w-5 text-slate-400 pointer-events-none" style="top: 50%; transform: translateY(-50%);" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
             </svg>
             <select id="severity-filter" class="pl-12 pr-10 py-3 bg-slate-700/50 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none text-white">
@@ -466,7 +466,7 @@ function generateGroupCard(group: DuplicateGroup): string {
     <div class="finding-card group-card ${colors.bg} ${colors.border} backdrop-blur-sm border rounded-lg p-6 cursor-pointer transition-all hover:shadow-lg hover:scale-[1.01]"
          data-severity="${result.severity}" data-group-id="${group.id}">
       <div class="flex items-start space-x-4">
-        <svg class="h-6 w-6 ${colors.icon} mt-1 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <svg class="h-6 w-6 ${colors.icon} flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           ${getSeverityIcon(result.severity)}
         </svg>
 
@@ -565,7 +565,7 @@ function generateFindingCard(result: ProcessedResult): string {
     <div class="finding-card ${colors.bg} ${colors.border} backdrop-blur-sm border rounded-lg p-6 cursor-pointer transition-all hover:shadow-lg hover:scale-[1.01]"
          data-severity="${result.severity}">
       <div class="flex items-start space-x-4">
-        <svg class="h-6 w-6 ${colors.icon} mt-1 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <svg class="h-6 w-6 ${colors.icon} flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           ${getSeverityIcon(result.severity)}
         </svg>
 
