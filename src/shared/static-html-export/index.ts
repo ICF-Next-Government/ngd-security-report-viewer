@@ -61,7 +61,7 @@ export function generateStaticHtml({
 </head>
 <body class="min-h-screen bg-slate-900 antialiased">
   <!-- Header -->
-  <header class="bg-slate-800/50 backdrop-blur-xl border-b border-slate-700">
+  <header class="backdrop-blur-xl border-b border-slate-700" style="background-color: rgba(30, 41, 59, 0.5);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -152,7 +152,7 @@ function generateReportHeader(
               };
 
   return `
-    <div class="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-4 shadow-lg">
+    <div class="backdrop-blur-sm rounded-lg border border-slate-700 p-4 shadow-lg" style="background-color: rgba(30, 41, 59, 0.5);">
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center gap-2">
           <svg class="h-5 w-5 text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -164,9 +164,9 @@ function generateReportHeader(
       </div>
 
       <div class="grid grid-cols-3 gap-3">
-        <div class="bg-blue-900/20 rounded-md p-3 border border-blue-500 border-opacity-50 hover:border-opacity-70 transition-all">
+        <div class="rounded-md p-3 border border-blue-500 border-opacity-50 hover:border-opacity-70 transition-all" style="background-color: rgba(30, 58, 138, 0.2);">
           <div class="flex items-start gap-2">
-            <div class="p-2 bg-blue-500/20 rounded-lg flex-shrink-0">
+            <div class="p-2 rounded-lg flex-shrink-0" style="background-color: rgba(59, 130, 246, 0.2);">
               <svg class="h-4 w-4 text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
@@ -178,9 +178,9 @@ function generateReportHeader(
           </div>
         </div>
 
-        <div class="bg-amber-900/20 rounded-md p-3 border border-amber-500 border-opacity-50 hover:border-opacity-70 transition-all">
+        <div class="rounded-md p-3 border border-amber-500 border-opacity-50 hover:border-opacity-70 transition-all" style="background-color: rgba(120, 53, 15, 0.2);">
           <div class="flex items-start gap-2">
-            <div class="p-2 bg-amber-500/20 rounded-lg flex-shrink-0">
+            <div class="p-2 rounded-lg flex-shrink-0" style="background-color: rgba(245, 158, 11, 0.2);">
               <svg class="h-4 w-4 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
               </svg>
@@ -192,9 +192,9 @@ function generateReportHeader(
           </div>
         </div>
 
-        <div class="bg-purple-900/20 rounded-md p-3 border border-purple-500 border-opacity-50 hover:border-opacity-70 transition-all">
+        <div class="rounded-md p-3 border border-purple-500 border-opacity-50 hover:border-opacity-70 transition-all" style="background-color: rgba(88, 28, 135, 0.2);">
           <div class="flex items-start gap-2">
-            <div class="p-2 bg-purple-500/20 rounded-lg flex-shrink-0">
+            <div class="p-2 rounded-lg flex-shrink-0" style="background-color: rgba(168, 85, 247, 0.2);">
               <svg class="h-4 w-4 text-purple-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
               </svg>
@@ -287,7 +287,7 @@ function generateSeverityCards(summary: ReportSummary): string {
       key: "info",
       label: "Info",
       color: "bg-slate-500",
-      bgColor: "bg-slate-800/50",
+      bgColor: "bg-slate-800/50", // Note: using inline style instead
       textColor: "text-slate-300",
       borderColor: "border-slate-600",
       icon: "check",
@@ -310,7 +310,17 @@ function generateSeverityCards(summary: ReportSummary): string {
                 : '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>';
 
           return `
-          <div class="${sev.bgColor} ${sev.borderColor} backdrop-blur-sm rounded-lg border p-6 transition-all hover:scale-105 hover:shadow-lg">
+          <div class="${sev.borderColor} backdrop-blur-sm rounded-lg border p-6 transition-all hover:scale-105 hover:shadow-lg" style="background-color: ${
+            sev.key === "critical"
+              ? "rgba(127, 29, 29, 0.2)"
+              : sev.key === "high"
+                ? "rgba(124, 45, 18, 0.2)"
+                : sev.key === "medium"
+                  ? "rgba(120, 53, 15, 0.2)"
+                  : sev.key === "low"
+                    ? "rgba(30, 58, 138, 0.2)"
+                    : "rgba(30, 41, 59, 0.5)"
+          };">
             <div class="flex items-center justify-between mb-3">
               <svg class="h-5 w-5 ${sev.textColor} flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 ${icon}
@@ -353,7 +363,7 @@ function generateSeverityDistribution(summary: ReportSummary): string {
     .join("");
 
   return `
-    <div class="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-6 shadow-lg">
+    <div class="backdrop-blur-sm rounded-lg border border-slate-700 p-6 shadow-lg" style="background-color: rgba(30, 41, 59, 0.5);">
       <h3 class="text-base sm:text-lg font-semibold text-white mb-4">Severity Distribution</h3>
       <div class="w-full bg-slate-700 rounded-full h-3 overflow-hidden">
         <div class="h-full flex">
@@ -423,7 +433,7 @@ function generateFindingsSection(
       </div>
 
       <!-- Search and Filters -->
-      <div class="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-4 sm:p-6 shadow-lg">
+      <div class="backdrop-blur-sm rounded-lg border border-slate-700 p-4 sm:p-6 shadow-lg" style="background-color: rgba(30, 41, 59, 0.5);">
         <div class="flex flex-col gap-4">
           <div class="flex-1">
             <div class="relative">
