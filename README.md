@@ -1,10 +1,17 @@
-# NGD Security Report Viewer
+<div align="center">
+  <img src=".docs/img/logo-dark.svg#gh-dark-mode-only" alt="Security Report Viewer" width="400" />
+  <img src=".docs/img/logo.svg#gh-light-mode-only" alt="Security Report Viewer" width="400" />
+</div>
 
-A modern, interactive security report viewer and static HTML generator for SARIF, Semgrep, and GitLab SAST JSON files. View reports locally with advanced filtering and deduplication, or export as self-contained HTML files for sharing.
+<h1 align="center">NGD Security Report Viewer</h1>
 
-![ICF Security Report Viewer](./.docs/file-upload.webp)
+<p align="center">
+  A modern, interactive security report viewer and static HTML generator for SARIF, Semgrep, and GitLab SAST JSON files. View reports locally with advanced filtering and deduplication, or export as self-contained HTML files for sharing.
+</p>
 
-![ICF Security Report Viewer](./.docs/json-paste.webp)
+![ICF Security Report Viewer](./.docs/img/file-upload.webp)
+
+![ICF Security Report Viewer](./.docs/img/json-paste.webp)
 
 ## Features
 
@@ -25,15 +32,15 @@ A modern, interactive security report viewer and static HTML generator for SARIF
 
 ### Interactive Report View
 
-![ICF Security Report Viewer](./.docs/report-sample.webp)
+![ICF Security Report Viewer](./.docs/img/report-sample.webp)
 
 ### Exported Static HTML
 
-![ICF Security Report Viewer](./.docs/export-sample.webp)
+![ICF Security Report Viewer](./.docs/img/export-sample.webp)
 
 ### Report Summary Output
 
-![ICF Security Report Viewer](./.docs/report-summary-sample.webp)
+![ICF Security Report Viewer](./.docs/img/report-summary-sample.webp)
 
 ## Installation
 
