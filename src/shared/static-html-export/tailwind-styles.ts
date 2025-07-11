@@ -578,18 +578,65 @@ html::-webkit-scrollbar-corner, body::-webkit-scrollbar-corner {
   .sm\\:flex { display: flex; }
   .sm\\:hidden { display: none; }
   .sm\\:flex-row { flex-direction: row; }
+  .sm\\:flex-initial { flex: 0 1 auto; }
   .sm\\:items-center { align-items: center; }
   .sm\\:justify-between { justify-content: space-between; }
+  .sm\\:justify-start { justify-content: flex-start; }
   .sm\\:gap-0 { gap: 0px; }
+  .sm\\:gap-2 { gap: 0.5rem; }
+  .sm\\:gap-4 { gap: 1rem; }
+  .sm\\:space-x-3 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-x-reverse: 0;
+    margin-right: calc(0.75rem * var(--tw-space-x-reverse));
+    margin-left: calc(0.75rem * calc(1 - var(--tw-space-x-reverse)));
+  }
   .sm\\:space-x-4 > :not([hidden]) ~ :not([hidden]) {
     --tw-space-x-reverse: 0;
     margin-right: calc(1rem * var(--tw-space-x-reverse));
     margin-left: calc(1rem * calc(1 - var(--tw-space-x-reverse)));
   }
+  .sm\\:space-x-6 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-x-reverse: 0;
+    margin-right: calc(1.5rem * var(--tw-space-x-reverse));
+    margin-left: calc(1.5rem * calc(1 - var(--tw-space-x-reverse)));
+  }
+  .sm\\:space-y-4 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(1rem * var(--tw-space-y-reverse));
+  }
+  .sm\\:space-y-8 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(2rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(2rem * var(--tw-space-y-reverse));
+  }
+  .sm\\:p-4 { padding: 1rem; }
+  .sm\\:p-6 { padding: 1.5rem; }
+  .sm\\:px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+  .sm\\:px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
   .sm\\:px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
   .sm\\:py-0 { padding-top: 0; padding-bottom: 0; }
+  .sm\\:py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+  .sm\\:py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+  .sm\\:pt-6 { padding-top: 1.5rem; }
+  .sm\\:mb-3 { margin-bottom: 0.75rem; }
+  .sm\\:mb-4 { margin-bottom: 1rem; }
+  .sm\\:mb-6 { margin-bottom: 1.5rem; }
+  .sm\\:mt-4 { margin-top: 1rem; }
+  .sm\\:mt-6 { margin-top: 1.5rem; }
+  .sm\\:left-3 { left: 0.75rem; }
+  .sm\\:right-3 { right: 0.75rem; }
+  .sm\\:h-5 { height: 1.25rem; }
+  .sm\\:h-6 { height: 1.5rem; }
+  .sm\\:w-5 { width: 1.25rem; }
+  .sm\\:w-6 { width: 1.5rem; }
+  .sm\\:w-auto { width: auto; }
+  .sm\\:text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+  .sm\\:text-base { font-size: 1rem; line-height: 1.5rem; }
+  .sm\\:text-lg { font-size: 1.125rem; line-height: 1.75rem; }
   .sm\\:text-xl { font-size: 1.25rem; line-height: 1.75rem; }
   .sm\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sm\\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
 @media (min-width: 768px) {
