@@ -95,8 +95,7 @@ export function generateStaticHtml({
   <div id="report-content" class="max-w-7xl mx-auto px-4 py-6 sm:py-8 space-y-6 sm:space-y-8 animate-fade-in">
     <!-- Report Summary -->
     <div class="space-y-8 animate-fade-in">
-      ${generateReportHeader(summary)}
-      ${hasDeduplication ? generateDeduplicationSummary(groups.length, totalDuplicates, duplicatePercentage) : ""}
+      ${generateReportHeader(summary, hasDeduplication ? { uniqueGroups: groups.length, totalDuplicates, duplicatePercentage } : null)}
       ${generateSeverityCards(summary)}
       ${generateSeverityDistribution(summary)}
     </div>
@@ -124,7 +123,14 @@ function escapeHtml(text: string): string {
     .replace(/'/g, "&#039;");
 }
 
-function generateReportHeader(summary: ReportSummary): string {
+function generateReportHeader(
+  summary: ReportSummary,
+  deduplicationStats: {
+    uniqueGroups: number;
+    totalDuplicates: number;
+    duplicatePercentage: string;
+  } | null,
+): string {
   // Calculate highest severity
   const highestSeverity =
     summary.severityCounts?.critical > 0
@@ -149,7 +155,9 @@ function generateReportHeader(summary: ReportSummary): string {
     <div class="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-4 shadow-lg">
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center gap-2">
-          <div class="w-1.5 h-8 bg-blue-400 rounded-full"></div>
+          <svg class="h-5 w-5 text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h8l4 4v12a2 2 0 01-2 2z"/>
+          </svg>
           <h2 class="text-lg font-semibold text-white">Overview</h2>
         </div>
         <span class="text-xs text-slate-400">${summary.toolName}${summary.toolVersion ? ` v${summary.toolVersion}` : ""}</span>
@@ -198,42 +206,38 @@ function generateReportHeader(summary: ReportSummary): string {
           </div>
         </div>
       </div>
-    </div>
-  `;
-}
 
-function generateDeduplicationSummary(
-  uniqueGroups: number,
-  totalDuplicates: number,
-  percentage: string,
-): string {
-  return `
-    <div class="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-6 shadow-lg">
-      <div class="flex items-center space-x-3 mb-4">
-        <svg class="h-5 w-5 text-purple-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-        </svg>
-        <h3 class="text-lg font-semibold text-white">Deduplication Summary</h3>
+      ${
+        deduplicationStats
+          ? `
+      <div class="mt-4">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div class="flex items-center gap-2">
+            <svg class="h-4 w-4 text-purple-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
+            <span class="text-xs font-medium text-white">Deduplication Analysis</span>
+          </div>
+          <div class="flex items-center divide-x divide-slate-600/50 text-xs">
+            <div class="flex items-center gap-2 px-3 first:pl-0">
+              <span class="text-slate-400">Groups:</span>
+              <span class="font-medium text-white">${deduplicationStats.uniqueGroups}</span>
+            </div>
+            <div class="flex items-center gap-2 px-3">
+              <span class="text-slate-400">Duplicates:</span>
+              <span class="font-medium text-orange-300">${deduplicationStats.totalDuplicates}</span>
+            </div>
+            <div class="flex items-center gap-2 px-3 last:pr-0">
+              <span class="text-slate-400">Rate:</span>
+              <span class="font-medium text-orange-300">${deduplicationStats.duplicatePercentage}%</span>
+            </div>
+          </div>
+        </div>
+        <p class="text-[10px] text-slate-400 mt-2">Similar issues have been automatically grouped to reduce noise in the report.</p>
       </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-        <div>
-          <span class="text-slate-400">Unique Issue Groups:</span>
-          <span class="ml-2 font-medium text-white">${uniqueGroups}</span>
-        </div>
-        <div>
-          <span class="text-slate-400">Duplicate Findings:</span>
-          <span class="ml-2 font-medium text-orange-300">${totalDuplicates}</span>
-        </div>
-        <div>
-          <span class="text-slate-400">Duplication Rate:</span>
-          <span class="ml-2 font-medium text-orange-300">${percentage}%</span>
-        </div>
-      </div>
-
-<p class="text-xs text-slate-400 mt-3 sm:mt-4">
-  Similar issues have been automatically grouped to reduce noise in the report.
-</p>
+      `
+          : ""
+      }
     </div>
   `;
 }
