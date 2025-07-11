@@ -1,6 +1,6 @@
-import { ProcessedResult, ReportSummary } from "../types/report";
 import { SEVERITY_LEVELS } from "../constants";
 import type { SeverityLevel } from "../constants";
+import { ProcessedResult, ReportSummary } from "../types/report";
 
 /**
  * Base class for security report parsers
@@ -79,7 +79,7 @@ export abstract class BaseParser {
     results: ProcessedResult[],
     toolName: string,
     toolVersion: string | undefined,
-    format: "sarif" | "semgrep" | "gitlab-sast"
+    format: "sarif" | "semgrep" | "gitlab-sast",
   ): ReportSummary {
     const counts = this.countBySeverity(results);
     const filesSet = this.extractUniqueFiles(results);
@@ -87,6 +87,13 @@ export abstract class BaseParser {
     return {
       totalFindings: results.length,
       ...counts,
+      severityCounts: {
+        critical: counts.criticalCount,
+        high: counts.highCount,
+        medium: counts.mediumCount,
+        low: counts.lowCount,
+        info: counts.infoCount,
+      },
       filesAffected: filesSet.size,
       toolName,
       toolVersion,
@@ -104,7 +111,7 @@ export abstract class BaseParser {
   protected static safeExtractString(
     obj: any,
     path: string,
-    defaultValue: string = ""
+    defaultValue = "",
   ): string {
     const keys = path.split(".");
     let current = obj;
@@ -130,7 +137,7 @@ export abstract class BaseParser {
   protected static safeExtractNumber(
     obj: any,
     path: string,
-    defaultValue?: number
+    defaultValue?: number,
   ): number | undefined {
     const keys = path.split(".");
     let current = obj;
@@ -151,7 +158,9 @@ export abstract class BaseParser {
    * @param sources - Array of tag sources (arrays or strings)
    * @returns Deduplicated array of tags
    */
-  protected static extractTags(...sources: (string[] | string | undefined)[]): string[] {
+  protected static extractTags(
+    ...sources: (string[] | string | undefined)[]
+  ): string[] {
     const tags: string[] = [];
 
     for (const source of sources) {

@@ -1,7 +1,7 @@
 import {
+  GitLabSastIdentifier,
   GitLabSastReport,
   GitLabSastVulnerability,
-  GitLabSastIdentifier,
 } from "../types/gitlab-sast";
 import { ProcessedResult, ReportSummary } from "../types/report";
 
@@ -64,6 +64,13 @@ export class GitLabSastParser {
       mediumCount,
       lowCount,
       infoCount,
+      severityCounts: {
+        critical: criticalCount,
+        high: highCount,
+        medium: mediumCount,
+        low: lowCount,
+        info: infoCount,
+      },
       filesAffected: filesSet.size,
       toolName,
       toolVersion,
@@ -139,9 +146,7 @@ export class GitLabSastParser {
     }
 
     // Try to find a semgrep_id identifier
-    const semgrepId = vuln.identifiers.find(
-      (id) => id.type === "semgrep_id",
-    );
+    const semgrepId = vuln.identifiers.find((id) => id.type === "semgrep_id");
     if (semgrepId) {
       return semgrepId.value;
     }

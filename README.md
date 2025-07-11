@@ -61,7 +61,7 @@ Perfect for development workflows and security remediation cycles.
 make start
 ```
 
-Visit [http://localhost:9867](http://localhost:9867) in your browser.
+Visit [http://localhost:9876](http://localhost:9876) in your browser.
 
 **All-in-one command** (requires `gh` CLI):
 

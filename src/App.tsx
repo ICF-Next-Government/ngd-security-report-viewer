@@ -1,16 +1,9 @@
+import { AlertCircle, Download, Eye, FileText, Shield, Zap } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { FileUpload } from "./components/FileUpload";
 import { ReportView } from "./components/ReportView";
-import { ReportParser } from "./utils/reportParser";
 import { ProcessedResult, ReportSummary, UnifiedReport } from "./types/report";
-import {
-  Shield,
-  Zap,
-  Eye,
-  Download,
-  FileText,
-  AlertCircle,
-} from "lucide-react";
+import { ReportParser } from "./utils/reportParser";
 
 function App() {
   const [results, setResults] = useState<ProcessedResult[]>([]);
@@ -23,9 +16,7 @@ function App() {
 
   // For animated transitions
   const [transitioning, setTransitioning] = useState(false);
-  const [pendingShowReport, setPendingShowReport] = useState<boolean | null>(
-    null,
-  );
+  const [pendingShowReport, setPendingShowReport] = useState<boolean | null>(null);
 
   // Hide html/body scrollbars on report, but allow scrolling (hidden scrollbar) on home
   useEffect(() => {
@@ -151,8 +142,7 @@ function App() {
         style={{
           background: "linear-gradient(to bottom right, #0f172a, #1e293b 80%)",
           opacity: transitioning && !pendingShowReport ? 1 : 1,
-          pointerEvents:
-            transitioning && !pendingShowReport ? "none" : undefined,
+          pointerEvents: transitioning && !pendingShowReport ? "none" : undefined,
           overflowY: "auto",
           zIndex: 10,
         }}
@@ -209,9 +199,7 @@ function App() {
   return (
     <div
       className={`min-h-screen transition-opacity duration-300 no-scrollbar ${
-        transitioning && pendingShowReport === false
-          ? "animate-fade-out-black"
-          : "animate-fade-in"
+        transitioning && pendingShowReport === false ? "animate-fade-out-black" : "animate-fade-in"
       }`}
       style={{
         background: "linear-gradient(to bottom right, #0f172a, #1e293b 80%)",
@@ -227,14 +215,11 @@ function App() {
             <div className="p-2 bg-blue-600 rounded-xl shadow-lg">
               <Shield className="h-7 w-7 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-white">
-              Security Report Viewer
-            </h1>
+            <h1 className="text-3xl font-bold text-white">Security Report Viewer</h1>
           </div>
 
           <p className="text-lg text-slate-300 mb-4 max-w-2xl mx-auto">
-            A modern, beautiful report viewer for SARIF, Semgrep, and GitLab
-            SAST JSON outputs.
+            A modern, beautiful report viewer for SARIF, Semgrep, and GitLab SAST JSON outputs.
           </p>
 
           {/* Features */}
@@ -243,12 +228,9 @@ function App() {
               <div className="p-2 bg-blue-500/20 rounded-lg w-fit mx-auto mb-4">
                 <Zap className="h-6 w-6 text-blue-400" />
               </div>
-              <h3 className="text-lg font-semibold text-white mb-2">
-                Fast Parsing
-              </h3>
+              <h3 className="text-lg font-semibold text-white mb-2">Fast Parsing</h3>
               <p className="text-slate-400 text-sm">
-                Instantly parse and analyze SARIF, Semgrep, and GitLab SAST
-                security reports
+                Instantly parse and analyze SARIF, Semgrep, and GitLab SAST security reports
               </p>
             </div>
 
@@ -256,12 +238,9 @@ function App() {
               <div className="p-2 bg-green-500/20 rounded-lg w-fit mx-auto mb-4">
                 <Eye className="h-6 w-6 text-green-400" />
               </div>
-              <h3 className="text-lg font-semibold text-white mb-2">
-                Rich Visualization
-              </h3>
+              <h3 className="text-lg font-semibold text-white mb-2">Rich Visualization</h3>
               <p className="text-slate-400 text-sm">
-                Beautiful dashboards with severity breakdowns and detailed
-                finding views
+                Beautiful dashboards with severity breakdowns and detailed finding views
               </p>
             </div>
 
@@ -269,12 +248,9 @@ function App() {
               <div className="p-2 bg-purple-500/20 rounded-lg w-fit mx-auto mb-4">
                 <Download className="h-6 w-6 text-purple-400" />
               </div>
-              <h3 className="text-lg font-semibold text-white mb-2">
-                Export Reports
-              </h3>
+              <h3 className="text-lg font-semibold text-white mb-2">Export Reports</h3>
               <p className="text-slate-400 text-sm">
-                Export findings as a static HTML file for further analysis and
-                reporting
+                Export findings as a static HTML file for further analysis and reporting
               </p>
             </div>
           </div>
@@ -323,16 +299,13 @@ function App() {
                     <FileText className="h-7 w-7 text-slate-400" />
                   </div>
                   <div className="space-y-1">
-                    <h3 className="text-lg font-semibold text-white">
-                      Paste Security Report JSON
-                    </h3>
+                    <h3 className="text-lg font-semibold text-white">Paste Security Report JSON</h3>
                     <p className="text-slate-300 text-sm">
-                      Paste your SARIF, Semgrep, or GitLab SAST JSON content
-                      below to generate a report.
+                      Paste your SARIF, Semgrep, or GitLab SAST JSON content below to generate a
+                      report.
                     </p>
                     <p className="text-xs text-slate-400">
-                      Supports SARIF v2.1.0, Semgrep, and GitLab SAST JSON
-                      formats.
+                      Supports SARIF v2.1.0, Semgrep, and GitLab SAST JSON formats.
                     </p>
                   </div>
                   <div className="relative w-full">
@@ -379,12 +352,8 @@ function App() {
                     <div className="mt-1 p-2 bg-red-900/50 border border-red-700 rounded-lg flex items-start space-x-3 backdrop-blur-sm w-full text-left">
                       <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
                       <div>
-                        <h4 className="text-sm font-medium text-red-300">
-                          Parse Error
-                        </h4>
-                        <p className="text-sm text-red-400 mt-1">
-                          {jsonInputError}
-                        </p>
+                        <h4 className="text-sm font-medium text-red-300">Parse Error</h4>
+                        <p className="text-sm text-red-400 mt-1">{jsonInputError}</p>
                       </div>
                     </div>
                   )}
@@ -397,11 +366,7 @@ function App() {
               className="w-full h-full transition-all duration-500 ease-in-out animate-fade-in-panel flex"
             >
               <div className="w-full h-full flex flex-col justify-center">
-                <FileUpload
-                  onFileUpload={handleFileUpload}
-                  loading={loading}
-                  error={error}
-                />
+                <FileUpload onFileUpload={handleFileUpload} loading={loading} error={error} />
               </div>
             </div>
           )}
@@ -423,9 +388,7 @@ function App() {
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm transition-all">
             <div className="flex flex-col items-center space-y-4">
               <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-              <span className="text-white text-lg font-semibold">
-                Parsing...
-              </span>
+              <span className="text-white text-lg font-semibold">Parsing...</span>
             </div>
           </div>
         )}
@@ -433,8 +396,8 @@ function App() {
         {/* Footer */}
         <footer className="text-center mt-12 text-sm text-slate-400 border-t border-slate-700 pt-8">
           <p>
-            Supports SARIF v2.1.0 format • Compatible with Semgrep, CodeQL, and
-            other SARIF-compliant tools
+            Supports SARIF v2.1.0 format • Compatible with Semgrep, CodeQL, and other
+            SARIF-compliant tools
           </p>
           <div className="flex justify-center gap-4 mt-4">
             <a
