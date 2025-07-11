@@ -117,8 +117,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   const features = [
     {
       icon: Zap,
-      title: "Lightning Fast",
-      description: "Parse and analyze reports instantly",
+      title: "Rapid Analysis",
+      description: "Process security reports with enterprise-grade performance",
       color: "from-blue-500 to-cyan-500",
       bgColor: "bg-blue-500/10",
       iconColor: "text-blue-500",
@@ -126,8 +126,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
     },
     {
       icon: Eye,
-      title: "Beautiful Reports",
-      description: "Interactive dashboards with detailed insights",
+      title: "Comprehensive Insights",
+      description: "Interactive dashboards for vulnerability assessment",
       color: "from-emerald-500 to-green-500",
       bgColor: "bg-emerald-500/10",
       iconColor: "text-emerald-500",
@@ -135,8 +135,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
     },
     {
       icon: Download,
-      title: "Export & Share",
-      description: "Generate static HTML reports for sharing",
+      title: "Report Generation",
+      description: "Export detailed HTML reports for stakeholder review",
       color: "from-purple-500 to-pink-500",
       bgColor: "bg-purple-500/10",
       iconColor: "text-purple-500",
@@ -192,20 +192,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm rounded-full border border-white/10 mb-6">
                   <Sparkles className="w-4 h-4 text-blue-400" />
                   <span className="text-sm text-blue-300">
-                    Transform your security reports
+                    Enterprise Security Analysis Platform
                   </span>
                 </div>
 
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-                  Security insights
+                  Security Report
                   <span className="block bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                    made beautiful
+                    Analysis Portal
                   </span>
                 </h1>
 
                 <p className="text-lg text-slate-300 mb-8 leading-relaxed">
-                  Upload your SARIF, Semgrep, or GitLab SAST reports and get
-                  instant, actionable insights with stunning visualizations.
+                  Centralized platform for analyzing SARIF, Semgrep, and GitLab
+                  SAST security reports. Generate comprehensive insights and
+                  detailed visualizations for vulnerability assessment and
+                  remediation tracking.
                 </p>
 
                 {/* Feature Pills */}
@@ -329,24 +331,26 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
                             <h3 className="text-lg font-semibold text-white mb-2">
                               {loading
-                                ? "Processing your file..."
-                                : "Drop your file here"}
+                                ? "Processing security report..."
+                                : "Select Security Report"}
                             </h3>
 
                             <p className="text-slate-400 mb-6">
-                              or{" "}
+                              Drop file or{" "}
                               <button
                                 onClick={() => fileInputRef.current?.click()}
                                 className="text-blue-400 hover:text-blue-300 font-medium transition-colors duration-200 hover:underline underline-offset-2"
                                 disabled={loading}
                               >
-                                click to browse
+                                browse for file
                               </button>
                             </p>
 
                             <div className="flex items-center justify-center gap-2 text-xs text-slate-500">
                               <FileText className="w-3 h-3" />
-                              <span>JSON files only • Max 50MB</span>
+                              <span>
+                                Supported: JSON format • Maximum file size: 50MB
+                              </span>
                             </div>
                           </div>
                         </div>
