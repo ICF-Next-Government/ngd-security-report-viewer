@@ -410,11 +410,11 @@ function generateFindingsSection(
 }
 
 function generateGroupedFindings(groups: DuplicateGroup[]): string {
-  return groups.map((group) => generateGroupCard(group)).join("");
+  return `<div class="space-y-6">${groups.map((group) => generateGroupCard(group)).join("")}</div>`;
 }
 
 function generateAllFindings(results: ProcessedResult[]): string {
-  return results.map((result) => generateFindingCard(result)).join("");
+  return `<div class="space-y-6">${results.map((result) => generateFindingCard(result)).join("")}</div>`;
 }
 
 function generateGroupCard(group: DuplicateGroup): string {
@@ -754,6 +754,7 @@ function getAllStyles(): string {
     .space-y-1 > * + * { margin-top: 0.25rem; }
     .space-y-2 > * + * { margin-top: 0.5rem; }
     .space-y-4 > * + * { margin-top: 1rem; }
+    .space-y-6 { display: flex; flex-direction: column; gap: 2rem; }
     .space-y-8 > * + * { margin-top: 2rem; }
     .overflow-hidden { overflow: hidden; }
     .overflow-x-auto { overflow-x: auto; }
