@@ -3,8 +3,6 @@
   <img src=".docs/img/logo.svg#gh-light-mode-only" alt="Security Report Viewer" width="400" />
 </div>
 
-<h1 align="center">NGD Security Report Viewer</h1>
-
 <p align="center">
   A modern, interactive security report viewer and static HTML generator for SARIF, Semgrep, and GitLab SAST JSON files. View reports locally with advanced filtering and deduplication, or export as self-contained HTML files for sharing.
 </p>
