@@ -49,8 +49,33 @@ export function generateStaticHtml({
       })
     : null;
 
+  // Generate report summary data matching the CLI output format
+  const reportSummaryData = {
+    timestamp: Math.floor(Date.now() / 1000),
+    tool: `${summary.toolName}${summary.toolVersion ? ` v${summary.toolVersion}` : ""}${summary.format ? ` (${summary.format.toUpperCase()})` : ""}`,
+    total_findings: summary.totalFindings || 0,
+    files_affected: summary.filesAffected || 0,
+    severity: {
+      critical: summary.criticalCount || 0,
+      high: summary.highCount || 0,
+      medium: summary.mediumCount || 0,
+      low: summary.lowCount || 0,
+      info: summary.infoCount || 0,
+    },
+    ...(hasDeduplication && {
+      deduplication: {
+        unique_groups: groups.length,
+        duplicate_findings: totalDuplicates,
+        duplication_rate: `${duplicatePercentage}%`,
+      },
+    }),
+  };
+
+  // Base64 encode the JSON for HTML attribute
+  const reportSummaryJson = btoa(JSON.stringify(reportSummaryData));
+
   return `<!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="scroll-smooth" data-report-summary="${reportSummaryJson}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
