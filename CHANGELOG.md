@@ -8,7 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.1.0] - 2025-01-10
 
 ### Added
+
 - **Embedded Report Data**: HTML exports now include machine-readable data
+
   - Base64-encoded JSON summary in `data-report-summary` attribute
   - Contains timestamp, tool info, finding counts, and deduplication stats
   - Enables programmatic extraction for automation workflows
@@ -22,11 +24,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Shield icon added to report header for better visual identity
 
 ### Changed
+
 - **Simplified Export Architecture**: Removed polyglot HTML/shell script approach
+
   - HTML files are now standard, non-executable files
   - Cleaner implementation focused on data embedding
   - Improved security by removing executable components
-  
+
 - **Static HTML Export Improvements**
   - Updated card styling with subtle background colors
   - Improved typography with consistent white titles
@@ -36,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Normalized proportions between React app and static export
 
 ### Fixed
+
 - **Tailwind CSS Classes**: Added missing border color utilities to static export styles
 - **Border Rendering**: Fixed border colors appearing as white in exported HTML
 - **Icon Background Colors**: Fixed missing background colors in static export by using inline styles
@@ -44,6 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Severity Indicator**: Fixed missing colored dot next to severity level in static export
 
 ### Removed
+
 - **Extraction Scripts**: Removed pre-built extraction scripts in favor of direct command usage
   - Users can extract data using standard Unix tools
   - Simplified maintenance and reduced complexity
@@ -51,20 +57,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.0] - 2024-12
 
 ### Added
+
 - **Modular HTML Generation Architecture**: Refactored monolithic system into focused modules
+
   - `index.ts`: Main orchestrator handling HTML generation
   - `styles.ts`: Centralized CSS and theming management
   - `summary.ts`: Report metadata and summary components
   - `findings.ts`: Individual and grouped findings rendering
   - `scripts.ts`: Interactive JavaScript functionality
-  
+
 - **Advanced Deduplication System**: Intelligent grouping of similar findings
+
   - Groups by rule ID, severity, and message similarity (85% threshold)
   - Interactive expand/collapse for grouped findings
   - Occurrence tracking with file location details
   - Significant noise reduction in security reports
 
 - **Export as HTML Feature**: One-click export in ReportView component
+
   - Visual loading states during export
   - Error handling with user feedback
   - Browser compatibility checks
@@ -76,13 +86,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Automatic injection during build process
 
 ### Changed
+
 - **Code Organization**: Improved maintainability and structure
+
   - Split 886-line file into 5 focused modules
   - Enhanced TypeScript type safety
   - Better separation of concerns
   - Improved testability
 
 - **Performance Enhancements**
+
   - Sub-millisecond HTML generation for typical reports
   - Debounced search functionality
   - Optimized DOM updates
@@ -95,7 +108,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Improved keyboard navigation
 
 ### Fixed
+
 - **Parser Compatibility**: Fixed missing `severityCounts` in parsers
+
   - Updated Semgrep and GitLab SAST parsers
   - Added safe property access in HTML generation
   - Improved validation in React components
@@ -106,6 +121,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Ensured cross-browser compatibility
 
 ### Security
+
 - **Gitleaks Integration**: Added `.gitleaks.toml` for secret detection
 - **Client-side Processing**: All report processing happens in browser
 - **XSS Prevention**: HTML content properly escaped
@@ -114,6 +130,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2024-11
 
 ### Added
+
 - Initial release of NGD Security Report Viewer
 - Support for multiple report formats:
   - SARIF v2.1.0
@@ -133,12 +150,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
 - Nothing yet
 
 ### Changed
+
 - Nothing yet
 
 ### Fixed
+
 - Nothing yet
 
 ## Summary
@@ -146,6 +166,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 The NGD Security Report Viewer provides a modern, efficient way to analyze security findings from various scanning tools. Key capabilities include:
 
 ### Core Features
+
 - **Multi-format Support**: Parse SARIF, Semgrep, and GitLab SAST reports
 - **Smart Deduplication**: Reduce noise by grouping similar findings
 - **Interactive UI**: Search, filter, and explore findings efficiently
@@ -154,6 +175,7 @@ The NGD Security Report Viewer provides a modern, efficient way to analyze secur
 - **Embedded Data**: Machine-readable JSON summary in every HTML export
 
 ### Technical Highlights
+
 - **Modular Architecture**: Clean, maintainable codebase
 - **TypeScript**: Full type safety throughout
 - **Performance**: Fast parsing and rendering of large reports
@@ -161,6 +183,7 @@ The NGD Security Report Viewer provides a modern, efficient way to analyze secur
 - **Responsive**: Works on desktop, tablet, and mobile devices
 
 ### Recent Improvements
+
 - Enhanced Report Overview section with better visual design
 - Improved deduplication with detailed occurrence tracking
 - Better error handling and user feedback
