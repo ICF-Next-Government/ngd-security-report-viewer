@@ -316,13 +316,13 @@ export const ReportView: React.FC<ReportViewProps> = ({
       {/* Content */}
       <div className="animate-fade-in" style={{ animationDelay: "0.1s" }}>
         {/* Summary Section */}
-        <div className="px-4 py-6 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
           <ReportSummary summary={safeSummary} results={safeResults} />
         </div>
 
         {/* Findings Section */}
         <div
-          className="px-4 pb-8 sm:px-6 lg:px-8 animate-fade-in"
+          className="max-w-7xl mx-auto px-4 pb-8 sm:px-6 lg:px-8 animate-fade-in"
           style={{ animationDelay: "0.2s" }}
         >
           <FindingsList results={safeResults} />
