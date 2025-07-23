@@ -9,6 +9,16 @@
   A modern, interactive security report viewer and static HTML generator for SARIF, Semgrep, and GitLab SAST JSON files. View reports locally with advanced filtering and deduplication, or export as self-contained HTML files for sharing.
 </p>
 
+---
+
+> GitHub CLI Single Command Quick Start:
+
+```bash
+gh repo clone ICF-Next-Government/ngd-security-report-viewer && cd ngd-security-report-viewer && make start && cd ..
+```
+
+---
+
 ![ICF Security Report Viewer](./.docs/img/file-upload.webp)
 
 ![ICF Security Report Viewer](./.docs/img/json-paste.webp)
