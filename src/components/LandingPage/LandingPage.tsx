@@ -267,13 +267,21 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 </motion.div>
 
                 {/* Supported Formats */}
-                <div className="flex items-center gap-2 text-sm text-slate-400">
+                <div className="flex items-center gap-2 text-sm text-slate-400 mt-6">
                   <FileCode className="w-4 h-4" />
                   <span>Supports:</span>
-                  <div className="flex gap-2">
+                  <div className="flex items-center gap-2">
                     {supportedFormats.map((format, index) => (
-                      <span key={index} className="text-slate-300">
+                      <span
+                        key={index}
+                        className="text-slate-300 flex items-center"
+                      >
                         {format.name}
+                        {index < supportedFormats.length - 1 && (
+                          <span className="mx-2 text-slate-500 select-none">
+                            |
+                          </span>
+                        )}
                       </span>
                     ))}
                   </div>

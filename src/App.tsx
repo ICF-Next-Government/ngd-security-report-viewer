@@ -162,6 +162,35 @@ function App() {
   // Always render both views with AnimatePresence for smooth transitions
   return (
     <>
+      {/* Centered Loader Overlay */}
+      <AnimatePresence>
+        {loading && (
+          <motion.div
+            className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <motion.div
+              className="flex flex-col items-center justify-center text-center"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+            >
+              <motion.div
+                className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full mb-4"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              />
+              <p className="text-white text-lg font-medium">
+                Loading report...
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <AnimatePresence mode="wait">
         {!showReport ? (
           <motion.div
