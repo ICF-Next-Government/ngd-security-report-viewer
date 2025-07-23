@@ -1,40 +1,40 @@
 # Development Guidelines
 
-This guide ensures consistent coding standards, tooling, and workflows for the project.
+This guide ensures consistent coding standards, tooling, and workflows.
 
 ## Commands
 
-- `bun i`: Install dependencies.
+- Check `package.json`, `Makefile`, `compose.yml`, or similar (if present) for commands (e.g., install, build, test).
 - Use Bun for monorepo package management.
 
 ## Code Style
 
 - **Module System**: Use ES Modules with TypeScript.
-- **Path Aliases**:
-  - `@/*`: Project root.
-  - `@/packages/*`: Monorepo packages.
+- **Path Aliases**: Use `@/*` (project root) and `@/packages/*` (monorepo packages) for consistent imports; see `tsconfig.json` for definitions.
 - **Module Structure**:
-  - Place modules in `ModuleName/ModuleName.ts` (use `.tsx` only for JSX).
-  - Include `index.ts` (or `index.tsx` for JSX) as the single export point.
+  - Place modules in `ModuleName/ModuleName.ts` (`.tsx` for JSX only).
+  - Use `index.ts` (or `index.tsx` for JSX) as the single export point.
   - Export components as `export const ModuleName = () => {}`; use appropriate exports for non-components.
 - **Styling**:
   - Use Tailwind CSS unless impractical.
-  - Use `ModuleName.module.css` for custom CSS only when Tailwind is insufficient.
+  - Use `ModuleName.module.css` for custom CSS only if Tailwind is insufficient.
 - **TypeScript**:
   - Use `type`, not `interface`, for type definitions.
   - Use `as const` for constants, not `enum`.
 
+## React Development
+
+- **HTML Components**: Create fully typed React components for each HTML element, matching TypeScript HTML element props.
+- **Refs**: Support fully typed `React.Ref` for all HTML React components.
+- **Nested Components**: Use `<Component.SubComponent>` for nested HTML elements (e.g., `ul`, `ol`, `li`, `dd`, `dt`). Ensure `<Component>` is usable standalone. Avoid `<ComponentSubComponent>` naming.
+
 ## Workflow
 
 - **Branch Naming**: Use prefixes: `feat/` (features), `fix/` (bug fixes), `hotfix/` (urgent fixes), `release/` (release changes), `chore/` (maintenance).
-- **Code Validation**:
-  - Run type checking after changes.
-  - Execute `bun run lint` to fix formatting/linting.
-  - Periodically run `bun run build` to verify build integrity.
-  - Ensure builds and type checks pass post-changes.
-- **Testing**: Run individual tests to validate changes.
-- **Commits**: Write concise commit messages with a 1-3 sentence summary, followed by bullet points for details.
+- **Code Validation**: Type check, run linting, and periodically build (per `package.json` or similar) to ensure type safety and build integrity post-changes.
+- **Testing**: Run tests (per `package.json` or similar) to validate changes.
+- **Commits**: Write concise commit messages with a 1-3 sentence summary (≤1500 characters) and bullet points for details.
 - **Documentation**:
-  - Do not create `.md` files unless requested.
-  - Update `CHANGELOG.md` (if present) with concise, detailed commit changes.
+  - Avoid creating `.md` files unless requested.
+  - Update `CHANGELOG.md` (if present) in Keep a Changelog format (e.g., Added, Changed, Fixed) with concise, detailed commit changes.
 - **Code Examples**: Avoid sample code unless requested.
