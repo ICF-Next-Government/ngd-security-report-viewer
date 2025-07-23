@@ -44,6 +44,8 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       if (e.target.files && e.target.files[0]) {
         onFileUpload(e.target.files[0]);
+        // Reset the input to allow selecting the same file again
+        e.target.value = "";
       }
     },
     [onFileUpload],

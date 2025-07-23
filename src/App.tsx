@@ -24,6 +24,12 @@ function App() {
   const [showReport, setShowReport] = useState(false);
   const [uploadTimestamp, setUploadTimestamp] = useState<Date | null>(null);
 
+  // Recent report tracking
+  const [recentFileName, setRecentFileName] = useState<string | undefined>(
+    undefined,
+  );
+  const [isRemovingReport, setIsRemovingReport] = useState(false);
+
   // Animation state for smooth transitions between views
   const [transitioning, setTransitioning] = useState(false);
   const [pendingShowReport, setPendingShowReport] = useState<boolean | null>(
@@ -66,6 +72,7 @@ function App() {
     setLoading(true);
     setError("");
     setUploadTimestamp(new Date());
+    setRecentFileName(file.name);
 
     try {
       const fileContent = await file.text();
@@ -106,6 +113,7 @@ function App() {
     setLoading(true);
     setError("");
     setUploadTimestamp(new Date());
+    setRecentFileName(undefined); // No filename for pasted JSON
 
     try {
       const jsonData = JSON.parse(jsonInput);
@@ -139,7 +147,7 @@ function App() {
 
   /**
    * Handles navigation back to the landing page from report view
-   * Clears all report data and resets the application state
+   * Preserves report data so users can view it again
    */
   const handleBackToUpload = () => {
     // Start fade-out animation
@@ -148,14 +156,44 @@ function App() {
     setShowReport(false);
 
     setTimeout(() => {
-      // Clear all report data after animation completes
+      // Only clear transition state, keep report data
+      setTransitioning(false);
+      setPendingShowReport(null);
+    }, 550); // Allow transition to complete
+  };
+
+  /**
+   * Handles viewing the recent report again
+   */
+  const handleViewRecentReport = () => {
+    if (summary && results.length > 0) {
+      // Use same transition animation as file upload
+      setTransitioning(true);
+      setPendingShowReport(true);
+      setTimeout(() => {
+        setShowReport(true);
+      }, 50);
+      setTimeout(() => {
+        setTransitioning(false);
+        setPendingShowReport(null);
+      }, 550); // Allow transition to complete
+    }
+  };
+
+  /**
+   * Handles clearing the recent report data
+   */
+  const handleClearRecentReport = () => {
+    setIsRemovingReport(true);
+    // Wait for animation to complete before clearing data
+    setTimeout(() => {
       setResults([]);
       setSummary(null);
       setError("");
       setUploadTimestamp(null);
-      setTransitioning(false);
-      setPendingShowReport(null);
-    }, 550); // Allow transition to complete
+      setRecentFileName(undefined);
+      setIsRemovingReport(false);
+    }, 400); // Match animation duration
   };
 
   // Always render both views, control visibility with CSS
@@ -177,6 +215,19 @@ function App() {
           onJsonParse={handleJsonParse}
           loading={loading}
           error={error}
+          recentReport={
+            summary && uploadTimestamp && !isRemovingReport
+              ? {
+                  fileName: recentFileName,
+                  timestamp: uploadTimestamp,
+                  totalFindings: summary.totalFindings,
+                  criticalCount: summary.criticalCount,
+                  highCount: summary.highCount,
+                }
+              : undefined
+          }
+          onViewRecentReport={handleViewRecentReport}
+          onClearRecentReport={handleClearRecentReport}
         />
       </div>
 

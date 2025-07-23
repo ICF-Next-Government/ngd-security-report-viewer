@@ -11,7 +11,6 @@ import {
   CheckCircle,
   Copy,
   FileCode,
-  ArrowRight,
   Github,
 } from "lucide-react";
 
@@ -20,6 +19,15 @@ type LandingPageProps = {
   onJsonParse: (json: string) => void;
   loading: boolean;
   error?: string;
+  recentReport?: {
+    fileName?: string;
+    timestamp: Date;
+    totalFindings: number;
+    criticalCount: number;
+    highCount: number;
+  };
+  onViewRecentReport?: () => void;
+  onClearRecentReport?: () => void;
 };
 
 export const LandingPage: React.FC<LandingPageProps> = ({
@@ -27,7 +35,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   onJsonParse,
   loading,
   error,
+  recentReport,
+  onViewRecentReport,
+  onClearRecentReport,
 }) => {
+  const [isRemoving, setIsRemoving] = useState(false);
   const [inputMode, setInputMode] = useState<"upload" | "paste">("upload");
   const [dragActive, setDragActive] = useState(false);
   const [jsonInput, setJsonInput] = useState("");
@@ -85,6 +97,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       if (e.target.files && e.target.files[0]) {
         onFileUpload(e.target.files[0]);
+        // Reset the input to allow selecting the same file again
+        e.target.value = "";
       }
     },
     [onFileUpload],
@@ -418,6 +432,105 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     </div>
                   )}
                 </div>
+
+                {/* Recent Report Card */}
+                {recentReport && onViewRecentReport && (
+                  <div className="mt-8 overflow-hidden">
+                    <div
+                      className={
+                        isRemoving ? "animate-slide-down" : "animate-slide-up"
+                      }
+                    >
+                      <div className="relative bg-slate-800/30 backdrop-blur-sm border border-slate-700 rounded-xl p-6 hover:bg-slate-800/50 hover:border-slate-600 transition-all duration-200 group">
+                        {/* Clear button */}
+                        {onClearRecentReport && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setIsRemoving(true);
+                              setTimeout(() => {
+                                onClearRecentReport();
+                                setIsRemoving(false);
+                              }, 400);
+                            }}
+                            className="absolute top-4 right-4 p-1.5 text-slate-500 hover:text-slate-300 hover:bg-slate-700/50 rounded-lg transition-all duration-200"
+                            title="Clear recent report"
+                          >
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M6 18L18 6M6 6l12 12"
+                              />
+                            </svg>
+                          </button>
+                        )}
+
+                        <button
+                          onClick={onViewRecentReport}
+                          className="w-full text-left"
+                        >
+                          <div className="pr-12">
+                            <div className="flex items-center gap-2 mb-3">
+                              <FileText className="w-5 h-5 text-blue-400" />
+                              <h3 className="text-lg font-semibold text-white">
+                                Recent Report
+                              </h3>
+                            </div>
+
+                            <div className="space-y-2">
+                              {recentReport.fileName && (
+                                <p className="text-sm text-slate-400 truncate">
+                                  {recentReport.fileName}
+                                </p>
+                              )}
+
+                              <div className="flex items-center gap-4 text-sm">
+                                <span className="text-slate-500">
+                                  {recentReport.timestamp.toLocaleString(
+                                    "en-US",
+                                    {
+                                      month: "short",
+                                      day: "numeric",
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    },
+                                  )}
+                                </span>
+
+                                <span className="text-slate-300">
+                                  {recentReport.totalFindings} findings
+                                </span>
+                              </div>
+
+                              {(recentReport.criticalCount > 0 ||
+                                recentReport.highCount > 0) && (
+                                <div className="flex items-center gap-3 mt-3">
+                                  {recentReport.criticalCount > 0 && (
+                                    <span className="inline-flex items-center px-2 py-1 rounded-md bg-red-900/30 text-red-300 text-xs font-medium">
+                                      {recentReport.criticalCount} Critical
+                                    </span>
+                                  )}
+                                  {recentReport.highCount > 0 && (
+                                    <span className="inline-flex items-center px-2 py-1 rounded-md bg-orange-900/30 text-orange-300 text-xs font-medium">
+                                      {recentReport.highCount} High
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -461,7 +574,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         </div>
       )}
 
-      <style>{`
+      <style>
+        {`
         @keyframes blob {
           0% {
             transform: translate(0px, 0px) scale(1);
@@ -509,7 +623,34 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         .animate-scale-in {
           animation: scale-in 0.3s ease-out;
         }
-      `}</style>
+        @keyframes slide-up {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-slide-up {
+          animation: slide-up 0.4s ease-out;
+        }
+        @keyframes slide-down {
+          from {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          to {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+        }
+        .animate-slide-down {
+          animation: slide-down 0.4s ease-out forwards;
+        }
+      `}
+      </style>
     </div>
   );
 };
