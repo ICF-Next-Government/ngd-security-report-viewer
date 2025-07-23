@@ -82,13 +82,6 @@ test-outputs/
 scan-results/
 security-reports/
 
-# Sample data (except the one we keep)
-*.json
-!package.json
-!tsconfig*.json
-!biome.json
-!sample-sast.json
-
 # Misc
 *.bak
 *.orig
@@ -101,3 +94,6 @@ security-reports/
 debug/
 *.map
 *.map.json
+
+# Sample data (except the one we keep)
+!*.json
