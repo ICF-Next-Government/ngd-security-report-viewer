@@ -190,7 +190,7 @@ export const FindingsList: React.FC<FindingsListProps> = ({ results }) => {
             <select
               value={severityFilter}
               onChange={(e) => setSeverityFilter(e.target.value)}
-              className="pl-10 pr-3 py-2 bg-slate-800/50 backdrop-blur-sm border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+              className="pl-10 pr-4 py-3 bg-slate-800/50 backdrop-blur-sm border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
             >
               <option value="all">All Severities</option>
               <option value="critical">Critical</option>

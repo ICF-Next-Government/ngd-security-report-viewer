@@ -205,13 +205,17 @@ export const ReportSummary: React.FC<ReportSummaryProps> = ({
         <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-6 hover:border-slate-600 transition-all">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-slate-400 mb-1">Security Score</p>
+              <p className="text-sm text-slate-400 mb-1">Severity Level</p>
               <p className="text-3xl font-bold text-white">
-                {safeSummary.criticalCount > 0 || safeSummary.highCount > 0
-                  ? "Needs Attention"
-                  : safeSummary.mediumCount > 0
-                    ? "Fair"
-                    : "Good"}
+                {safeSummary.criticalCount > 0
+                  ? "Critical"
+                  : safeSummary.highCount > 0
+                    ? "High"
+                    : safeSummary.mediumCount > 0
+                      ? "Medium"
+                      : safeSummary.lowCount > 0
+                        ? "Low"
+                        : "Info"}
               </p>
             </div>
             <div className="p-3 bg-green-900/30 rounded-full">
