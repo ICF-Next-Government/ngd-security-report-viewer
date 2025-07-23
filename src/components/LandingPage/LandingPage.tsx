@@ -496,17 +496,23 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   </AnimatePresence>
                 </div>
 
+                <div className="gap-4" />
+
                 {/* Recent Report Card */}
                 <AnimatePresence>
                   {recentReport && onViewRecentReport && (
                     <motion.div
-                      className="mt-8"
+                      className="mt-4"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 20 }}
                       transition={{ duration: 0.4, ease: "easeOut" }}
                     >
-                      <div className="relative bg-slate-800/30 backdrop-blur-sm border border-slate-700 rounded-xl p-6 hover:bg-slate-800/50 hover:border-slate-600 transition-all duration-200 group">
+                      <div
+                        className="relative bg-slate-800/40 backdrop-blur border border-slate-700 rounded-2xl p-6 hover:bg-slate-800/60 hover:border-slate-500 transition-all duration-200 group shadow-lg"
+                        tabIndex={0}
+                        aria-label="Recent Report"
+                      >
                         {/* Clear button */}
                         {onClearRecentReport && (
                           <button
@@ -518,8 +524,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                                 setIsRemoving(false);
                               }, 400);
                             }}
-                            className="absolute top-4 right-4 p-1.5 text-slate-500 hover:text-slate-300 hover:bg-slate-700/50 rounded-lg transition-all duration-200"
+                            className="absolute top-4 right-4 p-2 text-slate-500 hover:text-white hover:bg-red-700/40 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400"
                             title="Clear recent report"
+                            aria-label="Clear recent report"
                           >
                             <svg
                               className="w-4 h-4"
@@ -539,28 +546,46 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
                         <button
                           onClick={onViewRecentReport}
-                          className="w-full text-left"
+                          className="w-full text-left focus:outline-none focus:ring-2 focus:ring-blue-400 rounded-xl"
+                          aria-label="View recent report"
                         >
-                          <div className="pr-12">
-                            <div className="flex items-center gap-2 mb-3">
-                              <FileText className="w-5 h-5 text-blue-400" />
-                              <h3 className="text-lg font-semibold text-white">
+                          <div className="pr-10">
+                            <div className="flex items-center gap-2 mb-2">
+                              <FileText className="w-6 h-6 text-blue-400" />
+                              <h3 className="text-xl font-bold text-white tracking-tight">
                                 Recent Report
                               </h3>
                             </div>
 
-                            <div className="space-y-2">
+                            <div className="space-y-1">
                               {recentReport.fileName && (
-                                <p className="text-sm text-slate-400 truncate">
+                                <p
+                                  className="text-base text-slate-200 font-medium truncate mb-1"
+                                  title={recentReport.fileName}
+                                >
                                   {recentReport.fileName}
                                 </p>
                               )}
 
-                              <div className="flex items-center gap-4 text-sm">
-                                <span className="text-slate-500">
+                              <div className="flex items-center gap-6 text-sm mt-2 mb-8">
+                                <span className="flex items-center gap-1 text-slate-400">
+                                  <svg
+                                    className="w-4 h-4 text-slate-500"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                    />
+                                  </svg>
                                   {recentReport.timestamp.toLocaleString(
                                     "en-US",
                                     {
+                                      year: "numeric",
                                       month: "short",
                                       day: "numeric",
                                       hour: "2-digit",
@@ -569,21 +594,63 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                                   )}
                                 </span>
 
-                                <span className="text-slate-300">
+                                <span className="flex items-center gap-1 text-slate-300 font-semibold">
+                                  <svg
+                                    className="w-4 h-4 text-yellow-400"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M12 12v.01M12 8v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                    />
+                                  </svg>
                                   {recentReport.totalFindings} findings
                                 </span>
                               </div>
 
                               {(recentReport.criticalCount > 0 ||
                                 recentReport.highCount > 0) && (
-                                <div className="flex items-center gap-3 mt-3">
+                                <div
+                                  className="flex items-center gap-2"
+                                  style={{ marginTop: "1rem" }}
+                                >
                                   {recentReport.criticalCount > 0 && (
-                                    <span className="inline-flex items-center px-2 py-1 rounded-md bg-red-900/30 text-red-300 text-xs font-medium">
+                                    <span className="inline-flex items-center px-2 py-1 rounded-md bg-red-900/60 text-red-200 text-xs font-semibold shadow-sm border border-red-800">
+                                      <svg
+                                        className="w-3 h-3 mr-1"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={2}
+                                          d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                        />
+                                      </svg>
                                       {recentReport.criticalCount} Critical
                                     </span>
                                   )}
                                   {recentReport.highCount > 0 && (
-                                    <span className="inline-flex items-center px-2 py-1 rounded-md bg-orange-900/30 text-orange-300 text-xs font-medium">
+                                    <span className="inline-flex items-center px-2 py-1 rounded-md bg-orange-900/50 text-orange-200 text-xs font-semibold shadow-sm border border-orange-800">
+                                      <svg
+                                        className="w-3 h-3 mr-1"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={2}
+                                          d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                        />
+                                      </svg>
                                       {recentReport.highCount} High
                                     </span>
                                   )}
@@ -638,14 +705,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             transition={{ duration: 0.2 }}
           >
             <motion.div
-              className="text-center"
+              className="flex flex-col items-center justify-center text-center"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.3 }}
             >
               <motion.div
-                className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full mb-4"
+                className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full mb-4 mx-auto"
                 animate={{ rotate: 360 }}
                 transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
               />
