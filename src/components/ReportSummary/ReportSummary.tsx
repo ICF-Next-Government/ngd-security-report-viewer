@@ -1,5 +1,6 @@
 import { AlertTriangle, CheckCircle, Info } from "lucide-react";
 import React, { useMemo } from "react";
+import { motion } from "motion/react";
 import {
   ProcessedResult,
   ReportSummary as ReportSummaryType,
@@ -59,11 +60,11 @@ export const ReportSummary: React.FC<ReportSummaryProps> = ({
     {
       label: "Medium",
       count: safeSummary.mediumCount || 0,
-      color: "bg-amber-500",
-      bgColor: "bg-amber-900/20",
-      textColor: "text-amber-300",
-      borderColor: "border-amber-700",
-      icon: Info,
+      color: "bg-yellow-500",
+      bgColor: "bg-yellow-900/20",
+      textColor: "text-yellow-300",
+      borderColor: "border-yellow-700",
+      icon: AlertTriangle,
     },
     {
       label: "Low",
@@ -77,284 +78,188 @@ export const ReportSummary: React.FC<ReportSummaryProps> = ({
     {
       label: "Info",
       count: safeSummary.infoCount || 0,
-      color: "bg-slate-500",
-      bgColor: "bg-slate-800/50",
-      textColor: "text-slate-300",
-      borderColor: "border-slate-600",
-      icon: CheckCircle,
+      color: "bg-gray-500",
+      bgColor: "bg-gray-900/20",
+      textColor: "text-gray-300",
+      borderColor: "border-gray-700",
+      icon: Info,
     },
   ];
 
+  // Calculate deduplication stats if results are provided
   const deduplicationStats = useMemo(() => {
     if (!results || results.length === 0) return null;
 
-    const groups = DeduplicationService.deduplicateFindings(results);
-    const totalDuplicates = results.length - groups.length;
-    const duplicatePercentage = (
-      (totalDuplicates / results.length) *
-      100
-    ).toFixed(1);
+    const deduplicatedGroups = DeduplicationService.deduplicateFindings(
+      results,
+      {
+        groupByRuleId: true,
+        groupBySimilarMessage: true,
+        similarityThreshold: 0.85,
+      },
+    );
+
+    const totalDuplicates = results.length - deduplicatedGroups.length;
+    const duplicatePercentage =
+      results.length > 0
+        ? ((totalDuplicates / results.length) * 100).toFixed(1)
+        : "0";
 
     return {
-      uniqueGroups: groups.length,
+      uniqueGroups: deduplicatedGroups.length,
       totalDuplicates,
       duplicatePercentage,
     };
   }, [results]);
 
   return (
-    <div className="space-y-8">
-      {/* Report Overview */}
-      <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-4 shadow-lg">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <svg
-              className="h-5 w-5 text-blue-400"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h8l4 4v12a2 2 0 01-2 2z"
-              />
-            </svg>
-            <h2 className="text-lg font-semibold text-white">Overview</h2>
-          </div>
-          <span className="text-xs text-slate-400">
-            {safeSummary.toolName}
-            {safeSummary.toolVersion ? ` v${safeSummary.toolVersion}` : ""}
+    <div className="space-y-6">
+      {/* Header with tool info */}
+      <motion.div
+        className="text-center"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <h2 className="text-2xl font-bold text-white mb-2">
+          Security Analysis Report
+        </h2>
+        <div className="flex items-center justify-center gap-4 text-sm text-slate-400">
+          <span>
+            Tool: {safeSummary.toolName}
+            {safeSummary.toolVersion && ` v${safeSummary.toolVersion}`}
           </span>
+          <span>•</span>
+          <span>Format: {safeSummary.format.toUpperCase()}</span>
+          <span>•</span>
+          <span>{safeSummary.filesAffected} files affected</span>
         </div>
+      </motion.div>
 
-        <div className="grid grid-cols-3 gap-3">
-          <div className="bg-blue-900/20 rounded-md p-3 border border-blue-500 border-opacity-50 hover:border-opacity-70 transition-all">
-            <div className="flex items-start gap-2">
-              <div className="p-2 bg-blue-500/20 rounded-lg flex-shrink-0">
-                <svg
-                  className="h-4 w-4 text-blue-400"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-              <div>
-                <p className="text-[10px] text-white uppercase tracking-wider font-medium mb-1">
-                  Findings
-                </p>
-                <p className="text-2xl font-bold text-white leading-none">
-                  {safeSummary.totalFindings.toLocaleString()}
-                </p>
-              </div>
+      {/* Severity breakdown cards */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        {severityCards.map((card, index) => (
+          <motion.div
+            key={card.label}
+            className={`${card.bgColor} ${card.borderColor} backdrop-blur-sm rounded-lg border p-4 hover:shadow-lg transition-all`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: index * 0.05 }}
+            whileHover={{ scale: 1.05 }}
+          >
+            <div className="flex items-start justify-between mb-2">
+              <card.icon className={`h-5 w-5 ${card.textColor}`} />
+              <span className={`text-xs font-medium ${card.textColor}`}>
+                {card.label}
+              </span>
             </div>
-          </div>
-
-          <div className="bg-amber-900/20 rounded-md p-3 border border-amber-500 border-opacity-50 hover:border-opacity-70 transition-all">
-            <div className="flex items-start gap-2">
-              <div className="p-2 bg-amber-500/20 rounded-lg flex-shrink-0">
-                <svg
-                  className="h-4 w-4 text-amber-400"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
-                </svg>
-              </div>
-              <div>
-                <p className="text-[10px] text-white uppercase tracking-wider font-medium mb-1">
-                  Files
-                </p>
-                <p className="text-2xl font-bold text-white leading-none">
-                  {safeSummary.filesAffected.toLocaleString()}
-                </p>
-              </div>
+            <div className={`text-2xl font-bold ${card.textColor}`}>
+              {card.count}
             </div>
-          </div>
-
-          <div className="bg-purple-900/20 rounded-md p-3 border border-purple-500 border-opacity-50 hover:border-opacity-70 transition-all">
-            <div className="flex items-start gap-2">
-              <div className="p-2 bg-purple-500/20 rounded-lg flex-shrink-0">
-                <svg
-                  className="h-4 w-4 text-purple-400"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                  />
-                </svg>
-              </div>
-              <div>
-                <p className="text-[10px] text-white uppercase tracking-wider font-medium mb-1">
-                  Severity
-                </p>
-                <div className="flex items-center gap-1.5">
-                  <span
-                    className={`text-xl font-bold leading-none ${
-                      safeSummary.criticalCount > 0
-                        ? "text-red-400"
-                        : safeSummary.highCount > 0
-                          ? "text-orange-400"
-                          : safeSummary.mediumCount > 0
-                            ? "text-amber-400"
-                            : safeSummary.lowCount > 0
-                              ? "text-blue-400"
-                              : "text-slate-400"
-                    }`}
-                  >
-                    {safeSummary.criticalCount > 0
-                      ? "Critical"
-                      : safeSummary.highCount > 0
-                        ? "High"
-                        : safeSummary.mediumCount > 0
-                          ? "Medium"
-                          : safeSummary.lowCount > 0
-                            ? "Low"
-                            : "Info"}
-                  </span>
-                  <div
-                    className={`w-1.5 h-1.5 rounded-full ${
-                      safeSummary.criticalCount > 0
-                        ? "bg-red-500"
-                        : safeSummary.highCount > 0
-                          ? "bg-orange-500"
-                          : safeSummary.mediumCount > 0
-                            ? "bg-amber-500"
-                            : safeSummary.lowCount > 0
-                              ? "bg-blue-500"
-                              : "bg-slate-500"
-                    }`}
-                  ></div>
-                </div>
-              </div>
+            <div className="text-xs text-slate-500 mt-1">
+              {safeSummary.totalFindings > 0
+                ? `${((card.count / safeSummary.totalFindings) * 100).toFixed(
+                    1,
+                  )}%`
+                : "0%"}
             </div>
-          </div>
-        </div>
-
-        {/* Deduplication Stats Integrated */}
-        {deduplicationStats && deduplicationStats.totalDuplicates > 0 && (
-          <div className="mt-4">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <svg
-                  className="h-4 w-4 text-purple-400"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
-                  />
-                </svg>
-                <span className="text-xs font-medium text-white">
-                  Deduplication Analysis
-                </span>
-              </div>
-              <div className="flex items-center divide-x divide-slate-600/50 text-xs">
-                <div className="flex items-center gap-2 px-3 first:pl-0">
-                  <span className="text-slate-400">Groups:</span>
-                  <span className="font-medium text-white">
-                    {deduplicationStats.uniqueGroups}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 px-3">
-                  <span className="text-slate-400">Duplicates:</span>
-                  <span className="font-medium text-orange-300">
-                    {deduplicationStats.totalDuplicates}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 px-3 last:pr-0">
-                  <span className="text-slate-400">Rate:</span>
-                  <span className="font-medium text-orange-300">
-                    {deduplicationStats.duplicatePercentage}%
-                  </span>
-                </div>
-              </div>
-            </div>
-            <p className="text-[10px] text-slate-400 mt-2">
-              Similar issues have been automatically grouped to reduce noise in
-              the report.
-            </p>
-          </div>
-        )}
+          </motion.div>
+        ))}
       </div>
 
-      {/* Severity Summary */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        {severityCards.map((card) => {
-          const Icon = card.icon;
-          return (
-            <div
-              key={card.label}
-              className={`${card.bgColor} ${card.borderColor} backdrop-blur-sm rounded-lg border p-6 transition-all hover:scale-105 hover:shadow-lg`}
-            >
-              <div className="flex items-center justify-between mb-3">
-                <Icon className={`h-5 w-5 ${card.textColor}`} />
-                {card.count > 0 && (
-                  <div className={`w-3 h-3 rounded-full ${card.color}`}></div>
-                )}
+      {/* Summary stats */}
+      <motion.div
+        className="grid grid-cols-1 md:grid-cols-3 gap-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+      >
+        <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-6 hover:border-slate-600 transition-all">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-slate-400 mb-1">Total Findings</p>
+              <p className="text-3xl font-bold text-white">
+                {safeSummary.totalFindings}
+              </p>
+            </div>
+            <div className="p-3 bg-blue-900/30 rounded-full">
+              <AlertTriangle className="h-6 w-6 text-blue-400" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-6 hover:border-slate-600 transition-all">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-slate-400 mb-1">Files Affected</p>
+              <p className="text-3xl font-bold text-white">
+                {safeSummary.filesAffected}
+              </p>
+            </div>
+            <div className="p-3 bg-purple-900/30 rounded-full">
+              <Info className="h-6 w-6 text-purple-400" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-6 hover:border-slate-600 transition-all">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-slate-400 mb-1">Security Score</p>
+              <p className="text-3xl font-bold text-white">
+                {safeSummary.criticalCount > 0 || safeSummary.highCount > 0
+                  ? "Needs Attention"
+                  : safeSummary.mediumCount > 0
+                    ? "Fair"
+                    : "Good"}
+              </p>
+            </div>
+            <div className="p-3 bg-green-900/30 rounded-full">
+              <CheckCircle className="h-6 w-6 text-green-400" />
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Deduplication Stats */}
+      {deduplicationStats && deduplicationStats.totalDuplicates > 0 && (
+        <motion.div
+          className="bg-slate-800/30 backdrop-blur-sm rounded-lg border border-slate-700 p-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-purple-900/30 rounded-lg">
+                <Info className="h-5 w-5 text-purple-400" />
               </div>
-              <div className="space-y-1">
-                <p className="text-2xl font-bold text-white">{card.count}</p>
-                <p className={`text-sm font-medium ${card.textColor}`}>
-                  {card.label}
+              <div>
+                <h3 className="text-sm font-medium text-white">
+                  Deduplication Active
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  {deduplicationStats.totalDuplicates} duplicate findings hidden
                 </p>
               </div>
             </div>
-          );
-        })}
-      </div>
-
-      {/* Progress Bar */}
-      <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-6 shadow-lg">
-        <h3 className="text-lg font-semibold text-white mb-4">
-          Severity Distribution
-        </h3>
-        <div className="w-full bg-slate-700 rounded-full h-3 overflow-hidden">
-          <div className="h-full flex">
-            {severityCards.map((card) => {
-              const percentage =
-                safeSummary.totalFindings > 0
-                  ? (card.count / safeSummary.totalFindings) * 100
-                  : 0;
-              return (
-                <div
-                  key={card.label}
-                  className={card.color}
-                  style={{ width: `${percentage}%` }}
-                  title={`${card.label}: ${card.count} (${percentage.toFixed(1)}%)`}
-                ></div>
-              );
-            })}
+            <div className="flex items-center gap-4">
+              <div className="text-right">
+                <p className="text-xs text-slate-400">Unique Groups</p>
+                <p className="text-lg font-bold text-white">
+                  {deduplicationStats.uniqueGroups}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-xs text-slate-400">Reduction</p>
+                <p className="text-lg font-bold text-purple-400">
+                  {deduplicationStats.duplicatePercentage}%
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
-        <div className="flex justify-between text-xs text-slate-400 mt-2">
-          <span>0</span>
-          <span>{safeSummary.totalFindings} total findings</span>
-        </div>
-      </div>
+        </motion.div>
+      )}
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import { ArrowLeft, Download, Shield } from "lucide-react";
 import React, { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { generateStaticHtml } from "@/shared/static-html-export";
 import {
   ProcessedResult,
@@ -226,9 +227,19 @@ export const ReportView: React.FC<ReportViewProps> = ({
   }, [exportSuccess]);
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <motion.div
+      className="min-h-screen bg-slate-900"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
       {/* Navigation header with export functionality */}
-      <nav className="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700 sticky top-0 z-50">
+      <motion.nav
+        className="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700 sticky top-0 z-50"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between h-auto sm:h-16 py-2 sm:py-0 gap-2 sm:gap-0">
             <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto space-x-2 sm:space-x-4">
@@ -282,49 +293,70 @@ export const ReportView: React.FC<ReportViewProps> = ({
                 </button>
 
                 {/* Error/Success Messages */}
-                {(exportError || exportSuccess) && (
-                  <div
-                    className={`absolute top-full mt-2 right-0 w-64 sm:w-80 p-3 rounded-lg shadow-xl ${
-                      exportError
-                        ? "bg-red-900/90 border border-red-700"
-                        : "bg-green-900/90 border border-green-700"
-                    } backdrop-blur-sm z-50`}
-                  >
-                    <p
-                      className={`text-sm ${exportError ? "text-red-200" : "text-green-200"}`}
+                <AnimatePresence>
+                  {(exportError || exportSuccess) && (
+                    <motion.div
+                      className={`absolute top-full mt-2 right-0 w-64 sm:w-80 p-3 rounded-lg shadow-xl ${
+                        exportError
+                          ? "bg-red-900/90 border border-red-700"
+                          : "bg-green-900/90 border border-green-700"
+                      } backdrop-blur-sm z-50`}
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
                     >
-                      {exportError || "Report exported successfully!"}
-                    </p>
-                  </div>
-                )}
+                      <p
+                        className={`text-sm ${exportError ? "text-red-200" : "text-green-200"}`}
+                      >
+                        {exportError || "Report exported successfully!"}
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
           </div>
         </div>
-      </nav>
+      </motion.nav>
 
       {/* Sticky Back to Upload button for mobile */}
-      <button
+      <motion.button
         onClick={onBack}
         className="fixed bottom-4 left-4 z-50 flex items-center px-4 py-2 rounded-lg bg-slate-800/90 border border-slate-700 text-slate-200 shadow-lg backdrop-blur-md transition-all hover:bg-slate-700/90 active:scale-95 sm:hidden"
         style={{ boxShadow: "0 2px 12px 0 rgba(30,41,59,0.25)" }}
+        initial={{ opacity: 0, x: -50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.4, delay: 0.3 }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
       >
         <ArrowLeft className="h-4 w-4 mr-2" />
         Back
-      </button>
+      </motion.button>
 
       {/* Content */}
       <div>
         {/* Summary Section */}
-        <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+        <motion.div
+          className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
           <ReportSummary summary={safeSummary} results={safeResults} />
-        </div>
+        </motion.div>
 
         {/* Findings Section */}
-        <div className="max-w-7xl mx-auto px-4 pb-8 sm:px-6 lg:px-8">
+        <motion.div
+          className="max-w-7xl mx-auto px-4 pb-8 sm:px-6 lg:px-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
           <FindingsList results={safeResults} />
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 };

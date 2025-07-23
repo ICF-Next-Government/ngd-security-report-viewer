@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import { LandingPage } from "@/components/LandingPage";
 import { ReportView } from "@/components/ReportView";
 import { ProcessedResult, ReportSummary } from "@/types/report";
@@ -30,19 +31,13 @@ function App() {
   );
   const [isRemovingReport, setIsRemovingReport] = useState(false);
 
-  // Animation state for smooth transitions between views
-  const [transitioning, setTransitioning] = useState(false);
-  const [pendingShowReport, setPendingShowReport] = useState<boolean | null>(
-    null,
-  );
-
   /**
    * Manages document scrollbar visibility based on the current view
    * - Report view: Hidden overflow (report has its own scrolling)
    * - Landing page: Auto overflow with hidden scrollbar (custom styling)
    */
   useEffect(() => {
-    if (showReport || (transitioning && pendingShowReport)) {
+    if (showReport) {
       // Report view - prevent document scrolling
       document.documentElement.style.overflow = "hidden";
       document.body.style.overflow = "hidden";
@@ -62,7 +57,7 @@ function App() {
       document.documentElement.classList.remove("no-scrollbar");
       document.body.classList.remove("no-scrollbar");
     };
-  }, [showReport, transitioning, pendingShowReport]);
+  }, [showReport]);
 
   /**
    * Handles file upload from the drag-and-drop interface
@@ -83,16 +78,8 @@ function App() {
       setResults(parsed.results);
       setSummary(parsed.summary);
 
-      // Trigger smooth transition animation to report view
-      setTransitioning(true);
-      setPendingShowReport(true);
-      setTimeout(() => {
-        setShowReport(true);
-      }, 50);
-      setTimeout(() => {
-        setTransitioning(false);
-        setPendingShowReport(null);
-      }, 550); // Allow transition to complete
+      // Show report view with smooth animation
+      setShowReport(true);
     } catch (err) {
       console.error("Parse error:", err);
       setError(
@@ -123,16 +110,8 @@ function App() {
       setResults(parsed.results);
       setSummary(parsed.summary);
 
-      // Trigger smooth transition animation to report view
-      setTransitioning(true);
-      setPendingShowReport(true);
-      setTimeout(() => {
-        setShowReport(true);
-      }, 50);
-      setTimeout(() => {
-        setTransitioning(false);
-        setPendingShowReport(null);
-      }, 550); // Allow transition to complete
+      // Show report view with smooth animation
+      setShowReport(true);
     } catch (err) {
       console.error("Parse error:", err);
       setError(
@@ -150,16 +129,8 @@ function App() {
    * Preserves report data so users can view it again
    */
   const handleBackToUpload = () => {
-    // Start fade-out animation
-    setTransitioning(true);
-    setPendingShowReport(false);
+    // Navigate back to landing page
     setShowReport(false);
-
-    setTimeout(() => {
-      // Only clear transition state, keep report data
-      setTransitioning(false);
-      setPendingShowReport(null);
-    }, 550); // Allow transition to complete
   };
 
   /**
@@ -167,16 +138,8 @@ function App() {
    */
   const handleViewRecentReport = () => {
     if (summary && results.length > 0) {
-      // Use same transition animation as file upload
-      setTransitioning(true);
-      setPendingShowReport(true);
-      setTimeout(() => {
-        setShowReport(true);
-      }, 50);
-      setTimeout(() => {
-        setTransitioning(false);
-        setPendingShowReport(null);
-      }, 550); // Allow transition to complete
+      // Show report view with smooth animation
+      setShowReport(true);
     }
   };
 
@@ -196,65 +159,64 @@ function App() {
     }, 400); // Match animation duration
   };
 
-  // Always render both views, control visibility with CSS
+  // Always render both views with AnimatePresence for smooth transitions
   return (
     <>
-      {/* Landing Page Layer */}
-      <div
-        className={`fixed inset-0 transition-all duration-500 ${
-          showReport || transitioning
-            ? "opacity-0 pointer-events-none"
-            : "opacity-100"
-        }`}
-        style={{
-          transform: showReport || transitioning ? "scale(0.95)" : "scale(1)",
-        }}
-      >
-        <LandingPage
-          onFileUpload={handleFileUpload}
-          onJsonParse={handleJsonParse}
-          loading={loading}
-          error={error}
-          recentReport={
-            summary && uploadTimestamp && !isRemovingReport
-              ? {
-                  fileName: recentFileName,
-                  timestamp: uploadTimestamp,
-                  totalFindings: summary.totalFindings,
-                  criticalCount: summary.criticalCount,
-                  highCount: summary.highCount,
-                }
-              : undefined
-          }
-          onViewRecentReport={handleViewRecentReport}
-          onClearRecentReport={handleClearRecentReport}
-        />
-      </div>
-
-      {/* Report View Layer */}
-      {summary && (
-        <div
-          className={`fixed inset-0 min-h-screen w-screen report-scrollbar transition-all duration-500 ${
-            showReport && !transitioning
-              ? "opacity-100"
-              : "opacity-0 pointer-events-none"
-          }`}
-          style={{
-            background:
-              "linear-gradient(to bottom right, #0f172a, #1e293b 80%)",
-            overflowY: "auto",
-            transform:
-              showReport && !transitioning ? "scale(1)" : "scale(1.05)",
-          }}
-        >
-          <ReportView
-            results={results}
-            summary={summary}
-            onBack={handleBackToUpload}
-            uploadTimestamp={uploadTimestamp}
-          />
-        </div>
-      )}
+      <AnimatePresence mode="wait">
+        {!showReport ? (
+          <motion.div
+            key="landing"
+            className="fixed inset-0"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+          >
+            <LandingPage
+              onFileUpload={handleFileUpload}
+              onJsonParse={handleJsonParse}
+              loading={loading}
+              error={error}
+              recentReport={
+                summary && uploadTimestamp && !isRemovingReport
+                  ? {
+                      fileName: recentFileName,
+                      timestamp: uploadTimestamp,
+                      totalFindings: summary.totalFindings,
+                      criticalCount: summary.criticalCount,
+                      highCount: summary.highCount,
+                    }
+                  : undefined
+              }
+              onViewRecentReport={handleViewRecentReport}
+              onClearRecentReport={handleClearRecentReport}
+            />
+          </motion.div>
+        ) : (
+          summary && (
+            <motion.div
+              key="report"
+              className="fixed inset-0 min-h-screen w-screen report-scrollbar"
+              style={{
+                background:
+                  "linear-gradient(to bottom right, #0f172a, #1e293b 80%)",
+                overflowY: "auto",
+              }}
+              initial={{ opacity: 0, scale: 1.05 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.05 }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+            >
+              <ReportView
+                results={results}
+                summary={summary}
+                onBack={handleBackToUpload}
+                uploadTimestamp={uploadTimestamp}
+              />
+            </motion.div>
+          )
+        )}
+      </AnimatePresence>
 
       <style>
         {`

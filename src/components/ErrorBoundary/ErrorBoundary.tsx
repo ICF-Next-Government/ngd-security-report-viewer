@@ -1,5 +1,11 @@
-import { AlertTriangle, Home, RefreshCw } from "lucide-react";
-import React, { Component, ErrorInfo, ReactNode } from "react";
+import {
+  AlertTriangle,
+  Home,
+  RefreshCw,
+  Copy,
+  CheckCircle,
+} from "lucide-react";
+import React, { Component, ErrorInfo, ReactNode, useState } from "react";
 
 type Props = {
   children: ReactNode;
@@ -10,6 +16,7 @@ type State = {
   hasError: boolean;
   error: Error | null;
   errorInfo: ErrorInfo | null;
+  copiedStackTrace: boolean;
 };
 
 export class ErrorBoundary extends Component<Props, State> {
@@ -19,6 +26,7 @@ export class ErrorBoundary extends Component<Props, State> {
       hasError: false,
       error: null,
       errorInfo: null,
+      copiedStackTrace: false,
     };
   }
 
@@ -27,6 +35,7 @@ export class ErrorBoundary extends Component<Props, State> {
       hasError: true,
       error,
       errorInfo: null,
+      copiedStackTrace: false,
     };
   }
 
@@ -43,6 +52,7 @@ export class ErrorBoundary extends Component<Props, State> {
       hasError: false,
       error: null,
       errorInfo: null,
+      copiedStackTrace: false,
     });
   };
 
@@ -52,6 +62,18 @@ export class ErrorBoundary extends Component<Props, State> {
 
   handleGoHome = () => {
     window.location.href = "/";
+  };
+
+  handleCopyFullError = () => {
+    if (this.state.error) {
+      const fullError = `Error: ${this.state.error.toString()}\n\nStack Trace:\n${this.state.error.stack || "No stack trace available"}\n\nComponent Stack:\n${this.state.errorInfo?.componentStack || "No component stack available"}`;
+      navigator.clipboard.writeText(fullError).then(() => {
+        this.setState({ copiedStackTrace: true });
+        setTimeout(() => {
+          this.setState({ copiedStackTrace: false });
+        }, 2000);
+      });
+    }
   };
 
   render() {
@@ -80,9 +102,28 @@ export class ErrorBoundary extends Component<Props, State> {
 
               {this.state.error && (
                 <div className="mb-6">
-                  <h2 className="text-lg font-semibold text-red-300 mb-2">
-                    Error Details
-                  </h2>
+                  <div className="flex items-center justify-between mb-2">
+                    <h2 className="text-lg font-semibold text-red-300">
+                      Error Details
+                    </h2>
+                    <button
+                      onClick={this.handleCopyFullError}
+                      className="flex items-center gap-1 px-3 py-1.5 text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 rounded transition-colors duration-200"
+                      title="Copy full error details"
+                    >
+                      {this.state.copiedStackTrace ? (
+                        <>
+                          <CheckCircle className="h-3 w-3" />
+                          <span>Copied!</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="h-3 w-3" />
+                          <span>Copy Error</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                   <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-700">
                     <p className="text-red-400 font-mono text-sm mb-2">
                       {this.state.error.toString()}
@@ -92,9 +133,11 @@ export class ErrorBoundary extends Component<Props, State> {
                         <summary className="cursor-pointer text-slate-400 hover:text-slate-300 text-sm">
                           Show stack trace
                         </summary>
-                        <pre className="mt-2 text-xs text-slate-500 overflow-auto max-h-64">
-                          {this.state.errorInfo.componentStack}
-                        </pre>
+                        <div className="mt-2">
+                          <pre className="text-xs text-slate-500 overflow-auto max-h-64 bg-slate-900 p-3 rounded">
+                            {this.state.errorInfo.componentStack}
+                          </pre>
+                        </div>
                       </details>
                     )}
                   </div>

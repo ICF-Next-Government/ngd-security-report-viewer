@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import {
   Shield,
   Upload,
@@ -12,6 +13,7 @@ import {
   Copy,
   FileCode,
   Github,
+  ArrowRight,
 } from "lucide-react";
 
 type LandingPageProps = {
@@ -196,34 +198,59 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         </nav>
 
         {/* Main Content */}
-        <div className="flex-1 flex items-center justify-center px-6 py-8">
-          <div className="grid lg:grid-cols-2 gap-12 max-w-7xl w-full items-center">
+        <motion.div className="flex-1 flex items-center justify-center px-6 py-8">
+          <motion.div className="grid lg:grid-cols-2 gap-12 max-w-7xl w-full items-center">
             {/* Left Side - Hero Content */}
-            <div className="order-2 lg:order-1">
+            <motion.div
+              className="order-2 lg:order-1"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
               <div className="max-w-lg">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm rounded-full border border-white/10 mb-6">
+                <motion.div
+                  className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm rounded-full border border-white/10 mb-6"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                >
                   <Sparkles className="w-4 h-4 text-blue-400" />
                   <span className="text-sm text-blue-300">
                     Enterprise Security Analysis Platform
                   </span>
-                </div>
+                </motion.div>
 
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+                <motion.h1
+                  className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                >
                   Security Report
                   <span className="block bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                     Analysis Portal
                   </span>
-                </h1>
+                </motion.h1>
 
-                <p className="text-lg text-slate-300 mb-8 leading-relaxed">
+                <motion.p
+                  className="text-lg text-slate-300 mb-8 leading-relaxed"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.5 }}
+                >
                   Centralized platform for analyzing SARIF, Semgrep, and GitLab
                   SAST security reports. Generate comprehensive insights and
                   detailed visualizations for vulnerability assessment and
                   remediation tracking.
-                </p>
+                </motion.p>
 
                 {/* Feature Pills */}
-                <div className="flex flex-wrap gap-3 mb-8">
+                <motion.div
+                  className="flex flex-wrap gap-4 text-sm"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.6, delay: 0.6 }}
+                >
                   {features.map((feature, index) => (
                     <div
                       key={index}
@@ -237,7 +264,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                       </span>
                     </div>
                   ))}
-                </div>
+                </motion.div>
 
                 {/* Supported Formats */}
                 <div className="flex items-center gap-2 text-sm text-slate-400">
@@ -252,13 +279,33 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Right Side - Upload Card */}
-            <div className="order-1 lg:order-2">
-              <div className="relative">
+            <motion.div
+              className="order-1 lg:order-2"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              <motion.div
+                className="relative"
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.3 }}
+              >
                 {/* Glow effect */}
-                <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl blur-xl opacity-20" />
+                <motion.div
+                  className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl blur-xl opacity-20"
+                  animate={{
+                    scale: [1, 1.1, 1],
+                    opacity: [0.2, 0.3, 0.2],
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                />
 
                 {/* Upload Card */}
                 <div className="relative bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
@@ -418,28 +465,38 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   </div>
 
                   {/* Error Display */}
-                  {(error || jsonError) && (
-                    <div className="mx-8 -mt-2 mb-6 p-4 bg-red-500/10 backdrop-blur-sm border border-red-500/20 rounded-lg flex items-start gap-3 animate-fade-in">
-                      <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                      <div className="flex-1">
-                        <h4 className="text-sm font-medium text-red-300 mb-1">
-                          Error
-                        </h4>
-                        <p className="text-sm text-red-400">
-                          {error || jsonError}
-                        </p>
-                      </div>
-                    </div>
-                  )}
+                  <AnimatePresence>
+                    {(error || jsonError) && (
+                      <motion.div
+                        className="mx-8 -mt-2 mb-6 p-4 bg-red-500/10 backdrop-blur-sm border border-red-500/20 rounded-lg flex items-start gap-3"
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <h4 className="text-sm font-medium text-red-300 mb-1">
+                            Error
+                          </h4>
+                          <p className="text-sm text-red-400">
+                            {error || jsonError}
+                          </p>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 {/* Recent Report Card */}
-                {recentReport && onViewRecentReport && (
-                  <div className="mt-8 overflow-hidden">
-                    <div
-                      className={
-                        isRemoving ? "animate-slide-down" : "animate-slide-up"
-                      }
+                <AnimatePresence>
+                  {recentReport && onViewRecentReport && (
+                    <motion.div
+                      className="mt-8"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 20 }}
+                      transition={{ duration: 0.4, ease: "easeOut" }}
                     >
                       <div className="relative bg-slate-800/30 backdrop-blur-sm border border-slate-700 rounded-xl p-6 hover:bg-slate-800/50 hover:border-slate-600 transition-all duration-200 group">
                         {/* Clear button */}
@@ -528,13 +585,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                           </div>
                         </button>
                       </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        </motion.div>
 
         {/* Bottom Footer */}
         <footer className="mt-auto py-6 px-6 lg:px-12 border-t border-white/10">
@@ -563,94 +620,34 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       </div>
 
       {/* Loading Overlay */}
-      {loading && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center animate-fade-in">
-          <div className="text-center animate-scale-in">
-            <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4" />
-            <p className="text-white text-lg font-medium">
-              Analyzing security report...
-            </p>
-          </div>
-        </div>
-      )}
-
-      <style>
-        {`
-        @keyframes blob {
-          0% {
-            transform: translate(0px, 0px) scale(1);
-          }
-          33% {
-            transform: translate(30px, -50px) scale(1.1);
-          }
-          66% {
-            transform: translate(-20px, 20px) scale(0.9);
-          }
-          100% {
-            transform: translate(0px, 0px) scale(1);
-          }
-        }
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-        @keyframes scale-in {
-          from {
-            opacity: 0;
-            transform: scale(0.9);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.2s ease-out;
-        }
-        .animate-scale-in {
-          animation: scale-in 0.3s ease-out;
-        }
-        @keyframes slide-up {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-slide-up {
-          animation: slide-up 0.4s ease-out;
-        }
-        @keyframes slide-down {
-          from {
-            opacity: 1;
-            transform: translateY(0);
-          }
-          to {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-        }
-        .animate-slide-down {
-          animation: slide-down 0.4s ease-out forwards;
-        }
-      `}
-      </style>
+      <AnimatePresence>
+        {loading && (
+          <motion.div
+            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <motion.div
+              className="text-center"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+            >
+              <motion.div
+                className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full mb-4"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              />
+              <p className="text-white text-lg font-medium">
+                Analyzing security report...
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
