@@ -81,9 +81,11 @@ function App() {
       setPendingShowReport(true);
       setTimeout(() => {
         setShowReport(true);
+      }, 50);
+      setTimeout(() => {
         setTransitioning(false);
         setPendingShowReport(null);
-      }, 350); // 350ms matches the CSS animation duration
+      }, 550); // Allow transition to complete
     } catch (err) {
       console.error("Parse error:", err);
       setError(
@@ -118,9 +120,11 @@ function App() {
       setPendingShowReport(true);
       setTimeout(() => {
         setShowReport(true);
+      }, 50);
+      setTimeout(() => {
         setTransitioning(false);
         setPendingShowReport(null);
-      }, 350); // 350ms matches the CSS animation duration
+      }, 550); // Allow transition to complete
     } catch (err) {
       console.error("Parse error:", err);
       setError(
@@ -141,111 +145,78 @@ function App() {
     // Start fade-out animation
     setTransitioning(true);
     setPendingShowReport(false);
+    setShowReport(false);
+
     setTimeout(() => {
       // Clear all report data after animation completes
-      setShowReport(false);
       setResults([]);
       setSummary(null);
-
       setError("");
       setUploadTimestamp(null);
       setTransitioning(false);
       setPendingShowReport(null);
-    }, 350); // 350ms matches the CSS animation duration
+    }, 550); // Allow transition to complete
   };
 
-  // Determine which animation class to apply based on transition state
-  const fadeClass = transitioning
-    ? pendingShowReport
-      ? "animate-fade-in"
-      : "animate-fade-out-black"
-    : "";
-
-  // Render report view if we have data and are in the right state
-  if ((showReport || (transitioning && pendingShowReport)) && summary) {
-    return (
-      <div
-        className={`fixed inset-0 min-h-screen w-screen transition-opacity duration-300 report-scrollbar ${fadeClass}`}
-        style={{
-          background: "linear-gradient(to bottom right, #0f172a, #1e293b 80%)",
-          opacity: transitioning && !pendingShowReport ? 1 : 1,
-          pointerEvents:
-            transitioning && !pendingShowReport ? "none" : undefined,
-          overflowY: "auto",
-          zIndex: 10,
-        }}
-      >
-        <ReportView
-          results={results}
-          summary={summary}
-          onBack={handleBackToUpload}
-          uploadTimestamp={uploadTimestamp}
-        />
-        <style>
-          {`
-            /* Fade in animation for report view entrance */
-            @keyframes fadeIn {
-              from { opacity: 0; transform: translateY(16px);}
-              to { opacity: 1; transform: none;}
-            }
-            /* Fade to black animation for report view exit */
-            @keyframes fadeOutBlack {
-              0% {
-                opacity: 1;
-                filter: brightness(1);
-                background: #0f172a;
-              }
-              70% {
-                opacity: 0;
-                filter: brightness(0.2);
-                background: #0f172a;
-              }
-              100% {
-                opacity: 0;
-                filter: brightness(0);
-                background: #0f172a;
-              }
-            }
-            .animate-fade-in {
-              animation: fadeIn 0.35s;
-            }
-            .animate-fade-out-black {
-              animation: fadeOutBlack 0.35s forwards;
-            }
-            /* Custom scrollbar hiding for landing page */
-            .no-scrollbar::-webkit-scrollbar {
-              display: none;
-            }
-            .no-scrollbar {
-              -ms-overflow-style: none;
-              scrollbar-width: none;
-            }
-          `}
-        </style>
-      </div>
-    );
-  }
-
-  // Render landing page by default
+  // Always render both views, control visibility with CSS
   return (
     <>
-      {/* Overlay for fade-out animation when leaving landing page */}
-      {transitioning && pendingShowReport === false && (
+      {/* Landing Page Layer */}
+      <div
+        className={`fixed inset-0 transition-all duration-500 ${
+          showReport || transitioning
+            ? "opacity-0 pointer-events-none"
+            : "opacity-100"
+        }`}
+        style={{
+          transform: showReport || transitioning ? "scale(0.95)" : "scale(1)",
+        }}
+      >
+        <LandingPage
+          onFileUpload={handleFileUpload}
+          onJsonParse={handleJsonParse}
+          loading={loading}
+          error={error}
+        />
+      </div>
+
+      {/* Report View Layer */}
+      {summary && (
         <div
-          className="fixed inset-0 z-50 animate-fade-out-black"
+          className={`fixed inset-0 min-h-screen w-screen report-scrollbar transition-all duration-500 ${
+            showReport && !transitioning
+              ? "opacity-100"
+              : "opacity-0 pointer-events-none"
+          }`}
           style={{
             background:
               "linear-gradient(to bottom right, #0f172a, #1e293b 80%)",
+            overflowY: "auto",
+            transform:
+              showReport && !transitioning ? "scale(1)" : "scale(1.05)",
           }}
-        />
+        >
+          <ReportView
+            results={results}
+            summary={summary}
+            onBack={handleBackToUpload}
+            uploadTimestamp={uploadTimestamp}
+          />
+        </div>
       )}
 
-      <LandingPage
-        onFileUpload={handleFileUpload}
-        onJsonParse={handleJsonParse}
-        loading={loading}
-        error={error}
-      />
+      <style>
+        {`
+          /* Custom scrollbar hiding for landing page */
+          .no-scrollbar::-webkit-scrollbar {
+            display: none;
+          }
+          .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+          }
+        `}
+      </style>
     </>
   );
 }
