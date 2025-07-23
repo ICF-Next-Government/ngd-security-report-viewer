@@ -1,10 +1,16 @@
 import { SEVERITY_LEVELS } from "../constants";
-import type { SeverityLevel } from "../constants";
 import { ProcessedResult, ReportSummary } from "../types/report";
 
 /**
  * Base class for security report parsers
- * Provides common functionality for parsing different report formats
+ *
+ * This abstract class provides common functionality for parsing different security
+ * report formats (SARIF, Semgrep, GitLab SAST, etc.). It includes utilities for:
+ * - Counting findings by severity level
+ * - Normalizing severity values across different formats
+ * - Providing a consistent interface for parser implementations
+ *
+ * Subclasses must implement the static parse() method to handle specific formats.
  */
 export abstract class BaseParser {
   /**

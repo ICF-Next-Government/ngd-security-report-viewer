@@ -13,16 +13,14 @@ import {
   FileCode,
   ArrowRight,
   Github,
-  Mail,
-  ExternalLink,
 } from "lucide-react";
 
-interface LandingPageProps {
+type LandingPageProps = {
   onFileUpload: (file: File) => void;
   onJsonParse: (json: string) => void;
   loading: boolean;
   error?: string;
-}
+};
 
 export const LandingPage: React.FC<LandingPageProps> = ({
   onFileUpload,

@@ -10,12 +10,12 @@ import {
 } from "../../utils/deduplication";
 import { tailwindExportStyles } from "./tailwind-styles";
 
-export interface GenerateStaticHtmlOptions {
+export type GenerateStaticHtmlOptions = {
   summary: ReportSummary;
   results: ProcessedResult[];
   generatedAt?: string;
   enableDeduplication?: boolean;
-}
+};
 
 /**
  * Generates a complete static HTML file that exactly replicates the React application

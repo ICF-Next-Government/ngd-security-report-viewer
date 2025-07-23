@@ -1,16 +1,16 @@
 import { AlertTriangle, Home, RefreshCw } from "lucide-react";
 import React, { Component, ErrorInfo, ReactNode } from "react";
 
-interface Props {
+type Props = {
   children: ReactNode;
   fallback?: ReactNode;
-}
+};
 
-interface State {
+type State = {
   hasError: boolean;
   error: Error | null;
   errorInfo: ErrorInfo | null;
-}
+};
 
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
@@ -69,7 +69,9 @@ export class ErrorBoundary extends Component<Props, State> {
                   <AlertTriangle className="h-8 w-8 text-red-400" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-white">Something went wrong</h1>
+                  <h1 className="text-2xl font-bold text-white">
+                    Something went wrong
+                  </h1>
                   <p className="text-slate-400 mt-1">
                     An unexpected error occurred while rendering this page
                   </p>
@@ -78,7 +80,9 @@ export class ErrorBoundary extends Component<Props, State> {
 
               {this.state.error && (
                 <div className="mb-6">
-                  <h2 className="text-lg font-semibold text-red-300 mb-2">Error Details</h2>
+                  <h2 className="text-lg font-semibold text-red-300 mb-2">
+                    Error Details
+                  </h2>
                   <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-700">
                     <p className="text-red-400 font-mono text-sm mb-2">
                       {this.state.error.toString()}
@@ -123,8 +127,9 @@ export class ErrorBoundary extends Component<Props, State> {
 
               <div className="mt-6 p-4 bg-blue-900/20 border border-blue-700/50 rounded-lg">
                 <p className="text-sm text-blue-300">
-                  <strong>Tip:</strong> If this error persists, try clearing your browser cache or
-                  using a different browser. You can also report this issue to the development team.
+                  <strong>Tip:</strong> If this error persists, try clearing
+                  your browser cache or using a different browser. You can also
+                  report this issue to the development team.
                 </p>
               </div>
             </div>

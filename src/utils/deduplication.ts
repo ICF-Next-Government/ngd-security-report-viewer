@@ -1,19 +1,25 @@
 import { ProcessedResult } from "../types/report";
 
-export interface DuplicateGroup {
+/**
+ * Represents a group of duplicate or similar security findings
+ */
+export type DuplicateGroup = {
   id: string;
   representativeResult: ProcessedResult;
   duplicates: ProcessedResult[];
   occurrences: number;
   affectedFiles: string[];
   lineRanges: Array<{ file: string; startLine?: number; endLine?: number }>;
-}
+};
 
-export interface DeduplicationOptions {
+/**
+ * Configuration options for the deduplication algorithm
+ */
+export type DeduplicationOptions = {
   groupByRuleId: boolean;
   groupBySimilarMessage: boolean;
   similarityThreshold: number;
-}
+};
 
 const DEFAULT_OPTIONS: DeduplicationOptions = {
   groupByRuleId: true,
@@ -39,7 +45,11 @@ export class DeduplicationService {
       if (!existingGroup) {
         // Check for similar messages if enabled
         if (opts.groupBySimilarMessage) {
-          existingGroup = this.findSimilarGroup(result, groups, opts.similarityThreshold);
+          existingGroup = this.findSimilarGroup(
+            result,
+            groups,
+            opts.similarityThreshold,
+          );
         }
       }
 
@@ -79,11 +89,21 @@ export class DeduplicationService {
     });
 
     return Array.from(groups.values()).sort((a, b) => {
-      // Sort by severity first, then by occurrences
-      const severityOrder = { critical: 0, high: 1, medium: 2, low: 3, info: 4 };
+      // Sort by severity first (critical → info), then by occurrence count (high → low)
+      const severityOrder = {
+        critical: 0,
+        high: 1,
+        medium: 2,
+        low: 3,
+        info: 4,
+      };
       const severityCompare =
-        severityOrder[a.representativeResult.severity as keyof typeof severityOrder] -
-        severityOrder[b.representativeResult.severity as keyof typeof severityOrder];
+        severityOrder[
+          a.representativeResult.severity as keyof typeof severityOrder
+        ] -
+        severityOrder[
+          b.representativeResult.severity as keyof typeof severityOrder
+        ];
 
       if (severityCompare !== 0) return severityCompare;
 
@@ -92,9 +112,19 @@ export class DeduplicationService {
   }
 
   /**
-   * Generate a unique key for grouping similar findings
+   * Generates a unique key for grouping similar findings
+   *
+   * The key is based on:
+   * - Rule ID (if groupByRuleId is enabled)
+   * - Normalized message content (if groupBySimilarMessage is enabled)
+   * - File path (always included to avoid false positives)
+   *
+   * @private
    */
-  private static getGroupKey(result: ProcessedResult, options: DeduplicationOptions): string {
+  private static getGroupKey(
+    result: ProcessedResult,
+    options: DeduplicationOptions,
+  ): string {
     const parts: string[] = [];
 
     if (options.groupByRuleId) {
@@ -113,7 +143,16 @@ export class DeduplicationService {
   }
 
   /**
-   * Find a group with a similar message using fuzzy matching
+   * Finds an existing group with similar message content
+   *
+   * Uses Levenshtein distance algorithm to calculate similarity
+   * between messages after normalization
+   *
+   * @param result - The finding to match against existing groups
+   * @param groups - Map of existing groups
+   * @param threshold - Minimum similarity score (0-1) to consider a match
+   * @returns The matching group if found, undefined otherwise
+   * @private
    */
   private static findSimilarGroup(
     result: ProcessedResult,
@@ -140,9 +179,17 @@ export class DeduplicationService {
   }
 
   /**
-   * Calculate similarity between two messages (0-1)
+   * Calculates similarity between two messages using Levenshtein distance
+   *
+   * @param message1 - First message to compare
+   * @param message2 - Second message to compare
+   * @returns Similarity score between 0 (completely different) and 1 (identical)
+   * @private
    */
-  private static calculateSimilarity(message1: string, message2: string): number {
+  private static calculateSimilarity(
+    message1: string,
+    message2: string,
+  ): number {
     const normalized1 = this.normalizeMessage(message1);
     const normalized2 = this.normalizeMessage(message2);
 

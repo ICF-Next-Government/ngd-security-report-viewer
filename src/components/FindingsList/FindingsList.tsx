@@ -10,19 +10,50 @@ import {
   Search,
 } from "lucide-react";
 import React, { useState, useMemo } from "react";
-import { ProcessedResult, ViewMode } from "../types/report";
-import { DeduplicationService, DuplicateGroup } from "../utils/deduplication";
+import { ProcessedResult, ViewMode } from "@/types/report";
+import { DeduplicationService } from "@/utils/deduplication";
 
-interface FindingsListProps {
+/**
+ * FindingsList Component
+ *
+ * Displays security findings with advanced filtering and grouping capabilities.
+ *
+ * Features:
+ * - Real-time search across findings
+ * - Filter by severity level
+ * - Deduplicated view to group similar findings
+ * - Expandable details for each finding
+ * - Color-coded severity indicators
+ *
+ * @param results - Array of processed security findings from the scan
+ */
+type FindingsListProps = {
   results: ProcessedResult[];
-}
+};
 
 export const FindingsList: React.FC<FindingsListProps> = ({ results }) => {
+  // UI state for search and filtering
   const [searchTerm, setSearchTerm] = useState("");
   const [severityFilter, setSeverityFilter] = useState<string>("all");
-  const [selectedFinding, setSelectedFinding] = useState<ProcessedResult | null>(null);
+  const [selectedFinding, setSelectedFinding] =
+    useState<ProcessedResult | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("deduplicated");
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+
+  /**
+   * Toggles the expanded state of a finding group in deduplicated view
+   */
+  const toggleGroup = (groupId: string) => {
+    setExpandedGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(groupId)) {
+        next.delete(groupId);
+      } else {
+        next.add(groupId);
+      }
+      return next;
+    });
+  };
 
   const severityColors = {
     critical: {
@@ -84,7 +115,8 @@ export const FindingsList: React.FC<FindingsListProps> = ({ results }) => {
         result.file.toLowerCase().includes(searchTerm.toLowerCase()) ||
         result.ruleId.toLowerCase().includes(searchTerm.toLowerCase());
 
-      const matchesSeverity = severityFilter === "all" || result.severity === severityFilter;
+      const matchesSeverity =
+        severityFilter === "all" || result.severity === severityFilter;
 
       return matchesSearch && matchesSeverity;
     });
@@ -99,18 +131,6 @@ export const FindingsList: React.FC<FindingsListProps> = ({ results }) => {
     viewMode === "deduplicated" && deduplicatedGroups
       ? deduplicatedGroups.length
       : filteredResults.length;
-
-  const toggleGroup = (groupId: string) => {
-    setExpandedGroups((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(groupId)) {
-        newSet.delete(groupId);
-      } else {
-        newSet.add(groupId);
-      }
-      return newSet;
-    });
-  };
 
   return (
     <div className="space-y-8">
@@ -132,7 +152,9 @@ export const FindingsList: React.FC<FindingsListProps> = ({ results }) => {
             <button
               onClick={() => setViewMode("all")}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                viewMode === "all" ? "bg-blue-600 text-white" : "text-slate-400 hover:text-white"
+                viewMode === "all"
+                  ? "bg-blue-600 text-white"
+                  : "text-slate-400 hover:text-white"
               }`}
             >
               <List className="h-4 w-4" />
@@ -163,10 +185,11 @@ export const FindingsList: React.FC<FindingsListProps> = ({ results }) => {
 
           <div className="relative">
             <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+            {/* Severity filter dropdown */}
             <select
               value={severityFilter}
               onChange={(e) => setSeverityFilter(e.target.value)}
-              className="pl-10 pr-8 py-3 bg-slate-700/50 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none text-white"
+              className="pl-10 pr-3 py-2 bg-slate-800/50 backdrop-blur-sm border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
             >
               <option value="all">All Severities</option>
               <option value="critical">Critical</option>
@@ -185,11 +208,14 @@ export const FindingsList: React.FC<FindingsListProps> = ({ results }) => {
       </div>
 
       {/* Results List */}
-      <div className="space-y-6">
+      {/* Findings list - renders differently based on view mode */}
+      <div className="space-y-4">
         {viewMode === "deduplicated" && deduplicatedGroups
-          ? deduplicatedGroups.map((group) => {
+          ? // Deduplicated view - shows grouped findings
+            deduplicatedGroups.map((group) => {
               const result = group.representativeResult;
-              const colors = severityColors[result.severity as keyof typeof severityColors];
+              const colors =
+                severityColors[result.severity as keyof typeof severityColors];
               const SeverityIcon = getSeverityIcon(result.severity);
               const isExpanded = expandedGroups.has(group.id);
 
@@ -200,7 +226,9 @@ export const FindingsList: React.FC<FindingsListProps> = ({ results }) => {
                     onClick={() => toggleGroup(group.id)}
                   >
                     <div className="flex items-start space-x-4">
-                      <SeverityIcon className={`h-6 w-6 ${colors.icon} mt-1 flex-shrink-0`} />
+                      <SeverityIcon
+                        className={`h-6 w-6 ${colors.icon} mt-1 flex-shrink-0`}
+                      />
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-3">
@@ -210,7 +238,9 @@ export const FindingsList: React.FC<FindingsListProps> = ({ results }) => {
                             >
                               {result.severity.toUpperCase()}
                             </span>
-                            <span className="text-sm text-slate-400">{result.ruleId}</span>
+                            <span className="text-sm text-slate-400">
+                              {result.ruleId}
+                            </span>
                             {group.occurrences > 1 && (
                               <span className="inline-flex px-2 py-1 text-xs font-medium bg-slate-700/50 text-slate-300 rounded-full border border-slate-600">
                                 {group.occurrences} occurrences
@@ -222,11 +252,17 @@ export const FindingsList: React.FC<FindingsListProps> = ({ results }) => {
                           />
                         </div>
 
-                        <h3 className="text-xl font-semibold text-white mb-2">{result.ruleName}</h3>
-                        <p className="text-slate-300 mb-4 leading-relaxed">{result.message}</p>
+                        <h3 className="text-xl font-semibold text-white mb-2">
+                          {result.ruleName}
+                        </h3>
+                        <p className="text-slate-300 mb-4 leading-relaxed">
+                          {result.message}
+                        </p>
 
                         <div className="text-sm text-slate-400">
-                          <p className="mb-2">{DeduplicationService.getGroupSummary(group)}</p>
+                          <p className="mb-2">
+                            {DeduplicationService.getGroupSummary(group)}
+                          </p>
                           {!isExpanded && group.affectedFiles.length <= 3 && (
                             <div className="flex items-center space-x-2">
                               <FileText className="h-4 w-4" />
@@ -255,7 +291,9 @@ export const FindingsList: React.FC<FindingsListProps> = ({ results }) => {
                       <div className="mt-6 pt-6 border-t border-slate-600">
                         {result.description && (
                           <div className="mb-6">
-                            <h4 className="font-medium text-white mb-3">Description</h4>
+                            <h4 className="font-medium text-white mb-3">
+                              Description
+                            </h4>
                             <p className="text-slate-300 text-sm leading-relaxed">
                               {result.description}
                             </p>
@@ -263,17 +301,21 @@ export const FindingsList: React.FC<FindingsListProps> = ({ results }) => {
                         )}
 
                         <div className="mb-6">
-                          <h4 className="font-medium text-white mb-3">All Occurrences</h4>
+                          <h4 className="font-medium text-white mb-3">
+                            All Occurrences
+                          </h4>
                           <div className="space-y-2">
-                            {DeduplicationService.getGroupLocations(group).map((location, idx) => (
-                              <div
-                                key={idx}
-                                className="flex items-center space-x-2 text-sm text-slate-400"
-                              >
-                                <FileText className="h-4 w-4 flex-shrink-0" />
-                                <span className="font-mono">{location}</span>
-                              </div>
-                            ))}
+                            {DeduplicationService.getGroupLocations(group).map(
+                              (location, idx) => (
+                                <div
+                                  key={idx}
+                                  className="flex items-center space-x-2 text-sm text-slate-400"
+                                >
+                                  <FileText className="h-4 w-4 flex-shrink-0" />
+                                  <span className="font-mono">{location}</span>
+                                </div>
+                              ),
+                            )}
                           </div>
                         </div>
 
@@ -293,8 +335,10 @@ export const FindingsList: React.FC<FindingsListProps> = ({ results }) => {
                 </div>
               );
             })
-          : filteredResults.map((result) => {
-              const colors = severityColors[result.severity as keyof typeof severityColors];
+          : // All findings view - shows individual findings
+            filteredResults.map((result) => {
+              const colors =
+                severityColors[result.severity as keyof typeof severityColors];
               const SeverityIcon = getSeverityIcon(result.severity);
 
               return (
@@ -302,11 +346,15 @@ export const FindingsList: React.FC<FindingsListProps> = ({ results }) => {
                   key={result.id}
                   className={`${colors.bg} ${colors.border} backdrop-blur-sm border rounded-lg p-6 cursor-pointer transition-all hover:shadow-lg hover:scale-[1.01]`}
                   onClick={() =>
-                    setSelectedFinding(selectedFinding?.id === result.id ? null : result)
+                    setSelectedFinding(
+                      selectedFinding?.id === result.id ? null : result,
+                    )
                   }
                 >
                   <div className="flex items-start space-x-4">
-                    <SeverityIcon className={`h-6 w-6 ${colors.icon} mt-1 flex-shrink-0`} />
+                    <SeverityIcon
+                      className={`h-6 w-6 ${colors.icon} mt-1 flex-shrink-0`}
+                    />
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-3">
@@ -316,15 +364,21 @@ export const FindingsList: React.FC<FindingsListProps> = ({ results }) => {
                           >
                             {result.severity.toUpperCase()}
                           </span>
-                          <span className="text-sm text-slate-400">{result.ruleId}</span>
+                          <span className="text-sm text-slate-400">
+                            {result.ruleId}
+                          </span>
                         </div>
                         <ChevronDown
                           className={`h-5 w-5 text-slate-400 transition-transform ${selectedFinding?.id === result.id ? "rotate-180" : ""}`}
                         />
                       </div>
 
-                      <h3 className="text-xl font-semibold text-white mb-2">{result.ruleName}</h3>
-                      <p className="text-slate-300 mb-4 leading-relaxed">{result.message}</p>
+                      <h3 className="text-xl font-semibold text-white mb-2">
+                        {result.ruleName}
+                      </h3>
+                      <p className="text-slate-300 mb-4 leading-relaxed">
+                        {result.message}
+                      </p>
 
                       <div className="flex items-center space-x-6 text-sm text-slate-400">
                         <div className="flex items-center space-x-2">
@@ -334,7 +388,8 @@ export const FindingsList: React.FC<FindingsListProps> = ({ results }) => {
                         {result.startLine && (
                           <span>
                             Line {result.startLine}
-                            {result.endLine && result.endLine !== result.startLine
+                            {result.endLine &&
+                            result.endLine !== result.startLine
                               ? `-${result.endLine}`
                               : ""}
                           </span>
@@ -357,11 +412,14 @@ export const FindingsList: React.FC<FindingsListProps> = ({ results }) => {
                   </div>
 
                   {/* Expanded Details */}
+                  {/* Expanded finding details */}
                   {selectedFinding?.id === result.id && (
                     <div className="mt-6 pt-6 border-t border-slate-600">
                       {result.description && (
                         <div className="mb-6">
-                          <h4 className="font-medium text-white mb-3">Description</h4>
+                          <h4 className="font-medium text-white mb-3">
+                            Description
+                          </h4>
                           <p className="text-slate-300 text-sm leading-relaxed">
                             {result.description}
                           </p>
@@ -370,7 +428,9 @@ export const FindingsList: React.FC<FindingsListProps> = ({ results }) => {
 
                       {result.snippet && (
                         <div>
-                          <h4 className="font-medium text-white mb-3">Code Snippet</h4>
+                          <h4 className="font-medium text-white mb-3">
+                            Code Snippet
+                          </h4>
                           <pre className="bg-slate-900/80 text-slate-100 p-4 rounded-lg text-sm overflow-x-auto border border-slate-700">
                             <code>{result.snippet}</code>
                           </pre>
@@ -392,7 +452,13 @@ export const FindingsList: React.FC<FindingsListProps> = ({ results }) => {
             strokeWidth={2}
             viewBox="0 0 24 24"
           >
-            <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth={2} />
+            <circle
+              cx="11"
+              cy="11"
+              r="8"
+              stroke="currentColor"
+              strokeWidth={2}
+            />
             <line
               x1="21"
               y1="21"
@@ -412,7 +478,9 @@ export const FindingsList: React.FC<FindingsListProps> = ({ results }) => {
               strokeLinecap="round"
             />
           </svg>
-          <h3 className="text-lg font-medium text-white mb-2">No findings found</h3>
+          <h3 className="text-lg font-medium text-white mb-2">
+            No findings found
+          </h3>
           <p className="text-slate-400">
             {searchTerm || severityFilter !== "all"
               ? "Try adjusting your search criteria or filters."

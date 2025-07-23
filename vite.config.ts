@@ -1,5 +1,6 @@
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
+import { resolve } from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -7,5 +8,11 @@ export default defineConfig({
   base: "./",
   optimizeDeps: {
     exclude: ["lucide-react"],
+  },
+  resolve: {
+    alias: {
+      "@": resolve(__dirname, "./src"),
+      "@/packages": resolve(__dirname, "./packages"),
+    },
   },
 });

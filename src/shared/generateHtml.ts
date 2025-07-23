@@ -4,10 +4,7 @@
  * All assets are embedded for offline use.
  */
 
-import {
-  generateStaticHtml,
-  type GenerateStaticHtmlOptions,
-} from "./static-html-export";
+import { generateStaticHtml } from "./static-html-export";
 
 // Main export with compatibility wrapper
 export function generateHtml({
@@ -15,7 +12,6 @@ export function generateHtml({
   results,
   generatedAt,
   enableDeduplication = true,
-  offlineMode = true,
 }: GenerateHtmlOptions): string {
   return generateStaticHtml({
     summary,
@@ -26,13 +22,13 @@ export function generateHtml({
 }
 
 // Type exports for compatibility
-export interface GenerateHtmlOptions {
+export type GenerateHtmlOptions = {
   summary: import("../types/report").ReportSummary;
   results: import("../types/report").ProcessedResult[];
   generatedAt?: string;
   enableDeduplication?: boolean;
-  offlineMode?: boolean;
-}
+  offlineMode?: boolean; // Deprecated - all exports are offline-capable
+};
 
 // Re-export DeduplicationService for compatibility
 export { DeduplicationService } from "../utils/deduplication";

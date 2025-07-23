@@ -5,13 +5,8 @@
 
 import { ProcessedResult, ReportSummary } from "../../types/report";
 import { DeduplicationService } from "../../utils/deduplication";
+import { generateFindingsSectionHtml } from "./findings";
 import {
-  generateFindingsSectionHtml,
-  generateGroupedFindingsHtml,
-  generateAllFindingsHtml,
-} from "./findings";
-import {
-  generateSummaryHtml,
   generateReportHeaderHtml,
   generateReportMetadataHtml,
   generateDeduplicationSummaryHtml,
@@ -22,13 +17,13 @@ import {
 import { getAllStyles } from "./styles";
 import { generateReportScripts } from "./scripts";
 
-export interface GenerateHtmlOptions {
+export type GenerateHtmlOptions = {
   summary: ReportSummary;
   results: ProcessedResult[];
   generatedAt?: string; // ISO string or formatted date
   enableDeduplication?: boolean; // Whether to show deduplication by default
   offlineMode?: boolean; // Whether to embed all CSS for offline usage
-}
+};
 
 /**
  * Escapes HTML special characters to prevent XSS

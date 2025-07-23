@@ -1,15 +1,15 @@
-import { AlertTriangle, CheckCircle, Info, Layers } from "lucide-react";
+import { AlertTriangle, CheckCircle, Info } from "lucide-react";
 import React, { useMemo } from "react";
 import {
   ProcessedResult,
   ReportSummary as ReportSummaryType,
-} from "../types/report";
-import { DeduplicationService } from "../utils/deduplication";
+} from "@/types/report";
+import { DeduplicationService } from "@/utils/deduplication";
 
-interface ReportSummaryProps {
+type ReportSummaryProps = {
   summary: ReportSummaryType;
   results?: ProcessedResult[];
-}
+};
 
 export const ReportSummary: React.FC<ReportSummaryProps> = ({
   summary,
@@ -17,22 +17,24 @@ export const ReportSummary: React.FC<ReportSummaryProps> = ({
 }) => {
   // Safeguard against undefined summary or missing properties
   const safeSummary = {
-    criticalCount: 0,
-    highCount: 0,
-    mediumCount: 0,
-    lowCount: 0,
-    infoCount: 0,
-    totalFindings: 0,
-    filesAffected: 0,
-    toolName: "Unknown",
+    criticalCount: summary?.criticalCount || 0,
+    highCount: summary?.highCount || 0,
+    mediumCount: summary?.mediumCount || 0,
+    lowCount: summary?.lowCount || 0,
+    infoCount: summary?.infoCount || 0,
+    totalFindings: summary?.totalFindings || 0,
+    filesAffected: summary?.filesAffected || 0,
+    toolName: summary?.toolName || "Unknown",
+    toolVersion: summary?.toolVersion || undefined,
+    timestamp: summary?.timestamp || undefined,
+    format: summary?.format || "sarif",
     severityCounts: {
-      critical: 0,
-      high: 0,
-      medium: 0,
-      low: 0,
-      info: 0,
+      critical: summary?.severityCounts?.critical || 0,
+      high: summary?.severityCounts?.high || 0,
+      medium: summary?.severityCounts?.medium || 0,
+      low: summary?.severityCounts?.low || 0,
+      info: summary?.severityCounts?.info || 0,
     },
-    ...summary,
   };
 
   const severityCards = [

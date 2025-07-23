@@ -1,11 +1,11 @@
 import { AlertCircle, FileText, Upload } from "lucide-react";
 import React, { useCallback, useState } from "react";
 
-interface FileUploadProps {
+type FileUploadProps = {
   onFileUpload: (file: File) => void;
   loading: boolean;
   error?: string;
-}
+};
 
 export const FileUpload: React.FC<FileUploadProps> = ({
   onFileUpload,

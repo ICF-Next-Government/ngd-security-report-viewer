@@ -21,17 +21,17 @@ function escapeHtml(text: string): string {
 /**
  * Interface for deduplication statistics
  */
-export interface DeduplicationStats {
+export type DeduplicationStats = {
   uniqueGroups: number;
   totalDuplicates: number;
   duplicatePercentage: string;
-}
+};
 
 /**
  * Generates the main report header with title and timestamp
  */
 export function generateReportHeaderHtml(
-  summary: ReportSummary,
+  _summary: ReportSummary,
   formattedTimestamp?: string,
 ): string {
   // This function is now only used for the timestamp display
@@ -172,10 +172,6 @@ export function generateSeverityCardsHtml(summary: ReportSummary): string {
           const count =
             (summary.severityCounts && summary.severityCounts[key]) || 0;
           const colors = SEVERITY_COLORS[key];
-          const percentage =
-            summary.totalFindings > 0
-              ? ((count / summary.totalFindings) * 100).toFixed(1)
-              : "0";
 
           return `
           <div class="${colors.bg} ${colors.border} backdrop-blur-sm rounded-lg border p-6 transition-all hover:scale-105 hover:shadow-lg">
