@@ -2,7 +2,7 @@
 # Builds, tests, and publishes a Docker image to a temporary repository
 #
 
-name: 🏋️‍♂️ _build
+name: 🏋️‍♂️ _test
 on:
   workflow_call: {}
 
