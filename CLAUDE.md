@@ -19,7 +19,7 @@ Ensures consistent coding standards, tooling, and workflows.
 ## React Development
 
 - **Components**: Functional only. Never class components. Use packages like `react-error-boundary` for Error Boundaries.
-- **Component Types**: All components use `FC` with `import { type FC } from "react";` (or `import type { FC } from "react";`). Never `React.FC`.
+- **Types**: Destructured imports only: `import { type FC } from "react";` or `import type { FC } from "react";`. Never `React.*` namespace.
 - **Display Names**: All components must set `Component.displayName` to the exported component name for debugging tools.
 - **Imports**: Destructured only. No React default or `React.<foo>` namespace.
 - **HTML Components**: Fully typed React components matching TypeScript HTML element props with `React.Ref` support.
