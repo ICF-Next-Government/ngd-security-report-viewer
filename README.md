@@ -37,8 +37,6 @@
   - [Smart Deduplication](#smart-deduplication)
   - [Embedded Report Data](#embedded-report-data)
   - [Self-Contained HTML](#self-contained-html)
-- [Use Cases](#use-cases)
-- [License](#license)
 - [Contributing](#contributing)
   - [Development Workflow](#development-workflow)
 - [Support](#support)
