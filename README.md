@@ -15,7 +15,9 @@
 
 ---
 
-> GitHub CLI Single Command Quick Start:
+## Single Command: Quick Start
+
+> GitHub CLI.
 
 ```bash
 gh repo clone \
@@ -25,7 +27,7 @@ gh repo clone \
   cd ..
 ```
 
-> Standard `git` CLI Single Command Quick Start:
+> Standard `git` CLI.
 
 ```bash
 git clone \
