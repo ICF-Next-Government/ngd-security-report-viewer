@@ -81,3 +81,10 @@ jobs:
           GH_RUN_NUMBER: ${{ github.run_number }}
           GH_RUN_ID: ${{ github.run_id }}
         run: bash ./bin/ghactions/version
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        if: ${{ inputs.deployable != 'false' }}
+        with:
+          name: build
+          path: dist

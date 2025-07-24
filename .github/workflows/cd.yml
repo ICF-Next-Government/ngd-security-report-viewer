@@ -90,3 +90,12 @@ jobs:
     secrets: inherit
     needs:
       - invoke_builder
+
+  # Runs static code analysis vulnerability scan
+  invoke_semgrep:
+    needs:
+      - setup
+    uses: ./.github/workflows/_scan-semgrep.yml
+    secrets: inherit
+    with:
+      application: ${{ vars.application_name }}

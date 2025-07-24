@@ -1,0 +1,55 @@
+#
+# Runs a vulnerability scan, saves the scan report as a workflow artifact, and
+# notifies the team via MS Teams.
+#
+
+name: 🏋️‍♀️ _scan-semgrep
+
+on:
+  workflow_call:
+    inputs:
+      application:
+        description: "Application Name"
+        required: true
+        type: string
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    container:
+      image: registry.gitlab.com/gitlab-org/security-products/sast-rules/semgrepbap:latest
+    env:
+      SEMGREP_REPORT: scan-semgrep.${{ inputs.application }}
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Semgrep CI
+        run: |
+          git config --global --add safe.directory '*'
+          semgrep ci --sarif --output ${{ env.SEMGREP_REPORT }}.json
+        env:
+          # Connect to Semgrep AppSec Platform through your SEMGREP_APP_TOKEN.
+          # Generate a token from Semgrep AppSec Platform > Settings
+          # and add it to your GitHub secrets.
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+
+      - name: Generate ICF NG Security Report
+        uses: ICF-Next-Government/ngd-security-report-viewer@main
+        with:
+          in: ${{ env.SEMGREP_REPORT }}.json
+          out: ${{ env.SEMGREP_REPORT }}.html
+
+      - name: Save ICF NG Security Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.SEMGREP_REPORT }}
+          path: ${{ env.SEMGREP_REPORT }}.html
+
+      - name: Save Security Report
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.SEMGREP_REPORT }}
