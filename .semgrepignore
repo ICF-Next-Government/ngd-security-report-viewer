@@ -1,0 +1,6 @@
+action.yml
+scripts/download-fonts.ts
+src/utils/fonts/embedFonts.ts
+src/utils/baseParser.ts
+Dockerfile
+server.ts
