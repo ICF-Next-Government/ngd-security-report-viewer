@@ -24,6 +24,7 @@ This guide ensures consistent coding standards, tooling, and workflows.
 
 ## React Development
 
+- **Components**: Use functional components exclusively. Never use class components. For features requiring class components (e.g., Error Boundaries), use packages like `react-error-boundary` to implement them functionally.
 - **Imports**: Use destructured imports only (e.g., `import { useState, useEffect } from 'react'`). Never import React default export or use `React.<foo>` namespace.
 - **HTML Components**: Create fully typed React components for each HTML element, matching TypeScript HTML element props.
 - **Refs**: Support fully typed `React.Ref` for all HTML React components.
