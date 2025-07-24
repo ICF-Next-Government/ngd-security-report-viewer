@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
-import { AnimatePresence, motion } from "motion/react";
 import { LandingPage } from "@/components/LandingPage";
 import { ReportView } from "@/components/ReportView";
 import { ProcessedResult, ReportSummary } from "@/types/report";
 import { ReportParser } from "@/utils/reportParser";
+import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useState } from "react";
 
 /**
  * Main application component that manages the security report viewer
@@ -81,7 +81,6 @@ function App() {
       // Show report view with smooth animation
       setShowReport(true);
     } catch (err) {
-      console.error("Parse error:", err);
       setError(
         err instanceof Error
           ? `Failed to parse file: ${err.message}`
@@ -113,7 +112,6 @@ function App() {
       // Show report view with smooth animation
       setShowReport(true);
     } catch (err) {
-      console.error("Parse error:", err);
       setError(
         err instanceof Error
           ? `Failed to parse JSON: ${err.message}`
@@ -182,7 +180,11 @@ function App() {
               <motion.div
                 className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full mb-4"
                 animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                transition={{
+                  duration: 1,
+                  repeat: Number.POSITIVE_INFINITY,
+                  ease: "linear",
+                }}
               />
               <p className="text-white text-lg font-medium">
                 Loading report...

@@ -4,10 +4,7 @@
  */
 
 import { ProcessedResult } from "../../types/report";
-import {
-  DeduplicationService,
-  DuplicateGroup,
-} from "../../utils/deduplication";
+import { DeduplicationService, DuplicateGroup } from "../../utils/deduplication";
 import { SEVERITY_COLORS, SeverityLevel } from "./styles";
 
 /**
@@ -153,8 +150,7 @@ function generateGroupLocationsHtml(group: DuplicateGroup): string {
  * Generates HTML for individual finding
  */
 export function generateFindingHtml(result: ProcessedResult): string {
-  const colors =
-    SEVERITY_COLORS[result.severity as SeverityLevel] ?? SEVERITY_COLORS.info;
+  const colors = SEVERITY_COLORS[result.severity as SeverityLevel] ?? SEVERITY_COLORS.info;
 
   return `
     <div class="finding-result ${colors.bg} ${colors.border} backdrop-blur-sm border rounded-lg p-6 cursor-pointer transition-all hover:shadow-lg hover:scale-[1.01] severity-${result.severity}"
@@ -207,8 +203,7 @@ export function generateFindingHtml(result: ProcessedResult): string {
  */
 export function generateGroupHtml(group: DuplicateGroup): string {
   const result = group.representativeResult;
-  const colors =
-    SEVERITY_COLORS[result.severity as SeverityLevel] ?? SEVERITY_COLORS.info;
+  const colors = SEVERITY_COLORS[result.severity as SeverityLevel] ?? SEVERITY_COLORS.info;
   const groupLocationsHtml = generateGroupLocationsHtml(group);
 
   return `

@@ -11,14 +11,16 @@ Ensures consistent coding standards, tooling, and workflows.
 
 - **Module System**: ES Modules with TypeScript.
 - **Path Aliases**: `@/*` (app-specific), `~/*` (monorepo packages); see `tsconfig.json`.
-- **Module Structure**: All files use `ModuleName/ModuleName.ts` (`.tsx` for JSX only) with `index.ts[x]` as single export point.
+- **Module Structure**: `ModuleName/ModuleName.ts` (`.tsx` for JSX) with `index.ts[x]` as single export.
 - **Exports**: Components as `export const ModuleName = () => {}`; appropriate exports for non-components.
-- **Styling**: Tailwind CSS (use `ModuleName.module.css` only if Tailwind insufficient).
-- **TypeScript**: Use `type` not `interface`; use `as const` not `enum`.
+- **Styling**: Tailwind CSS (`ModuleName.module.css` only if Tailwind insufficient).
+- **TypeScript**: Use `type` not `interface`; `as const` not `enum`.
 
 ## React Development
 
-- **Components**: Functional only. Never class components. For Error Boundaries etc., use packages like `react-error-boundary`.
+- **Components**: Functional only. Never class components. Use packages like `react-error-boundary` for Error Boundaries.
+- **Component Types**: All components use `FC` with `import { type FC } from "react";` (or `import type { FC } from "react";`). Never `React.FC`.
+- **Display Names**: All components must set `Component.displayName` to the exported component name for debugging tools.
 - **Imports**: Destructured only. No React default or `React.<foo>` namespace.
 - **HTML Components**: Fully typed React components matching TypeScript HTML element props with `React.Ref` support.
 - **Nested Components**: Use `<Component.SubComponent>` pattern. Ensure `<Component>` is usable standalone.

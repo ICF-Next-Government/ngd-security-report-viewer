@@ -1,0 +1,9 @@
+# Bun configuration file
+
+[test]
+# Configure test runner
+root = "./src"
+# Preload the setup file
+preload = ["./test/setupTests.ts"]
+# Use smol mode for better memory usage
+smol = true

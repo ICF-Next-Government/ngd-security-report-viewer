@@ -1,13 +1,14 @@
-import { ArrowLeft, Download, Shield } from "lucide-react";
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { FindingsList } from "@/components/FindingsList";
+import { ReportSummary } from "@/components/ReportSummary";
 import { generateStaticHtml } from "@/shared/static-html-export";
 import {
   ProcessedResult,
   ReportSummary as ReportSummaryType,
 } from "@/types/report";
-import { FindingsList } from "@/components/FindingsList";
-import { ReportSummary } from "@/components/ReportSummary";
+import { ArrowLeft, Download, Shield } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useState } from "react";
+import type { FC } from "react";
 
 /**
  * ReportView Component
@@ -31,7 +32,7 @@ type ReportViewProps = {
   uploadTimestamp?: Date | null;
 };
 
-export const ReportView: React.FC<ReportViewProps> = ({
+export const ReportView: FC<ReportViewProps> = ({
   results,
   summary,
   onBack,
@@ -88,13 +89,6 @@ export const ReportView: React.FC<ReportViewProps> = ({
     setExportError(null);
     setExportSuccess(false);
 
-    console.log("🔄 Starting HTML export process...");
-    console.log("📊 Export data:", {
-      summaryPresent: !!summary,
-      resultsCount: results?.length || 0,
-      uploadTimestamp: uploadTimestamp?.toISOString(),
-    });
-
     try {
       // Browser compatibility checks
       if (!window.Blob) {
@@ -116,7 +110,6 @@ export const ReportView: React.FC<ReportViewProps> = ({
         );
       }
 
-      console.log("✅ Browser compatibility checks passed");
       // Add timeout to prevent hanging
       const timeoutPromise = new Promise((_, reject) => {
         setTimeout(
@@ -126,9 +119,6 @@ export const ReportView: React.FC<ReportViewProps> = ({
       });
 
       const generatePromise = (async () => {
-        console.log("⚙️ Generating HTML with summary:", safeSummary);
-        console.log("⚙️ Results count:", safeResults.length);
-
         const html = await generateStaticHtml({
           summary: safeSummary,
           results: safeResults,
@@ -136,7 +126,6 @@ export const ReportView: React.FC<ReportViewProps> = ({
           enableDeduplication: true,
         });
 
-        console.log("✅ HTML generated, size:", html.length, "bytes");
         return html;
       })();
 
@@ -146,18 +135,13 @@ export const ReportView: React.FC<ReportViewProps> = ({
         throw new Error("Generated HTML is empty or invalid");
       }
 
-      console.log("🔗 Creating blob...");
       const blob = new Blob([html], { type: "text/html;charset=utf-8" });
 
       if (blob.size === 0) {
         throw new Error("Generated blob is empty");
       }
 
-      console.log("💾 Blob created, size:", blob.size, "bytes");
-
       const url = URL.createObjectURL(blob);
-      console.log("🔗 Object URL created:", url);
-
       const a = document.createElement("a");
       a.href = url;
       a.download = `security-report-${new Date().toISOString().split("T")[0]}.html`;
@@ -165,22 +149,17 @@ export const ReportView: React.FC<ReportViewProps> = ({
       // Add to DOM temporarily (some browsers require this)
       a.style.display = "none";
       document.body.appendChild(a);
-
-      console.log("⬇️ Triggering download...");
       a.click();
 
       // Cleanup with delay to ensure download starts
       setTimeout(() => {
-        console.log("🧹 Cleaning up resources...");
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
       }, 1000);
 
-      console.log("✅ Export completed successfully!");
       setExportSuccess(true);
       setTimeout(() => setExportSuccess(false), 3000);
     } catch (error) {
-      console.error("❌ Export failed:", error);
       const errorMessage =
         error instanceof Error
           ? error.message
@@ -193,7 +172,7 @@ export const ReportView: React.FC<ReportViewProps> = ({
   };
 
   // Clear error/success messages on unmount
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       setExportError(null);
       setExportSuccess(false);
@@ -201,16 +180,12 @@ export const ReportView: React.FC<ReportViewProps> = ({
   }, []);
 
   // Debug: Log component state on mount
-  React.useEffect(() => {
-    console.log("🔍 ReportView mounted with:", {
-      resultsCount: results?.length || 0,
-      summaryPresent: !!summary,
-      uploadTimestamp: uploadTimestamp?.toISOString(),
-    });
+  useEffect(() => {
+    // Component mounted with report data
   }, [results, summary, uploadTimestamp]);
 
   // Auto-clear messages
-  React.useEffect(() => {
+  useEffect(() => {
     if (exportError) {
       const timer = setTimeout(() => setExportError(null), 5000);
       return () => clearTimeout(timer);
@@ -218,7 +193,7 @@ export const ReportView: React.FC<ReportViewProps> = ({
     return undefined;
   }, [exportError]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (exportSuccess) {
       const timer = setTimeout(() => setExportSuccess(false), 3000);
       return () => clearTimeout(timer);
@@ -375,7 +350,11 @@ export const ReportView: React.FC<ReportViewProps> = ({
                 <motion.div
                   className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full mb-4"
                   animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  transition={{
+                    duration: 1,
+                    repeat: Number.POSITIVE_INFINITY,
+                    ease: "linear",
+                  }}
                 />
                 <p className="text-white text-lg font-medium">
                   Exporting report...
@@ -407,3 +386,5 @@ export const ReportView: React.FC<ReportViewProps> = ({
     </motion.div>
   );
 };
+
+ReportView.displayName = "ReportView";

@@ -80,10 +80,7 @@ export class GitLabSastParser {
     return { results, summary };
   }
 
-  private static processVulnerability(
-    vuln: GitLabSastVulnerability,
-    id: string,
-  ): ProcessedResult {
+  private static processVulnerability(vuln: GitLabSastVulnerability, id: string): ProcessedResult {
     const severity = this.normalizeSeverity(vuln.severity);
     const tags = this.extractTags(vuln);
     const description = this.buildDescription(vuln);
@@ -153,10 +150,7 @@ export class GitLabSastParser {
 
     // Try to find any rule-like identifier
     const ruleId = vuln.identifiers.find(
-      (id) =>
-        id.type.includes("rule") ||
-        id.type.includes("check") ||
-        id.type.includes("id"),
+      (id) => id.type.includes("rule") || id.type.includes("check") || id.type.includes("id"),
     );
     if (ruleId) {
       return ruleId.value;

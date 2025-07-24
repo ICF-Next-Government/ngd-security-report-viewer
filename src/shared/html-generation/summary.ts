@@ -86,9 +86,7 @@ export function generateReportMetadataHtml(summary: ReportSummary): string {
 /**
  * Generates the deduplication summary card
  */
-export function generateDeduplicationSummaryHtml(
-  stats: DeduplicationStats,
-): string {
+export function generateDeduplicationSummaryHtml(stats: DeduplicationStats): string {
   if (stats.totalDuplicates === 0) return "";
 
   return `
@@ -126,51 +124,49 @@ export function generateDeduplicationSummaryHtml(
  * Generates severity distribution cards
  */
 export function generateSeverityCardsHtml(summary: ReportSummary): string {
-  const severities: Array<{ key: SeverityLevel; label: string; icon: string }> =
-    [
-      {
-        key: "critical",
-        label: "Critical",
-        icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+  const severities: Array<{ key: SeverityLevel; label: string; icon: string }> = [
+    {
+      key: "critical",
+      label: "Critical",
+      icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/>
       </svg>`,
-      },
-      {
-        key: "high",
-        label: "High",
-        icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+    },
+    {
+      key: "high",
+      label: "High",
+      icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126z"/>
       </svg>`,
-      },
-      {
-        key: "medium",
-        label: "Medium",
-        icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+    },
+    {
+      key: "medium",
+      label: "Medium",
+      icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
       </svg>`,
-      },
-      {
-        key: "low",
-        label: "Low",
-        icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+    },
+    {
+      key: "low",
+      label: "Low",
+      icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
       </svg>`,
-      },
-      {
-        key: "info",
-        label: "Info",
-        icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+    },
+    {
+      key: "info",
+      label: "Info",
+      icon: `<svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
       </svg>`,
-      },
-    ];
+    },
+  ];
 
   return `
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
       ${severities
         .map(({ key, label, icon }) => {
-          const count =
-            (summary.severityCounts && summary.severityCounts[key]) || 0;
+          const count = (summary.severityCounts && summary.severityCounts[key]) || 0;
           const colors = SEVERITY_COLORS[key];
 
           return `
@@ -210,9 +206,7 @@ export function generateSeverityCardsHtml(summary: ReportSummary): string {
 /**
  * Generates severity distribution bar chart
  */
-export function generateSeverityDistributionHtml(
-  summary: ReportSummary,
-): string {
+export function generateSeverityDistributionHtml(summary: ReportSummary): string {
   if (summary.totalFindings === 0) {
     return `
       <div class="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-slate-700 p-6 shadow-lg">
@@ -225,17 +219,10 @@ export function generateSeverityDistributionHtml(
     `;
   }
 
-  const severities: SeverityLevel[] = [
-    "critical",
-    "high",
-    "medium",
-    "low",
-    "info",
-  ];
+  const severities: SeverityLevel[] = ["critical", "high", "medium", "low", "info"];
   const segments = severities
     .map((severity) => {
-      const count =
-        (summary.severityCounts && summary.severityCounts[severity]) || 0;
+      const count = (summary.severityCounts && summary.severityCounts[severity]) || 0;
       const percentage = (count / summary.totalFindings) * 100;
       const colors = SEVERITY_COLORS[severity];
 

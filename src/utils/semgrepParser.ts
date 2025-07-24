@@ -1,15 +1,8 @@
 import { SEVERITY_LEVELS, TOOL_NAMES } from "../constants";
 import type { SeverityLevel } from "../constants";
 import { ProcessedResult, ReportSummary } from "../types/report";
-import {
-  SemgrepMetadata,
-  SemgrepOutput,
-  SemgrepResult,
-} from "../types/semgrep";
-import {
-  mapSecuritySeverityScore,
-  normalizeSeverity,
-} from "./helpers/severity";
+import { SemgrepMetadata, SemgrepOutput, SemgrepResult } from "../types/semgrep";
+import { mapSecuritySeverityScore, normalizeSeverity } from "./helpers/severity";
 
 export class SemgrepParser {
   static parse(semgrepData: SemgrepOutput): {
@@ -78,10 +71,7 @@ export class SemgrepParser {
     return { results, summary };
   }
 
-  private static processResult(
-    result: SemgrepResult,
-    id: string,
-  ): ProcessedResult {
+  private static processResult(result: SemgrepResult, id: string): ProcessedResult {
     const severity = this.determineSeverity(result);
     const tags = this.extractTags(result.metadata);
     const description = this.buildDescription(result);
@@ -133,16 +123,11 @@ export class SemgrepParser {
     return normalizeSeverity(result.severity);
   }
 
-  private static mapImpactLikelihood(
-    impact: string,
-    likelihood: string,
-  ): SeverityLevel {
+  private static mapImpactLikelihood(impact: string, likelihood: string): SeverityLevel {
     // Simple matrix mapping
-    if (impact === "HIGH" && likelihood === "HIGH")
-      return SEVERITY_LEVELS.CRITICAL;
+    if (impact === "HIGH" && likelihood === "HIGH") return SEVERITY_LEVELS.CRITICAL;
     if (impact === "HIGH" || likelihood === "HIGH") return SEVERITY_LEVELS.HIGH;
-    if (impact === "MEDIUM" || likelihood === "MEDIUM")
-      return SEVERITY_LEVELS.MEDIUM;
+    if (impact === "MEDIUM" || likelihood === "MEDIUM") return SEVERITY_LEVELS.MEDIUM;
     if (impact === "LOW" || likelihood === "LOW") return SEVERITY_LEVELS.LOW;
     return SEVERITY_LEVELS.INFO;
   }

@@ -4,10 +4,7 @@
  */
 
 import { ProcessedResult, ReportSummary } from "../../types/report";
-import {
-  DeduplicationService,
-  DuplicateGroup,
-} from "../../utils/deduplication";
+import { DeduplicationService, DuplicateGroup } from "../../utils/deduplication";
 import { tailwindExportStyles } from "./tailwind-styles";
 
 export type GenerateStaticHtmlOptions = {
@@ -30,9 +27,7 @@ export function generateStaticHtml({
   const groups = DeduplicationService.deduplicateFindings(results);
   const totalDuplicates = results.length - groups.length;
   const duplicatePercentage =
-    results.length > 0
-      ? ((totalDuplicates / results.length) * 100).toFixed(1)
-      : "0";
+    results.length > 0 ? ((totalDuplicates / results.length) * 100).toFixed(1) : "0";
 
   const hasDeduplication = totalDuplicates > 0;
   const showDeduplication = enableDeduplication && hasDeduplication;
@@ -340,9 +335,7 @@ function generateSeverityCards(summary: ReportSummary): string {
       ${severities
         .map((sev) => {
           const count =
-            summary.severityCounts?.[
-              sev.key as keyof typeof summary.severityCounts
-            ] || 0;
+            summary.severityCounts?.[sev.key as keyof typeof summary.severityCounts] || 0;
           const icon =
             sev.icon === "triangle"
               ? '<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>'
@@ -391,10 +384,7 @@ function generateSeverityDistribution(summary: ReportSummary): string {
 
   const bars = severities
     .map((sev) => {
-      const count =
-        summary.severityCounts?.[
-          sev.key as keyof typeof summary.severityCounts
-        ] || 0;
+      const count = summary.severityCounts?.[sev.key as keyof typeof summary.severityCounts] || 0;
       if (count > 0 && summary.totalFindings > 0) {
         const percentage = (count / summary.totalFindings) * 100;
         return `<div class="${sev.color}" style="width: ${percentage}%;" title="${sev.key}: ${count} (${percentage.toFixed(1)}%)"></div>`;
@@ -778,8 +768,7 @@ function getSeverityColors(severity: string) {
       border: "border-slate-600",
       icon: "text-slate-400",
       badge: "bg-slate-700/50 text-slate-300 border-slate-600",
-      badgeStyle:
-        "background-color: rgba(51, 65, 85, 0.5); color: #cbd5e1; border-color: #475569;",
+      badgeStyle: "background-color: rgba(51, 65, 85, 0.5); color: #cbd5e1; border-color: #475569;",
     },
   };
 
