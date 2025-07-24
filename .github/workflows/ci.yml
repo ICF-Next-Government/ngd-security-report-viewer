@@ -1,0 +1,39 @@
+#
+# Basic CI performed on non-deployable branches and PRs opened against `main`
+# High level tasks:
+#   - Build the application image, test it, and push it to a temporary ECR repo
+#   - Clean up artifacts we no longer need and send a notification
+#
+
+name: 🚀 Continuous Integration
+on:
+  push:
+    branches:
+      # GitHub Actions requires at least one branch defined without the ! character
+      # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#example-including-and-excluding-branches-and-tags
+      - "**"
+      - "!main"
+  pull_request:
+    branches:
+      - "main" # Let's only worry about performing PR builds for _key_ merges
+
+# See https://confluence.icfiweb.com/display/CSTT/Path+to+Production
+jobs:
+  # Calls the job to build the application image and push it to ECR/tmp
+  invoke_builder:
+    uses: ./.github/workflows/_build.yml
+    secrets: inherit
+    with:
+      application: ${{ vars.application_name }}
+      aws_region: ${{ vars.aws_region || 'us-east-1' }}
+      # The builder, when invoked from the ci workflow, is NEVER deployable
+      # Note that in GHA, booleans are evaluated as strings, so sending as a
+      # string for consistency. See https://github.com/actions/runner/issues/1483
+      deployable: "false"
+
+  # Calls the job to run tests.
+  invoke_tester:
+    uses: ./.github/workflows/_test.yml
+    secrets: inherit
+    needs:
+      - invoke_builder

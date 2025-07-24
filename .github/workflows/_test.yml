@@ -1,0 +1,23 @@
+#
+# Builds, tests, and publishes a Docker image to a temporary repository
+#
+
+name: 🏋️‍♂️ _build
+on:
+  workflow_call: {}
+
+# See https://confluence.icfiweb.com/display/CSTT/Path+to+Production
+jobs:
+  # Builds the containers and runs tests on every commit pushed to git
+  build:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.target_environment }}
+    steps:
+      - name: Checkout the Code
+        uses: actions/checkout@v4
+      - name: Install BunJS
+        uses: jcbhmr/configure-bun-action@v1
+      - name: Run Tests
+        run: |
+          bun i
+          bun vitest
