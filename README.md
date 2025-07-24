@@ -17,6 +17,12 @@
 gh repo clone ICF-Next-Government/ngd-security-report-viewer && cd ngd-security-report-viewer && make start && cd ..
 ```
 
+> Standard `git` CLI Single Command Quick Start:
+
+```bash
+git clone git@github.com:ICF-Next-Government/ngd-security-report-viewer.git && cd ngd-security-report-viewer && make start && cd ..
+```
+
 ---
 
 ![ICF Security Report Viewer](./.docs/img/file-upload.webp)
