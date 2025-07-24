@@ -14,6 +14,10 @@ This project adheres to [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Pre-commit hook to run Biome linter on staged JavaScript and TypeScript files and execute test suite.
 - `prepare` script in package.json to automatically install Git hooks.
 - Table of contents with clickable navigation links to README.md sections.
+- Commit message template (`.gitmessage`) following conventional commits format.
+- Setup instructions for using the commit template in the Contributing section.
+- GitHub Pull Request template to ensure consistent and informative PRs.
+- GitHub Issue templates for bug reports and feature requests.
 
 ### Changed
 - Updated README.md with correct repository URLs, Docker usage instructions, and improved development workflow documentation.

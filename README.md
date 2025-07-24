@@ -349,6 +349,43 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 Note: Pre-commit hooks are automatically installed and will run linting and tests before each commit.
 
+### Commit Message Format
+
+This project includes a commit message template to help maintain consistent commit messages. To use it locally:
+
+```bash
+# Set up the commit template for this repository
+git config commit.template .gitmessage
+```
+
+The template follows the conventional commits format:
+- `feat`: New feature for the user
+- `fix`: Bug fix for the user
+- `docs`: Documentation changes
+- `style`: Code style changes (formatting, etc.)
+- `refactor`: Code refactoring
+- `test`: Test additions or changes
+- `chore`: Build process or auxiliary tool changes
+- `perf`: Performance improvements
+- `ci`: CI configuration changes
+- `build`: Build system or dependency changes
+- `revert`: Reverts a previous commit
+
+### Pull Request Process
+
+This project includes templates to help create consistent Pull Requests and Issues:
+
+- **Pull Request Template**: Automatically loads when creating a new PR
+- **Issue Templates**: Choose from Bug Report or Feature Request templates
+- **All templates**: Located in `.github/` directory
+
+When submitting a PR:
+1. Fill out the PR template completely
+2. Link related issues using "Fixes #123" or "Closes #123"
+3. Ensure all checklist items are addressed
+4. Add screenshots for UI changes
+5. Wait for code review and CI checks to pass
+
 ## Support
 
 For bugs and feature requests, please open an issue in the GitHub repository.
