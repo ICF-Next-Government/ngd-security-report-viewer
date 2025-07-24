@@ -42,6 +42,17 @@ jobs:
       - name: Checkout the Code
         uses: actions/checkout@v4
 
+      - name: Install BunJS
+        uses: oven-sh/setup-bun@v2
+
+      # We want to do the build before checking for secrets
+      # so that we can detect and secrets output in the build,
+      # as well.
+      - name: Build
+        run: |
+          bun i
+          bun run build
+
       # Before we create the docker image...
       # https://github.com/marketplace/actions/trufflehog-oss
       # As described at https://github.com/trufflesecurity/trufflehog?tab=readme-ov-file#advanced-usage
@@ -62,14 +73,6 @@ jobs:
       - name: Scan Results Status and bail out on failure
         if: steps.trufflehog.outcome == 'failure'
         run: exit 1
-
-      - name: Install BunJS
-        uses: jcbhmr/configure-bun-action@v1
-
-      - name: Build
-        run: |
-          bun i
-          bun run build
 
       - name: Create the /version File
         env:

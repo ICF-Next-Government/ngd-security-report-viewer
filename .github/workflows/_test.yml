@@ -16,7 +16,7 @@ jobs:
       - name: Checkout the Code
         uses: actions/checkout@v4
       - name: Install BunJS
-        uses: jcbhmr/configure-bun-action@v1
+        uses: oven-sh/setup-bun@v2
       - name: Run Tests
         run: |
           bun i
