@@ -63,6 +63,14 @@ jobs:
         if: steps.trufflehog.outcome == 'failure'
         run: exit 1
 
+      - name: Install BunJS
+        uses: jcbhmr/configure-bun-action@v1
+
+      - name: Build
+        run: |
+          bun i
+          bun run build
+
       - name: Create the /version File
         env:
           GH_REF_NAME: ${{ github.ref_name }} # Covers branch and tag values
