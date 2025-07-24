@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+#
+# Creates either a release candidate tag with the naming convention YYYYMMDD.rcN
+# or a final release tag using the naming convention YYYYMMDD.N where `N` is an
+# incrementing build number.
+#
+# When a tag is created and pushed to GitHub, GitHub Actions is triggered to
+# publish a versioned release image to ECR and deploy that image to the STG
+# environment in the case of a release candidate or to the PRD environment in
+# the case of a final release.
+#
+
+# Cannot use my typical -e flag because we don't want to detect the failure of the
+# `git tag...` command below, which would tell us that the tag already exists,
+# and continue to update the build number until a tag is created successfully.
+# set -euxo pipefail
+set -uo pipefail
+
+function usage {
+    echo "
+Creates a candidate or final release that will trigger a deployment to either
+the authoring or staging environment.
+
+Usage: $(basename "$0") [-b] [-m] [-h]
+Options:
+    -b BRANCH_NAME  Specify a source branch or tag; defaults to main
+    -m CUSTOM_MSG   An optional message to include with the tag/release
+    -h              Displays this message
+"
+}
+
+# Any subsequent scripts that are called will exist in the same location as
+# this one, so let's be sure we call them correctly
+script_dir=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
+
+# Useful for the build link below
+repo_name=$(basename -s .git "$(git remote get-url origin)")
+
+# Default values for the creation of a release candidate that will be deployed
+# to the staging environment
+release_branch="main"
+build_prefix="rc"
+target_env="staging"
+custom_msg=""
+
+while getopts 'b:m:h' opt; do
+    case "${opt}" in
+        b)
+            # A release branch name was passed explicitly; create the tag from
+            # the head of that branch
+            release_branch="${OPTARG}"
+            ;;
+        m)
+            # Use this message when creating the tag/release
+            custom_msg="${OPTARG}"
+            ;;
+        h)
+            usage
+            exit 0
+            ;;
+        ?)
+            usage
+            echo "Invalid option (-${OPTARG})"
+            exit 1
+            ;;
+    esac
+done
+
+# If we're creating a release from a release candidate (YYYYMMDD.rcN), it's a
+# FINAL release to be deployed to production
+if [[ "${release_branch}" =~ ^[0-9]{8}\.rc[0-9]+$ ]]; then
+    build_prefix=""
+    target_env="production"
+fi
+
+# Sync local tags with upstream; prune any local tags that don't exist upstream
+git fetch --tags --prune --prune-tags -q
+
+# Ensure that the specified source branch (or tag) exists
+if ! git show-ref -q --heads --tags "${release_branch}"; then
+   echo "A branch or tag named '${release_branch}' does not exist; unable to continue"
+   exit 1
+fi
+
+# Communicate what's about to happen and request final confirmation
+read -rp "This action will tag the code base from ${release_branch} and trigger a deployment to the ${target_env} environment. Do you want to continue? [y/N]: " yolo
+if [[ "${yolo}" != "Y" && "${yolo}" != "y" ]]; then
+    echo "kthxbye! :-)"
+    exit 0
+fi
+
+bash "${script_dir}/tag" -m "${custom_msg}" "${release_branch}" "${build_prefix}"
+exit_code=$?
+
+if [ "${exit_code}" != "0" ]; then
+    echo "Failed to tag the code as expected; unable to continue"
+    exit 1
+fi
+
+echo "Handing off to GitHub Actions; follow the deployment at: https://github.com/ICF-Next-Government/${repo_name}/actions/workflows/cd.yml"
+
+exit 0

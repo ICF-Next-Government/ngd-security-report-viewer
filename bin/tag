@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+#
+# THIS IS A HELPER SCRIPT AND SHOULD NOT BE CALLED DIRECTLY
+#
+# Creates a git tag and pushes the tag to GitHub.
+#
+
+# Cannot use my typical -e flag because we don't want to detect the failure of the
+# `git tag...` command below, which would tell us that the tag already exists,
+# and continue to update the build number until a tag is created successfully.
+# set -euxo pipefail
+set -uo pipefail
+
+function usage {
+    echo "
+Creates a tag in YYYYMMDD.${build_prefix}N format and pushes it to GitHub.
+
+Usage: $(basename "$0") [-m] [-h] <branch|tag> <prefix>
+Description:
+    Tags will be created using a YYYYMMDD.N naming convention where 'YYYYMMDD'
+    is a datestamp, of course, and 'N' is an incrementing build number. A
+    prefix must be specified, even if it's an empty string (""). If a prefix
+    is passed, it will be prepended to the build
+    number (i.e., YYYYMMDD.<prefix>N).
+Options:
+    -m MESSAGE  An optional message to include with the tag/release
+    -h          Displays this message
+"
+}
+
+build_no=1
+yyyymmdd=$(date +"%Y%m%d")
+status_code=1
+custom_msg=""
+
+while getopts 'm:h' opt; do
+    case "${opt}" in
+        m)
+            # Use this message when creating the tag/release
+            custom_msg="${OPTARG}"
+            ;;
+        h)
+            usage
+            exit 0
+            ;;
+        ?)
+            usage
+            echo "Invalid option (-${OPTARG})"
+            exit 1
+            ;;
+    esac
+done
+# We have 2 required positional arguments; disappear the options we've processed
+# so that $# == 2 and $1 and $2 reference those args respectively
+shift $((OPTIND-1))
+
+# Ensure that both required parameters (source branch/tag & prefix) are passed
+if [[ $# -ne 2 ]]; then
+    usage
+    exit 1
+fi
+
+source_branch=$1
+build_prefix=$2
+
+# Ensure that the specified source branch (or tag) exists
+if ! git show-ref -q --heads --tags "${source_branch}"; then
+   echo "A branch or tag named '${source_branch}' does not exist; unable to continue"
+   exit 1
+fi
+
+echo ""
+echo "Tagging a release from the ${source_branch} branch or tag"
+
+# Be sure we update with any tags created by others before we try to
+# create our own tag
+echo "   Sync'ing with upstream tags before creating a new tag"
+git fetch --tags --prune --prune-tags -q
+
+# Create a new tag to deploy
+until [ "${status_code}" == "0" ] || (("${build_no}" >= "50")); do
+    tag="${yyyymmdd}.${build_prefix}${build_no}"
+
+    # Attempts to create an annotated tag; if the tag already exists, it will
+    # increment the build number and try again.
+
+    cmd=(git tag -a "${tag}" "${source_branch}" -m "Created from the \"${source_branch}\" branch or tag.")
+    if [[ "${custom_msg}" != "" ]]; then
+        cmd+=(-m "${custom_msg}")
+    fi
+
+    # Run the command to tag the code base
+    # Returns a 128 status code if the tag already exists; 0 if successful
+    "${cmd[@]}" > /dev/null 2>&1
+    status_code=$?
+    ((build_no++))
+
+    if [ "${status_code}" != "0" ]; then
+        echo "   Tag ${tag} already exists; incrementing the build number to try again"
+    else
+        echo "   Created tag ${tag} locally; pushing"
+        git push --tags --quiet
+    fi
+done
+
+if (("${build_no}" >= "50")); then
+    echo "ERROR: Build number is higher than expected; unable to continue"
+    exit 1
+fi
+
+exit 0
