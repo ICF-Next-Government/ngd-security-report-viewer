@@ -1,0 +1,92 @@
+#
+# Workflow that handles deployable Git operations
+#   - Merges to `main`
+#   - Creation of release candidates
+#   - Creation of final releases
+# High level tasks:
+#   - Build the application image, test it, and push it to a temporary ECR repo
+#   - Publish the built image to its canonical location
+#       - ECR/${application_repo}:main-${build_number}
+#       - ECR/${application_repo}:${release_candidate_tag}
+#       - ECR/${application_repo}:${final_release_tag}
+#   - Deploy the image to EKS
+#       - main --> DEV
+#       - Release candidates --> STG
+#       - Final releases --> PRD
+#   - For final releases only, create a GitHub release
+#   - Clean up artifacts we no longer need and send a notification
+#
+
+name: 🚀 Continuous Delivery
+on:
+  push:
+    branches:
+      - "main"
+    tags:
+      - "[0-9]+.rc[0-9]+" # Release Candidate: YYYYMMDD.rcN
+      - "[0-9]+.[0-9]+" # Final Release: YYYYMMDD.N
+
+# See https://confluence.icfiweb.com/display/CSTT/Path+to+Production
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      deployable: ${{ steps.setter.outputs.deployable }}
+      image_tag: ${{ steps.setter.outputs.image_tag }}
+      target_environment: ${{ steps.setter.outputs.target_environment }}
+      target_env: ${{ steps.setter.outputs.target_env }}
+
+      # Whether this run represents a final release
+      final_release: ${{ steps.setter.outputs.final_release }}
+    steps:
+      - name: Set outputs for workflow handoff(s)
+        id: setter
+        run: |
+          # As soon as AWS infrastructure is available, the AWS_ACCESS_KEY_ID
+          # value will be available. Until then, the application should NOT be
+          # considered deployable and any AWS-centric activity should be skipped.
+          #
+          # The AWS_ACCESS_KEY_ID being unset causes this line to fail due to its use of [[ ]].
+          # To address this, we've adapted to [ ] notation. For more context, refer to this Stack Overflow thread: https://stackoverflow.com/questions/19691082/why-am-i-getting-a-unary-operator-expected-error
+          echo "deployable=$([ ! -z "${{ secrets.AWS_ACCESS_KEY_ID }}" ] && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+
+          # If we're publishing a tag, use the tag name, but if it's a branch
+          # we have to append the build run number for clarity
+          echo "image_tag=$([[ ${{ github.ref_name }} =~ [0-9]{8}\.(rc)?[0-9]+ ]] \
+            && echo ${{ github.ref_name }} || echo ${{ github.ref_name }}-${{ github.run_number }})" >> $GITHUB_OUTPUT
+
+          # Identify the target deployment environment
+          if [[ '${{ github.ref_type }}' == 'tag' && '${{ github.ref_name }}' =~ [0-9]{8}\.rc[0-9]+ ]]; then
+            echo "target_environment='Staging'" >> $GITHUB_OUTPUT
+            echo "target_env='stg'" >> $GITHUB_OUTPUT
+            echo "final_release=false" >> $GITHUB_OUTPUT
+          elif [[ '${{ github.ref_name }}' =~ [0-9]{8}\.[0-9]+ ]]; then
+            echo "target_environment='Production'" >> $GITHUB_OUTPUT
+            echo "target_env='prd'" >> $GITHUB_OUTPUT
+            echo "final_release=true" >> $GITHUB_OUTPUT
+          else
+            echo "target_environment='Development'" >> $GITHUB_OUTPUT
+            echo "target_env='dev'" >> $GITHUB_OUTPUT
+            echo "final_release=false" >> $GITHUB_OUTPUT
+          fi
+
+  # Builds and test the application
+  invoke_builder:
+    needs:
+      - setup
+    uses: ./.github/workflows/_build.yml
+    secrets: inherit
+    with:
+      application: ${{ vars.application_name }}
+      aws_region: ${{ vars.aws_region }}
+      deployable: ${{ needs.setup.outputs.deployable }}
+      # In more and more client environments, we have unique GitHub environments
+      # so we're just getting ahead of things in the boilerplate
+      target_environment: ${{ needs.setup.outputs.target_environment }}
+
+  # Calls the job to run tests.
+  invoke_tester:
+    uses: ./.github/workflows/_test.yml
+    secrets: inherit
+    needs:
+      - invoke_builder
