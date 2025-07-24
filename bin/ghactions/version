@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+#
+# THIS SCRIPT SHOULD ONLY BE EXECUTED BY GITHUB ACTIONS!
+# The script expects certain key values to be available and those are only set
+# by the build process.
+#
+# Creates a version file and adds to the web root directory so that it will be
+# available at /version.
+#
+
+set -euxo pipefail
+
+function usage {
+    echo "
+Creates a version file and writes it to a specific directory.
+
+Usage: $(basename "$0") [-h]
+Options:
+    -h              Displays this message
+"
+}
+
+while getopts 'h' opt; do
+    case "${opt}" in
+        h)
+            usage
+            exit 0
+            ;;
+        ?)
+            usage
+            echo "Invalid option (-${OPTARG})"
+            exit 1
+            ;;
+    esac
+done
+
+if [[ -z ${GITHUB_ACTIONS} ]]; then
+  echo "This script expects to be called by GitHub Actions; exiting"
+  exit 1
+fi
+
+# Any subsequent scripts that are called via a path relative to this one, so
+# let's be sure we call them correctly
+script_dir=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
+
+# The file directory that serves as the web root
+target_dir="${script_dir}/../../dist"
+
+# Write the version file itself
+jq -n --arg version "${GH_REF_NAME}" \
+      --arg commit "${GH_SHA}" \
+      --arg buildNo "${GH_RUN_NUMBER}" \
+      --arg buildId "${GH_RUN_ID}" \
+      --arg timestamp "$(date)" \
+      '{ version: $version, commit: $commit, buildNumber: $buildNo, buildId: $buildId, timestamp: $timestamp}' > "${target_dir}/version"
+
+exit 0

@@ -1,0 +1,83 @@
+#
+# Builds, tests, and publishes a Docker image to a temporary repository
+#
+
+name: 🏋️‍♂️ _build
+on:
+  workflow_call:
+    inputs:
+      application:
+        description: "Application Name"
+        required: true
+        type: string
+      aws_region:
+        description: "AWS Region"
+        required: false
+        type: string
+        default: "us-east-1"
+      # There are usually 2 reasons the application would not be deployable:
+      #   1. This workflow is executed from the ci.yml (non-deployable workflow)
+      #   2. No AWS infrastructure, specifically the DEV environment, is ready
+      deployable:
+        description: "Whether the application is deployable"
+        required: false
+        type: string
+        default: "false"
+      # In more and more client worlds, the environments live in different
+      # or have different variables/secrets in play. As such, we need to know
+      # our build target so we pull the proper values when configured AWS
+      # access credentials.
+      target_environment:
+        description: "Environment"
+        required: false
+        type: string
+
+# See https://confluence.icfiweb.com/display/CSTT/Path+to+Production
+jobs:
+  # Builds the containers and runs tests on every commit pushed to git
+  build:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.target_environment }}
+    steps:
+      - name: Checkout the Code
+        uses: actions/checkout@v4
+
+      - name: Install BunJS
+        uses: oven-sh/setup-bun@v2
+
+      # We want to do the build before checking for secrets
+      # so that we can detect and secrets output in the build,
+      # as well.
+      - name: Build
+        run: |
+          bun i
+          bun run build
+
+      # Before we create the docker image...
+      # https://github.com/marketplace/actions/trufflehog-oss
+      # As described at https://github.com/trufflesecurity/trufflehog?tab=readme-ov-file#advanced-usage
+      # setting 'base' as empty string and 'head' as github.ref_name
+      # will scan the entire branch associated with this action cycle
+      - name: Perform a Secrets Scan on this branch
+        id: trufflehog
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          # Start scanning from here (empty string points to start of current branch)
+          base: ""
+          # Stop scanning with current commit
+          head: ${{ github.ref_name }}
+          # Extra args to be passed to the trufflehog cli.
+          extra_args: --log-level=2 --results=verified,unknown
+
+      - name: Scan Results Status and bail out on failure
+        if: steps.trufflehog.outcome == 'failure'
+        run: exit 1
+
+      - name: Create the /version File
+        env:
+          GH_REF_NAME: ${{ github.ref_name }} # Covers branch and tag values
+          GH_SHA: ${{ github.sha }}
+          GH_RUN_NUMBER: ${{ github.run_number }}
+          GH_RUN_ID: ${{ github.run_id }}
+        run: bash ./bin/ghactions/version
