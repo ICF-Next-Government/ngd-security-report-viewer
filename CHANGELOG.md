@@ -11,7 +11,7 @@ This project adheres to [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Added
 - Lefthook integration for Git hooks management.
-- Pre-commit hook to run Biome linter on staged JavaScript and TypeScript files.
+- Pre-commit hook to run Biome linter on staged JavaScript and TypeScript files and execute test suite.
 - `prepare` script in package.json to automatically install Git hooks.
 - Initial `CHANGELOG.md` file following Keep a Changelog format.
 - Integration of `react-error-boundary` for robust error handling.

@@ -7,3 +7,5 @@ pre-commit:
     lint:
       glob: "*.{js,jsx,ts,tsx,mjs,cjs}"
       run: bunx @biomejs/biome lint {staged_files}
+    test:
+      run: bun run test
