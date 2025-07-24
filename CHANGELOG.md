@@ -13,6 +13,12 @@ This project adheres to [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Lefthook integration for Git hooks management.
 - Pre-commit hook to run Biome linter on staged JavaScript and TypeScript files and execute test suite.
 - `prepare` script in package.json to automatically install Git hooks.
+- Table of contents with clickable navigation links to README.md sections.
+
+### Changed
+- Updated README.md with correct repository URLs, Docker usage instructions, and improved development workflow documentation.
+- Added missing commands to README.md including test running and fast build option.
+- Enhanced project structure documentation to include configuration files.
 - Initial `CHANGELOG.md` file following Keep a Changelog format.
 - Integration of `react-error-boundary` for robust error handling.
 - Timestamp display in report view header for improved context.
