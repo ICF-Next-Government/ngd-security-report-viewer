@@ -1,41 +1,34 @@
 # Development Guidelines
 
-This guide ensures consistent coding standards, tooling, and workflows.
+Ensures consistent coding standards, tooling, and workflows.
 
 ## Commands
 
-- Check `package.json`, `Makefile`, `compose.yml`, or similar for commands (e.g., install, build, test).
+- Check `package.json`, `Makefile`, `compose.yml`, or similar for commands.
 - Use Bun for monorepo package management.
 
 ## Code Style
 
-- **Module System**: Use ES Modules with TypeScript.
-- **Path Aliases**: Use `@/*` for app-specific imports, `~/*` for monorepo packages; see `tsconfig.json`.
-- **Module Structure**:
-  - Place modules in `ModuleName/ModuleName.ts` (`.tsx` for JSX only).
-  - Use `index.ts` (or `index.tsx` for JSX) as the single export point.
-  - Export components as `export const ModuleName = () => {}`; use appropriate exports for non-components.
-- **Styling**:
-  - Use Tailwind CSS unless impractical.
-  - Use `ModuleName.module.css` for custom CSS only if Tailwind is insufficient.
-- **TypeScript**:
-  - Use `type`, not `interface`.
-  - Use `as const` for constants, not `enum`.
+- **Module System**: ES Modules with TypeScript.
+- **Path Aliases**: `@/*` (app-specific), `~/*` (monorepo packages); see `tsconfig.json`.
+- **Module Structure**: All files use `ModuleName/ModuleName.ts` (`.tsx` for JSX only) with `index.ts[x]` as single export point.
+- **Exports**: Components as `export const ModuleName = () => {}`; appropriate exports for non-components.
+- **Styling**: Tailwind CSS (use `ModuleName.module.css` only if Tailwind insufficient).
+- **TypeScript**: Use `type` not `interface`; use `as const` not `enum`.
 
 ## React Development
 
-- **Components**: Use functional components exclusively. Never use class components. For features requiring class components (e.g., Error Boundaries), use packages like `react-error-boundary` to implement them functionally.
-- **Imports**: Use destructured imports only (e.g., `import { useState, useEffect } from 'react'`). Never import React default export or use `React.<foo>` namespace.
-- **HTML Components**: Create fully typed React components for each HTML element, matching TypeScript HTML element props.
-- **Refs**: Support fully typed `React.Ref` for all HTML React components.
-- **Nested Components**: Use `<Component.SubComponent>` for nested HTML elements (e.g., `ul`, `ol`, `li`, `dd`, `dt`). Ensure `<Component>` is usable standalone. Avoid `<ComponentSubComponent>` naming.
+- **Components**: Functional only. Never class components. For Error Boundaries etc., use packages like `react-error-boundary`.
+- **Imports**: Destructured only. No React default or `React.<foo>` namespace.
+- **HTML Components**: Fully typed React components matching TypeScript HTML element props with `React.Ref` support.
+- **Nested Components**: Use `<Component.SubComponent>` pattern. Ensure `<Component>` is usable standalone.
 
 ## Workflow
 
-- **Branch Naming**: Use prefixes: `feat/` (features), `fix/` (bugs), `hotfix/` (urgent), `release/` (releases), `chore/` (maintenance).
-- **Code Validation**: Type check, lint, and periodically build to ensure type safety and build integrity.
-- **Testing**: Run tests to validate changes.
-- **Commits**: Write concise messages with 1-3 sentence summary (≤1500 characters) and bullet points for details.
-- **Cleanup**: Review changes, remove unused references, fix warnings/errors, add comments only for complex/ambiguous code.
-- **Documentation**: Avoid creating `.md` files unless requested. If no `CHANGELOG.md` exists, prompt user to create one; if approved, use Keep a Changelog format. Otherwise, update existing `CHANGELOG.md`.
-- **Code Examples**: Avoid sample code unless requested.
+- **Branches**: `feat/`, `fix/`, `hotfix/`, `release/`, `chore/`.
+- **Validation**: Type check, lint, and periodically build.
+- **Testing**: Co-locate tests within module directories.
+- **Commits**: 1-3 sentence summary (≤1500 characters) with bullet points for details.
+- **Cleanup**: Remove unused references, fix warnings/errors, comment only complex/ambiguous code.
+- **Documentation**: Avoid `.md` files unless requested. Prompt for `CHANGELOG.md` creation if missing; use Keep a Changelog format.
+- **Code Examples**: Avoid unless requested.
