@@ -15,7 +15,9 @@
 
 ---
 
-## Single Command: Quick Start
+## Quick Start: Single Command
+
+These commands are intended to be single-shot commands that will pull the repo, install the packages, and run a production build of the applcation within a Docker container and return you back to the previous directory (to restore your `pwd` context).
 
 > GitHub CLI.
 
