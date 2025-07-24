@@ -6,6 +6,12 @@
 <hr />
 
 <p align="center">
+  <a href="https://github.com/ICF-Next-Government/ngd-security-report-viewer/actions/workflows/cd.yml">
+    <img src="https://github.com/ICF-Next-Government/ngd-security-report-viewer/actions/workflows/cd.yml/badge.svg" alt="Continuous Delivery" />
+  </a>
+</p>
+
+<p align="center">
   A modern, interactive security report viewer and static HTML generator for SARIF, Semgrep, and GitLab SAST JSON files. View reports locally with advanced filtering and deduplication, or export as self-contained HTML files for sharing.
 </p>
 
