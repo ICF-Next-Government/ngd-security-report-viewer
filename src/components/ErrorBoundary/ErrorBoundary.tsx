@@ -1,22 +1,13 @@
-import {
-  AlertTriangle,
-  Home,
-  RefreshCw,
-  Copy,
-  CheckCircle,
-} from "lucide-react";
-import { useState } from "react";
-import {
-  ErrorBoundary as ReactErrorBoundary,
-  FallbackProps,
-} from "react-error-boundary";
+import { AlertTriangle, CheckCircle, Copy, Home, RefreshCw } from "lucide-react";
+import { type ReactNode, useState } from "react";
+import { type FallbackProps, ErrorBoundary as ReactErrorBoundary } from "react-error-boundary";
 
 export function ErrorBoundary({
   children,
   fallback,
 }: {
-  children: React.ReactNode;
-  fallback?: React.ReactNode;
+  children: ReactNode;
+  fallback?: ReactNode;
 }) {
   return (
     <ReactErrorBoundary
@@ -48,9 +39,7 @@ function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
               <AlertTriangle className="h-8 w-8 text-red-400" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">
-                Something went wrong
-              </h1>
+              <h1 className="text-2xl font-bold text-white">Something went wrong</h1>
               <p className="text-slate-400 mt-1">
                 An unexpected error occurred while rendering this page
               </p>
@@ -59,9 +48,7 @@ function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
 
           <div className="mb-6">
             <div className="flex items-center justify-between mb-2">
-              <h2 className="text-lg font-semibold text-red-300">
-                Error Details
-              </h2>
+              <h2 className="text-lg font-semibold text-red-300">Error Details</h2>
               <button
                 onClick={handleCopy}
                 className="flex items-center gap-1 px-3 py-1.5 text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 rounded transition-colors duration-200"
@@ -81,9 +68,7 @@ function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
               </button>
             </div>
             <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-700">
-              <p className="text-red-400 font-mono text-sm mb-2">
-                {error.toString()}
-              </p>
+              <p className="text-red-400 font-mono text-sm mb-2">{error.toString()}</p>
               {error.stack && (
                 <details className="mt-4">
                   <summary className="cursor-pointer text-slate-400 hover:text-slate-300 text-sm">
@@ -115,7 +100,9 @@ function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
               <span>Reload Page</span>
             </button>
             <button
-              onClick={() => (window.location.href = "/")}
+              onClick={() => {
+                window.location.href = "/";
+              }}
               className="flex-1 flex items-center justify-center space-x-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors duration-200"
             >
               <Home className="h-4 w-4" />
@@ -125,9 +112,8 @@ function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
 
           <div className="mt-6 p-4 bg-blue-900/20 border border-blue-700/50 rounded-lg">
             <p className="text-sm text-blue-300">
-              <strong>Tip:</strong> If this error persists, try clearing your
-              browser cache or using a different browser. You can also report
-              this issue to the development team.
+              <strong>Tip:</strong> If this error persists, try clearing your browser cache or using
+              a different browser. You can also report this issue to the development team.
             </p>
           </div>
         </div>

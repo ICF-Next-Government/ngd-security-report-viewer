@@ -406,7 +406,7 @@ export function generateReportScripts(enableDeduplication: boolean = true): stri
 
   scripts.push(customInitialization);
 
-  return scripts.join('\n\n');
+  return scripts.join("\n\n");
 }
 
 /**

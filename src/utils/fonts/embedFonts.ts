@@ -66,16 +66,12 @@ export async function generateEmbeddedFontCSS(): Promise<string> {
         data: dataUrl,
       };
     } catch (error) {
-      console.warn(
-        `Failed to fetch font weight ${font.weight}, will use fallback`,
-      );
+      console.warn(`Failed to fetch font weight ${font.weight}, will use fallback`);
       return null;
     }
   });
 
-  const fontData = (await Promise.all(fontPromises)).filter(
-    Boolean,
-  ) as FontData[];
+  const fontData = (await Promise.all(fontPromises)).filter(Boolean) as FontData[];
 
   if (fontData.length === 0) {
     console.warn("No fonts could be fetched, using system fonts as fallback");

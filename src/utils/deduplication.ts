@@ -45,11 +45,7 @@ export class DeduplicationService {
       if (!existingGroup) {
         // Check for similar messages if enabled
         if (opts.groupBySimilarMessage) {
-          existingGroup = this.findSimilarGroup(
-            result,
-            groups,
-            opts.similarityThreshold,
-          );
+          existingGroup = this.findSimilarGroup(result, groups, opts.similarityThreshold);
         }
       }
 
@@ -98,12 +94,8 @@ export class DeduplicationService {
         info: 4,
       };
       const severityCompare =
-        severityOrder[
-          a.representativeResult.severity as keyof typeof severityOrder
-        ] -
-        severityOrder[
-          b.representativeResult.severity as keyof typeof severityOrder
-        ];
+        severityOrder[a.representativeResult.severity as keyof typeof severityOrder] -
+        severityOrder[b.representativeResult.severity as keyof typeof severityOrder];
 
       if (severityCompare !== 0) return severityCompare;
 
@@ -121,10 +113,7 @@ export class DeduplicationService {
    *
    * @private
    */
-  private static getGroupKey(
-    result: ProcessedResult,
-    options: DeduplicationOptions,
-  ): string {
+  private static getGroupKey(result: ProcessedResult, options: DeduplicationOptions): string {
     const parts: string[] = [];
 
     if (options.groupByRuleId) {
@@ -186,10 +175,7 @@ export class DeduplicationService {
    * @returns Similarity score between 0 (completely different) and 1 (identical)
    * @private
    */
-  private static calculateSimilarity(
-    message1: string,
-    message2: string,
-  ): number {
+  private static calculateSimilarity(message1: string, message2: string): number {
     const normalized1 = this.normalizeMessage(message1);
     const normalized2 = this.normalizeMessage(message2);
 

@@ -99,12 +99,8 @@ async function main() {
   try {
     jsonData = JSON.parse(fileContent);
   } catch (err) {
-    console.error(
-      "❌ Failed to parse JSON. The file doesn't appear to be valid JSON.",
-    );
-    console.error(
-      `   Error: ${err instanceof Error ? err.message : "Unknown error"}`,
-    );
+    console.error("❌ Failed to parse JSON. The file doesn't appear to be valid JSON.");
+    console.error(`   Error: ${err instanceof Error ? err.message : "Unknown error"}`);
     process.exit(1);
   }
 
@@ -114,9 +110,7 @@ async function main() {
     results = parsed.results;
     summary = parsed.summary;
     console.log(`🔍 Detected format: ${summary.format.toUpperCase()}`);
-    console.log(
-      `📊 Found ${summary.totalFindings} findings in ${summary.filesAffected} files`,
-    );
+    console.log(`📊 Found ${summary.totalFindings} findings in ${summary.filesAffected} files`);
   } catch (err) {
     console.error(
       `❌ Failed to parse report: ${err instanceof Error ? err.message : "Unknown error"}`,
@@ -145,9 +139,7 @@ async function main() {
     }
   } catch (err) {
     console.error(`❌ Failed to write output file: ${outputPath}`);
-    console.error(
-      `   Error: ${err instanceof Error ? err.message : "Unknown error"}`,
-    );
+    console.error(`   Error: ${err instanceof Error ? err.message : "Unknown error"}`);
     process.exit(1);
   }
 }

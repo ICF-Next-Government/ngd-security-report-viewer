@@ -59,9 +59,7 @@ const server = serve({
   async fetch(req) {
     const startTime = Date.now();
     const clientIP =
-      req.headers.get("x-forwarded-for") ||
-      req.headers.get("x-real-ip") ||
-      "unknown";
+      req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown";
 
     try {
       const url = new URL(req.url);
@@ -90,9 +88,7 @@ const server = serve({
 
       // Security check: ensure the resolved path doesn't escape the dist directory
       if (!filePath.startsWith(distPath + "/") && filePath !== distPath) {
-        log.warn(
-          `Path traversal attempt blocked: ${pathname} (IP: ${clientIP})`,
-        );
+        log.warn(`Path traversal attempt blocked: ${pathname} (IP: ${clientIP})`);
         return new Response("Forbidden - Path traversal not allowed", {
           status: 403,
         });
@@ -112,9 +108,7 @@ const server = serve({
           return new Response(fileContent, {
             headers: {
               "Content-Type": mimeType,
-              "Cache-Control": pathname.includes(".")
-                ? "public, max-age=31536000"
-                : "no-cache",
+              "Cache-Control": pathname.includes(".") ? "public, max-age=31536000" : "no-cache",
               "X-Content-Type-Options": "nosniff",
               "X-Frame-Options": "DENY",
               "X-XSS-Protection": "1; mode=block",
@@ -148,10 +142,7 @@ const server = serve({
           });
         } catch (indexError) {
           log.error(`Failed to read index.html: ${indexError}`);
-          return new Response(
-            "Internal Server Error - Index file read failed",
-            { status: 500 },
-          );
+          return new Response("Internal Server Error - Index file read failed", { status: 500 });
         }
       }
 
@@ -178,9 +169,7 @@ const server = serve({
       const processingTime = Date.now() - startTime;
       if (processingTime > 100) {
         // Log slow requests
-        log.warn(
-          `Slow request: ${req.method} ${req.url} took ${processingTime}ms`,
-        );
+        log.warn(`Slow request: ${req.method} ${req.url} took ${processingTime}ms`);
       }
     }
   },

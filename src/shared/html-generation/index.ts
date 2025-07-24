@@ -6,16 +6,16 @@
 import { ProcessedResult, ReportSummary } from "../../types/report";
 import { DeduplicationService } from "../../utils/deduplication";
 import { generateFindingsSectionHtml } from "./findings";
+import { generateReportScripts } from "./scripts";
+import { getAllStyles } from "./styles";
 import {
+  DeduplicationStats,
+  generateDeduplicationSummaryHtml,
   generateReportHeaderHtml,
   generateReportMetadataHtml,
-  generateDeduplicationSummaryHtml,
   generateSeverityCardsHtml,
   generateSeverityDistributionHtml,
-  DeduplicationStats,
 } from "./summary";
-import { getAllStyles } from "./styles";
-import { generateReportScripts } from "./scripts";
 
 export type GenerateHtmlOptions = {
   summary: ReportSummary;
@@ -63,10 +63,7 @@ function formatTimestamp(generatedAt?: string): string {
 /**
  * Generates the HTML document head section
  */
-function generateDocumentHead(
-  summary: ReportSummary,
-  offlineMode: boolean,
-): string {
+function generateDocumentHead(summary: ReportSummary, offlineMode: boolean): string {
   const title = `Security Report - ${summary.toolName || "Security Analysis"}`;
 
   return `
@@ -176,10 +173,7 @@ export function generateHtml({
     totalDuplicates: results.length - deduplicationGroups.length,
     duplicatePercentage:
       results.length > 0
-        ? (
-            ((results.length - deduplicationGroups.length) / results.length) *
-            100
-          ).toFixed(1)
+        ? (((results.length - deduplicationGroups.length) / results.length) * 100).toFixed(1)
         : "0",
   };
 

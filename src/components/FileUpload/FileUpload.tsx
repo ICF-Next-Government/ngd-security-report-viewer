@@ -1,5 +1,5 @@
 import { AlertCircle, FileText, Upload } from "lucide-react";
-import React, { useCallback, useState } from "react";
+import { type DragEvent, type FC, useCallback, useState } from "react";
 
 type FileUploadProps = {
   onFileUpload: (file: File) => void;
@@ -7,14 +7,10 @@ type FileUploadProps = {
   error?: string;
 };
 
-export const FileUpload: React.FC<FileUploadProps> = ({
-  onFileUpload,
-  loading,
-  error,
-}) => {
+export const FileUpload: FC<FileUploadProps> = ({ onFileUpload, loading, error }) => {
   const [dragActive, setDragActive] = useState(false);
 
-  const handleDrag = useCallback((e: React.DragEvent) => {
+  const handleDrag = useCallback((e: DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (e.type === "dragenter" || e.type === "dragover") {
@@ -79,9 +75,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
             {loading ? (
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400"></div>
             ) : (
-              <Upload
-                className={`h-8 w-8 ${dragActive ? "text-blue-400" : "text-slate-400"}`}
-              />
+              <Upload className={`h-8 w-8 ${dragActive ? "text-blue-400" : "text-slate-400"}`} />
             )}
           </div>
 
@@ -116,3 +110,5 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     </div>
   );
 };
+
+FileUpload.displayName = "FileUpload";

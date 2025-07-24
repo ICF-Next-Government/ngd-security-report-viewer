@@ -114,11 +114,7 @@ export abstract class BaseParser {
    * @param defaultValue - Default value if path doesn't exist
    * @returns Extracted string or default value
    */
-  protected static safeExtractString(
-    obj: any,
-    path: string,
-    defaultValue = "",
-  ): string {
+  protected static safeExtractString(obj: any, path: string, defaultValue = ""): string {
     const keys = path.split(".");
     let current = obj;
 
@@ -164,9 +160,7 @@ export abstract class BaseParser {
    * @param sources - Array of tag sources (arrays or strings)
    * @returns Deduplicated array of tags
    */
-  protected static extractTags(
-    ...sources: (string[] | string | undefined)[]
-  ): string[] {
+  protected static extractTags(...sources: (string[] | string | undefined)[]): string[] {
     const tags: string[] = [];
 
     for (const source of sources) {

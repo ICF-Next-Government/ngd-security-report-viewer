@@ -9,4 +9,15 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ["lucide-react"],
   },
+  test: {
+    globals: true,
+    environment: "jsdom",
+    setupFiles: "./test/setupTests.ts",
+    coverage: {
+      reporter: ["text", "json", "html"],
+      exclude: ["**/node_modules/**", "**/dist/**", "**/build/**"],
+    },
+    include: ["src/**/*.test.{ts,tsx}", "src/**/*.spec.{ts,tsx}"],
+    watch: false,
+  },
 });

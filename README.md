@@ -9,19 +9,67 @@
   A modern, interactive security report viewer and static HTML generator for SARIF, Semgrep, and GitLab SAST JSON files. View reports locally with advanced filtering and deduplication, or export as self-contained HTML files for sharing.
 </p>
 
----
-
-> GitHub CLI Single Command Quick Start:
-
-```bash
-gh repo clone ICF-Next-Government/ngd-security-report-viewer && cd ngd-security-report-viewer && make start && cd ..
-```
-
----
-
 ![ICF Security Report Viewer](./.docs/img/file-upload.webp)
 
 ![ICF Security Report Viewer](./.docs/img/json-paste.webp)
+
+---
+
+## Table of Contents
+
+- [Quick Start: Single Command](#quick-start-single-command)
+- [Features](#features)
+- [Supported Formats](#supported-formats)
+- [Screenshots](#screenshots)
+- [Installation](#installation)
+  - [Prerequisites](#prerequisites)
+  - [Quick Install](#quick-install)
+- [Usage](#usage)
+  - [Understanding Severity Levels](#understanding-severity-levels)
+  - [1. Local Web UI](#1-local-web-ui)
+  - [2. CLI Tool](#2-cli-tool)
+  - [3. Production Build](#3-production-build)
+- [Development](#development)
+  - [Setup](#setup)
+  - [Docker Usage](#docker-usage)
+  - [Project Structure](#project-structure)
+- [Key Features Explained](#key-features-explained)
+  - [Smart Deduplication](#smart-deduplication)
+  - [Embedded Report Data](#embedded-report-data)
+  - [Self-Contained HTML](#self-contained-html)
+- [Use Cases](#use-cases)
+- [License](#license)
+- [Contributing](#contributing)
+  - [Development Workflow](#development-workflow)
+- [Support](#support)
+
+---
+
+## Quick Start: Single Command
+
+These commands are intended to be single-shot commands that will pull the repo, install the packages, and run a production build of the applcation within a Docker container and return you back to the previous directory (to restore your `pwd` context).
+
+> GitHub CLI.
+
+```bash
+gh repo clone \
+  ICF-Next-Government/ngd-security-report-viewer && \
+  cd ngd-security-report-viewer && \
+  make start && \
+  cd ..
+```
+
+> Standard `git` CLI.
+
+```bash
+git clone \
+  git@github.com:ICF-Next-Government/ngd-security-report-viewer.git && \
+  cd ngd-security-report-viewer && \
+  make start && \
+  cd ..
+```
+
+---
 
 ## Features
 
@@ -171,11 +219,14 @@ bun run build
 ### Setup
 
 ```bash
-# Install dependencies
+# Install dependencies (also installs git hooks)
 bun install
 
 # Start development server
 bun run dev
+
+# Run tests
+bun run test
 
 # Run type checking
 bun run type-check
@@ -185,7 +236,30 @@ bun run lint
 
 # Build for production
 bun run build
+
+# Build without font injection (faster)
+bun run build:fast
 ```
+
+### Docker Usage
+
+The project includes Docker support for containerized deployment:
+
+```bash
+# Build and start the container (serves on port 9876)
+make start
+
+# Build the Docker image
+make build
+
+# Stop and remove containers
+make nuke
+
+# Full rebuild (clean + build)
+make rebuild
+```
+
+The Docker container serves the built application on port 9876.
 
 ### Project Structure
 
@@ -208,7 +282,10 @@ ngd-security-report-viewer/
 │   └── utils/                 # Utility functions
 ├── scripts/                   # Build and utility scripts
 ├── public/                    # Static assets
-└── dist/                      # Build output (git-ignored)
+├── dist/                      # Build output (git-ignored)
+├── lefthook.yml              # Git hooks configuration
+├── biome.json                # Code formatter and linter config
+└── vitest.config.ts          # Test configuration
 ```
 
 ## Key Features Explained
@@ -258,6 +335,56 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
+### Development Workflow
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feat/amazing-feature`)
+3. Make your changes
+4. Ensure tests pass (`bun run test`)
+5. Ensure code is formatted (`bun run lint`)
+6. Commit your changes (git hooks will run automatically)
+7. Push to your branch
+8. Open a Pull Request
+
+Note: Pre-commit hooks are automatically installed and will run linting and tests before each commit.
+
+### Commit Message Format
+
+This project includes a commit message template to help maintain consistent commit messages. To use it locally:
+
+```bash
+# Set up the commit template for this repository
+git config commit.template .gitmessage
+```
+
+The template follows the conventional commits format:
+- `feat`: New feature for the user
+- `fix`: Bug fix for the user
+- `docs`: Documentation changes
+- `style`: Code style changes (formatting, etc.)
+- `refactor`: Code refactoring
+- `test`: Test additions or changes
+- `chore`: Build process or auxiliary tool changes
+- `perf`: Performance improvements
+- `ci`: CI configuration changes
+- `build`: Build system or dependency changes
+- `revert`: Reverts a previous commit
+
+### Pull Request Process
+
+This project includes templates to help create consistent Pull Requests and Issues:
+
+- **Pull Request Template**: Automatically loads when creating a new PR
+- **Issue Templates**: Choose from Bug Report or Feature Request templates
+- **All templates**: Located in `.github/` directory
+
+When submitting a PR:
+1. Fill out the PR template completely
+2. Link related issues using "Fixes #123" or "Closes #123"
+3. Ensure all checklist items are addressed
+4. Add screenshots for UI changes
+5. Wait for code review and CI checks to pass
 
 ## Support
 

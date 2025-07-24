@@ -1,21 +1,15 @@
-import { AlertTriangle, CheckCircle, Info } from "lucide-react";
-import React, { useMemo } from "react";
-import { motion } from "motion/react";
-import {
-  ProcessedResult,
-  ReportSummary as ReportSummaryType,
-} from "@/types/report";
+import { ProcessedResult, ReportSummary as ReportSummaryType } from "@/types/report";
 import { DeduplicationService } from "@/utils/deduplication";
+import { AlertTriangle, CheckCircle, Info } from "lucide-react";
+import { motion } from "motion/react";
+import { type FC, useMemo } from "react";
 
 type ReportSummaryProps = {
   summary: ReportSummaryType;
   results?: ProcessedResult[];
 };
 
-export const ReportSummary: React.FC<ReportSummaryProps> = ({
-  summary,
-  results,
-}) => {
+export const ReportSummary: FC<ReportSummaryProps> = ({ summary, results }) => {
   // Safeguard against undefined summary or missing properties
   const safeSummary = {
     criticalCount: summary?.criticalCount || 0,
@@ -90,20 +84,15 @@ export const ReportSummary: React.FC<ReportSummaryProps> = ({
   const deduplicationStats = useMemo(() => {
     if (!results || results.length === 0) return null;
 
-    const deduplicatedGroups = DeduplicationService.deduplicateFindings(
-      results,
-      {
-        groupByRuleId: true,
-        groupBySimilarMessage: true,
-        similarityThreshold: 0.85,
-      },
-    );
+    const deduplicatedGroups = DeduplicationService.deduplicateFindings(results, {
+      groupByRuleId: true,
+      groupBySimilarMessage: true,
+      similarityThreshold: 0.85,
+    });
 
     const totalDuplicates = results.length - deduplicatedGroups.length;
     const duplicatePercentage =
-      results.length > 0
-        ? ((totalDuplicates / results.length) * 100).toFixed(1)
-        : "0";
+      results.length > 0 ? ((totalDuplicates / results.length) * 100).toFixed(1) : "0";
 
     return {
       uniqueGroups: deduplicatedGroups.length,
@@ -121,9 +110,7 @@ export const ReportSummary: React.FC<ReportSummaryProps> = ({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h2 className="text-2xl font-bold text-white mb-2">
-          Security Analysis Report
-        </h2>
+        <h2 className="text-2xl font-bold text-white mb-2">Security Analysis Report</h2>
         <div className="flex items-center justify-center gap-4 text-sm text-slate-400">
           <span>
             Tool: {safeSummary.toolName}
@@ -149,18 +136,12 @@ export const ReportSummary: React.FC<ReportSummaryProps> = ({
           >
             <div className="flex items-start justify-between mb-2">
               <card.icon className={`h-5 w-5 ${card.textColor}`} />
-              <span className={`text-xs font-medium ${card.textColor}`}>
-                {card.label}
-              </span>
+              <span className={`text-xs font-medium ${card.textColor}`}>{card.label}</span>
             </div>
-            <div className={`text-2xl font-bold ${card.textColor}`}>
-              {card.count}
-            </div>
+            <div className={`text-2xl font-bold ${card.textColor}`}>{card.count}</div>
             <div className="text-xs text-slate-500 mt-1">
               {safeSummary.totalFindings > 0
-                ? `${((card.count / safeSummary.totalFindings) * 100).toFixed(
-                    1,
-                  )}%`
+                ? `${((card.count / safeSummary.totalFindings) * 100).toFixed(1)}%`
                 : "0%"}
             </div>
           </motion.div>
@@ -178,9 +159,7 @@ export const ReportSummary: React.FC<ReportSummaryProps> = ({
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-slate-400 mb-1">Total Findings</p>
-              <p className="text-3xl font-bold text-white">
-                {safeSummary.totalFindings}
-              </p>
+              <p className="text-3xl font-bold text-white">{safeSummary.totalFindings}</p>
             </div>
             <div className="p-3 bg-blue-900/30 rounded-full">
               <AlertTriangle className="h-6 w-6 text-blue-400" />
@@ -192,9 +171,7 @@ export const ReportSummary: React.FC<ReportSummaryProps> = ({
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-slate-400 mb-1">Files Affected</p>
-              <p className="text-3xl font-bold text-white">
-                {safeSummary.filesAffected}
-              </p>
+              <p className="text-3xl font-bold text-white">{safeSummary.filesAffected}</p>
             </div>
             <div className="p-3 bg-purple-900/30 rounded-full">
               <Info className="h-6 w-6 text-purple-400" />
@@ -239,9 +216,7 @@ export const ReportSummary: React.FC<ReportSummaryProps> = ({
                 <Info className="h-5 w-5 text-purple-400" />
               </div>
               <div>
-                <h3 className="text-sm font-medium text-white">
-                  Deduplication Active
-                </h3>
+                <h3 className="text-sm font-medium text-white">Deduplication Active</h3>
                 <p className="text-xs text-slate-400 mt-0.5">
                   {deduplicationStats.totalDuplicates} duplicate findings hidden
                 </p>
@@ -250,9 +225,7 @@ export const ReportSummary: React.FC<ReportSummaryProps> = ({
             <div className="flex items-center gap-4">
               <div className="text-right">
                 <p className="text-xs text-slate-400">Unique Groups</p>
-                <p className="text-lg font-bold text-white">
-                  {deduplicationStats.uniqueGroups}
-                </p>
+                <p className="text-lg font-bold text-white">{deduplicationStats.uniqueGroups}</p>
               </div>
               <div className="text-right">
                 <p className="text-xs text-slate-400">Reduction</p>
@@ -267,3 +240,5 @@ export const ReportSummary: React.FC<ReportSummaryProps> = ({
     </div>
   );
 };
+
+ReportSummary.displayName = "ReportSummary";
