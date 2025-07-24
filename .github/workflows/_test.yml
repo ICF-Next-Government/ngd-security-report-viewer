@@ -8,8 +8,7 @@ on:
 
 # See https://confluence.icfiweb.com/display/CSTT/Path+to+Production
 jobs:
-  # Builds the containers and runs tests on every commit pushed to git
-  build:
+  test:
     runs-on: ubuntu-latest
     environment: ${{ inputs.target_environment }}
     steps:
