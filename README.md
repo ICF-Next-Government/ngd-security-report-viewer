@@ -320,22 +320,6 @@ Generated reports include:
 - No external JavaScript dependencies
 - Complete functionality offline
 
-## Use Cases
-
-- **Security Engineers**: Review and triage vulnerabilities with advanced filtering
-- **DevOps Teams**: Generate static reports for artifact storage
-- **Security Auditors**: Create professional reports for compliance documentation
-- **Development Teams**: Track and prioritize security remediation efforts
-- **Automation**: Extract report summaries for dashboards and metrics
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
 ### Development Workflow
 
 1. Fork the repository
@@ -359,6 +343,7 @@ git config commit.template .gitmessage
 ```
 
 The template follows the conventional commits format:
+
 - `feat`: New feature for the user
 - `fix`: Bug fix for the user
 - `docs`: Documentation changes
@@ -380,6 +365,7 @@ This project includes templates to help create consistent Pull Requests and Issu
 - **All templates**: Located in `.github/` directory
 
 When submitting a PR:
+
 1. Fill out the PR template completely
 2. Link related issues using "Fixes #123" or "Closes #123"
 3. Ensure all checklist items are addressed
