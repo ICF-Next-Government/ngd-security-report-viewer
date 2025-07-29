@@ -107,6 +107,6 @@ jobs:
   invoke_releaser:
     if: ${{ needs.setup.outputs.final_release == 'true' }}
     needs:
-      - setup
-      - invoke_publisher
+      - invoke_tester
+      - invoke_semgrep
     uses: ./.github/workflows/_release.yml
