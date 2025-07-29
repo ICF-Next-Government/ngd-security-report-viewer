@@ -1,10 +1,7 @@
 import { FindingsList } from "@/components/FindingsList";
 import { ReportSummary } from "@/components/ReportSummary";
 import { generateStaticHtml } from "@/shared/static-html-export";
-import {
-  ProcessedResult,
-  ReportSummary as ReportSummaryType,
-} from "@/types/report";
+import { ProcessedResult, ReportSummary as ReportSummaryType } from "@/types/report";
 import { ArrowLeft, Download, Shield } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
@@ -32,12 +29,7 @@ type ReportViewProps = {
   uploadTimestamp?: Date | null;
 };
 
-export const ReportView: FC<ReportViewProps> = ({
-  results,
-  summary,
-  onBack,
-  uploadTimestamp,
-}) => {
+export const ReportView: FC<ReportViewProps> = ({ results, summary, onBack, uploadTimestamp }) => {
   const [isExporting, setIsExporting] = useState(false);
   // Export state management
   const [exportError, setExportError] = useState<string | null>(null);
@@ -92,9 +84,7 @@ export const ReportView: FC<ReportViewProps> = ({
     try {
       // Browser compatibility checks
       if (!window.Blob) {
-        throw new Error(
-          "Your browser doesn't support file downloads (Blob API not available)",
-        );
+        throw new Error("Your browser doesn't support file downloads (Blob API not available)");
       }
 
       if (!window.URL || !window.URL.createObjectURL) {
@@ -112,10 +102,7 @@ export const ReportView: FC<ReportViewProps> = ({
 
       // Add timeout to prevent hanging
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(
-          () => reject(new Error("Export timeout - operation took too long")),
-          30000,
-        ); // 30 second timeout
+        setTimeout(() => reject(new Error("Export timeout - operation took too long")), 30000); // 30 second timeout
       });
 
       const generatePromise = (async () => {
@@ -161,9 +148,7 @@ export const ReportView: FC<ReportViewProps> = ({
       setTimeout(() => setExportSuccess(false), 3000);
     } catch (error) {
       const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "An unexpected error occurred during export";
+        error instanceof Error ? error.message : "An unexpected error occurred during export";
       setExportError(errorMessage);
       setTimeout(() => setExportError(null), 5000);
     } finally {
@@ -299,9 +284,7 @@ export const ReportView: FC<ReportViewProps> = ({
                       exit={{ opacity: 0, y: -10, scale: 0.95 }}
                       transition={{ duration: 0.2 }}
                     >
-                      <p
-                        className={`text-sm ${exportError ? "text-red-200" : "text-green-200"}`}
-                      >
+                      <p className={`text-sm ${exportError ? "text-red-200" : "text-green-200"}`}>
                         {exportError || "Report exported successfully!"}
                       </p>
                     </motion.div>
@@ -356,9 +339,7 @@ export const ReportView: FC<ReportViewProps> = ({
                     ease: "linear",
                   }}
                 />
-                <p className="text-white text-lg font-medium">
-                  Exporting report...
-                </p>
+                <p className="text-white text-lg font-medium">Exporting report...</p>
               </motion.div>
             </motion.div>
           )}

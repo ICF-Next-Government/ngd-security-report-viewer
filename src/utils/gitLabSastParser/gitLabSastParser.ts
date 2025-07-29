@@ -2,8 +2,8 @@ import {
   GitLabSastIdentifier,
   GitLabSastReport,
   GitLabSastVulnerability,
-} from "../types/gitlab-sast";
-import { ProcessedResult, ReportSummary } from "../types/report";
+} from "@/types/gitlab-sast";
+import { ProcessedResult, ReportSummary } from "@/types/report";
 
 export class GitLabSastParser {
   static parse(gitlabData: GitLabSastReport): {

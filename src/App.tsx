@@ -26,9 +26,7 @@ function App() {
   const [uploadTimestamp, setUploadTimestamp] = useState<Date | null>(null);
 
   // Recent report tracking
-  const [recentFileName, setRecentFileName] = useState<string | undefined>(
-    undefined,
-  );
+  const [recentFileName, setRecentFileName] = useState<string | undefined>(undefined);
   const [isRemovingReport, setIsRemovingReport] = useState(false);
 
   /**
@@ -186,9 +184,7 @@ function App() {
                   ease: "linear",
                 }}
               />
-              <p className="text-white text-lg font-medium">
-                Loading report...
-              </p>
+              <p className="text-white text-lg font-medium">Loading report...</p>
             </motion.div>
           </motion.div>
         )}
@@ -229,8 +225,7 @@ function App() {
               key="report"
               className="fixed inset-0 min-h-screen w-screen report-scrollbar"
               style={{
-                background:
-                  "linear-gradient(to bottom right, #0f172a, #1e293b 80%)",
+                background: "linear-gradient(to bottom right, #0f172a, #1e293b 80%)",
                 overflowY: "auto",
               }}
               initial={{ opacity: 0, scale: 1.05 }}

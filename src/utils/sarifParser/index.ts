@@ -1,0 +1,1 @@
+export { SarifParser } from "./sarifParser";

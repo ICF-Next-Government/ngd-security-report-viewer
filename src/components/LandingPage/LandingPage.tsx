@@ -46,6 +46,7 @@ export const LandingPage: FC<LandingPageProps> = ({
   const [jsonInput, setJsonInput] = useState("");
   const [jsonError, setJsonError] = useState("");
   const [copied, setCopied] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -65,7 +66,12 @@ export const LandingPage: FC<LandingPageProps> = ({
       const rect = e.currentTarget.getBoundingClientRect();
       const x = e.clientX;
       const y = e.clientY;
-      if (x < rect.left || x >= rect.right || y < rect.top || y >= rect.bottom) {
+      if (
+        x < rect.left ||
+        x >= rect.right ||
+        y < rect.top ||
+        y >= rect.bottom
+      ) {
         setDragActive(false);
       }
     }
@@ -232,9 +238,10 @@ export const LandingPage: FC<LandingPageProps> = ({
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.5 }}
                 >
-                  Centralized platform for analyzing SARIF, Semgrep, and GitLab SAST security
-                  reports. Generate comprehensive insights and detailed visualizations for
-                  vulnerability assessment and remediation tracking.
+                  Centralized platform for analyzing SARIF, Semgrep, and GitLab
+                  SAST security reports. Generate comprehensive insights and
+                  detailed visualizations for vulnerability assessment and
+                  remediation tracking.
                 </motion.p>
 
                 {/* Feature Pills */}
@@ -249,8 +256,12 @@ export const LandingPage: FC<LandingPageProps> = ({
                       key={index}
                       className={`inline-flex items-center gap-2 px-4 py-2 bg-white/5 backdrop-blur-sm rounded-full border border-white/10 transition-all duration-200 ${feature.hoverBg} hover:border-white/20 cursor-default`}
                     >
-                      <feature.icon className={`w-4 h-4 ${feature.iconColor}`} />
-                      <span className="text-sm text-white">{feature.title}</span>
+                      <feature.icon
+                        className={`w-4 h-4 ${feature.iconColor}`}
+                      />
+                      <span className="text-sm text-white">
+                        {feature.title}
+                      </span>
                     </div>
                   ))}
                 </motion.div>
@@ -261,10 +272,15 @@ export const LandingPage: FC<LandingPageProps> = ({
                   <span>Supports:</span>
                   <div className="flex items-center gap-2">
                     {supportedFormats.map((format, index) => (
-                      <span key={index} className="text-slate-300 flex items-center">
+                      <span
+                        key={index}
+                        className="text-slate-300 flex items-center"
+                      >
                         {format.name}
                         {index < supportedFormats.length - 1 && (
-                          <span className="mx-2 text-slate-500 select-none">|</span>
+                          <span className="mx-2 text-slate-500 select-none">
+                            |
+                          </span>
                         )}
                       </span>
                     ))}
@@ -306,7 +322,9 @@ export const LandingPage: FC<LandingPageProps> = ({
                     <button
                       onClick={() => setInputMode("upload")}
                       className={`flex-1 px-6 py-4 font-medium transition-all duration-200 relative ${
-                        inputMode === "upload" ? "text-white" : "text-slate-400 hover:text-white"
+                        inputMode === "upload"
+                          ? "text-white"
+                          : "text-slate-400 hover:text-white"
                       }`}
                       disabled={loading}
                     >
@@ -319,7 +337,9 @@ export const LandingPage: FC<LandingPageProps> = ({
                     <button
                       onClick={() => setInputMode("paste")}
                       className={`flex-1 px-6 py-4 font-medium transition-all duration-200 relative ${
-                        inputMode === "paste" ? "text-white" : "text-slate-400 hover:text-white"
+                        inputMode === "paste"
+                          ? "text-white"
+                          : "text-slate-400 hover:text-white"
                       }`}
                       disabled={loading}
                     >
@@ -358,7 +378,9 @@ export const LandingPage: FC<LandingPageProps> = ({
                           <div className="p-12 text-center">
                             <div
                               className={`inline-flex p-4 rounded-full mb-6 transition-all duration-300 ${
-                                dragActive ? "bg-blue-500/20 scale-110" : "bg-white/10"
+                                dragActive
+                                  ? "bg-blue-500/20 scale-110"
+                                  : "bg-white/10"
                               }`}
                             >
                               {loading ? (
@@ -366,14 +388,18 @@ export const LandingPage: FC<LandingPageProps> = ({
                               ) : (
                                 <Upload
                                   className={`w-10 h-10 transition-colors duration-300 ${
-                                    dragActive ? "text-blue-400" : "text-slate-400"
+                                    dragActive
+                                      ? "text-blue-400"
+                                      : "text-slate-400"
                                   }`}
                                 />
                               )}
                             </div>
 
                             <h3 className="text-lg font-semibold text-white mb-2">
-                              {loading ? "Processing security report..." : "Select Security Report"}
+                              {loading
+                                ? "Processing security report..."
+                                : "Select Security Report"}
                             </h3>
 
                             <p className="text-slate-400 mb-6">
@@ -389,7 +415,9 @@ export const LandingPage: FC<LandingPageProps> = ({
 
                             <div className="flex items-center justify-center gap-2 text-xs text-slate-500">
                               <FileText className="w-3 h-3" />
-                              <span>Supported: JSON format • Maximum file size: 50MB</span>
+                              <span>
+                                Supported: JSON format • Maximum file size: 50MB
+                              </span>
                             </div>
                           </div>
                         </div>
@@ -456,8 +484,12 @@ export const LandingPage: FC<LandingPageProps> = ({
                       >
                         <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
                         <div className="flex-1">
-                          <h4 className="text-sm font-medium text-red-300 mb-1">Error</h4>
-                          <p className="text-sm text-red-400">{error || jsonError}</p>
+                          <h4 className="text-sm font-medium text-red-300 mb-1">
+                            Error
+                          </h4>
+                          <p className="text-sm text-red-400">
+                            {error || jsonError}
+                          </p>
                         </div>
                       </motion.div>
                     )}
@@ -492,12 +524,12 @@ export const LandingPage: FC<LandingPageProps> = ({
                                 setIsRemoving(false);
                               }, 400);
                             }}
-                            className="absolute top-4 right-4 p-2 text-slate-500 hover:text-white hover:bg-red-700/40 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400"
+                            className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white bg-slate-700/50 hover:bg-red-600/80 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 group-hover:opacity-100 opacity-70"
                             title="Clear recent report"
                             aria-label="Clear recent report"
                           >
                             <svg
-                              className="w-4 h-4"
+                              className="w-5 h-5"
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -550,13 +582,16 @@ export const LandingPage: FC<LandingPageProps> = ({
                                       d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                                     />
                                   </svg>
-                                  {recentReport.timestamp.toLocaleString("en-US", {
-                                    year: "numeric",
-                                    month: "short",
-                                    day: "numeric",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  })}
+                                  {recentReport.timestamp.toLocaleString(
+                                    "en-US",
+                                    {
+                                      year: "numeric",
+                                      month: "short",
+                                      day: "numeric",
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    },
+                                  )}
                                 </span>
 
                                 <span className="flex items-center gap-1 text-slate-300 font-semibold">
@@ -577,7 +612,8 @@ export const LandingPage: FC<LandingPageProps> = ({
                                 </span>
                               </div>
 
-                              {(recentReport.criticalCount > 0 || recentReport.highCount > 0) && (
+                              {(recentReport.criticalCount > 0 ||
+                                recentReport.highCount > 0) && (
                                 <div
                                   className="flex items-center gap-2"
                                   style={{ marginTop: "1rem" }}
@@ -684,7 +720,9 @@ export const LandingPage: FC<LandingPageProps> = ({
                   ease: "linear",
                 }}
               />
-              <p className="text-white text-lg font-medium">Analyzing security report...</p>
+              <p className="text-white text-lg font-medium">
+                Analyzing security report...
+              </p>
             </motion.div>
           </motion.div>
         )}

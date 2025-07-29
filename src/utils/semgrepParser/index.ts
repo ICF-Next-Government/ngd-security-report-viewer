@@ -1,0 +1,1 @@
+export { SemgrepParser } from "./semgrepParser";

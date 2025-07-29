@@ -39,10 +39,7 @@ if (typeof window !== "undefined") {
   // Only suppress jsdom errors, not all errors
   // @ts-ignore
   console.error = (...args: any[]) => {
-    if (
-      typeof args[0] === "string" &&
-      args[0].includes("Error: Uncaught [Error:")
-    ) {
+    if (typeof args[0] === "string" && args[0].includes("Error: Uncaught [Error:")) {
       return;
     }
     originalConsoleError(...args);

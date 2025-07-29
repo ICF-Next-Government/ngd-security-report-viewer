@@ -1,9 +1,9 @@
-import { ProcessedResult, ReportSummary } from "../types/report";
-import { SarifLog, SarifResult } from "../types/sarif";
-import { BaseParser } from "./baseParser";
-import { mapSecuritySeverityScore, normalizeSeverity } from "./helpers/severity";
+import { ProcessedResult, ReportSummary } from "@/types/report";
+import { SarifLog, SarifResult } from "@/types/sarif";
+import { BaseParser } from "@/utils/baseParser";
+import { mapSecuritySeverityScore, normalizeSeverity } from "@/utils/helpers/severity";
 
-export class SarifParser extends BaseParser {
+export class SarifParser {
   static parse(sarifData: SarifLog): {
     results: ProcessedResult[];
     summary: ReportSummary;
@@ -22,15 +22,15 @@ export class SarifParser extends BaseParser {
       });
     });
 
-    const summary = this.createSummary(results, toolName, toolVersion, "sarif");
+    const summary = BaseParser.createSummary(results, toolName, toolVersion, "sarif");
     return { results, summary };
   }
 
   private static processResult(result: SarifResult, run: any, id: string): ProcessedResult {
     const ruleId = result.ruleId || "unknown-rule";
-    const rule = this.findRule(ruleId, run);
+    const rule = SarifParser.findRule(ruleId, run);
 
-    const severity = this.determineSeverity(result, rule);
+    const severity = SarifParser.determineSeverity(result, rule);
     const file = result.locations?.[0]?.physicalLocation?.artifactLocation.uri || "unknown-file";
     const startLine = result.locations?.[0]?.physicalLocation?.region?.startLine;
     const endLine = result.locations?.[0]?.physicalLocation?.region?.endLine;

@@ -1,5 +1,5 @@
-import { SEVERITY_LEVELS } from "../constants";
-import { ProcessedResult, ReportSummary } from "../types/report";
+import { SEVERITY_LEVELS } from "@/constants";
+import { ProcessedResult, ReportSummary, ReportFormat } from "@/types/report";
 
 /**
  * Base class for security report parsers
@@ -12,7 +12,7 @@ import { ProcessedResult, ReportSummary } from "../types/report";
  *
  * Subclasses must implement the static parse() method to handle specific formats.
  */
-export abstract class BaseParser {
+export class BaseParser {
   /**
    * Count findings by severity level
    * @param results - Array of processed results
@@ -81,11 +81,11 @@ export abstract class BaseParser {
    * @param format - Report format identifier
    * @returns Report summary object
    */
-  protected static createSummary(
+  public static createSummary(
     results: ProcessedResult[],
     toolName: string,
     toolVersion: string | undefined,
-    format: "sarif" | "semgrep" | "gitlab-sast",
+    format: ReportFormat,
   ): ReportSummary {
     const counts = this.countBySeverity(results);
     const filesSet = this.extractUniqueFiles(results);
@@ -114,7 +114,11 @@ export abstract class BaseParser {
    * @param defaultValue - Default value if path doesn't exist
    * @returns Extracted string or default value
    */
-  protected static safeExtractString(obj: any, path: string, defaultValue = ""): string {
+  protected static safeExtractString(
+    obj: any,
+    path: string,
+    defaultValue = "",
+  ): string {
     const keys = path.split(".");
     let current = obj;
 
@@ -160,7 +164,9 @@ export abstract class BaseParser {
    * @param sources - Array of tag sources (arrays or strings)
    * @returns Deduplicated array of tags
    */
-  protected static extractTags(...sources: (string[] | string | undefined)[]): string[] {
+  protected static extractTags(
+    ...sources: (string[] | string | undefined)[]
+  ): string[] {
     const tags: string[] = [];
 
     for (const source of sources) {
@@ -182,14 +188,4 @@ export abstract class BaseParser {
   protected static buildDescription(parts: (string | undefined)[]): string {
     return parts.filter(Boolean).join("\n\n");
   }
-
-  /**
-   * Abstract method to be implemented by specific parsers
-   * @param data - Raw report data
-   * @returns Parsed results and summary
-   */
-  abstract parse(data: any): {
-    results: ProcessedResult[];
-    summary: ReportSummary;
-  };
 }

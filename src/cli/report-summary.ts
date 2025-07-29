@@ -7,7 +7,7 @@
  */
 
 import { readFile } from "node:fs/promises";
-import { resolve } from "node:path";
+
 import { DeduplicationService } from "../utils/deduplication";
 import { ReportParser } from "../utils/reportParser";
 
