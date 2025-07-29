@@ -2,7 +2,7 @@ services:
   service:
     build:
       dockerfile: Dockerfile
-    container_name: sarif-viewer
+    container_name: AuditLens
     ports:
       - 9876:9876
     tty: true
