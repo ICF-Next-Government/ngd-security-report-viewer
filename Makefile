@@ -1,7 +1,9 @@
-SERVICE_NAME := sarif-viewer-service
+SERVICE_NAME := AuditLens
 
 .PHONY: start
 start:
+	@bun i
+	@bun run build
 	@DOCKER_BUILDKIT=1 docker compose up service -d
 
 .PHONY: build
