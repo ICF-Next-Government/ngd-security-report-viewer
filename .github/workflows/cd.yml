@@ -99,3 +99,14 @@ jobs:
     secrets: inherit
     with:
       application: ${{ vars.application_name }}
+
+  # Creates a GitHub release for final release tags (YYYYMMDD.N)
+  # We're going to treat this job as a bit of a side effect and not really
+  # care whether it succeeds or fails. It's a luxury, not a requirement. And
+  # it's easy to create manually if it fails.
+  invoke_releaser:
+    if: ${{ needs.setup.outputs.final_release == 'true' }}
+    needs:
+      - setup
+      - invoke_publisher
+    uses: ./.github/workflows/_release.yml

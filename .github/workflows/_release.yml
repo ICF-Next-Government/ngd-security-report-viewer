@@ -1,0 +1,17 @@
+#
+# Creates a GitHub release
+#
+
+name: 🏋️‍♂️ _release
+on:
+  workflow_call:
+
+jobs:
+  gh_release:
+    runs-on: ubuntu-latest
+    steps:
+      # https://github.com/marketplace/actions/create-release
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          body: "Final (production) release created from the ${{ github.ref_name }} tag."
