@@ -109,7 +109,6 @@ git clone \
 ### Prerequisites
 
 - [Bun](https://bun.sh/) runtime (v1.0 or higher)
-- Or [Node.js](https://nodejs.org/) 20.x or higher
 
 ### Quick Install
 
