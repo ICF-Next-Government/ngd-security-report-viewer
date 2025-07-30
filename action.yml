@@ -194,7 +194,7 @@ runs:
 
         # Test report summary with the input file
         echo "📊 Generating report summary..."
-        if node dist/report-summary.cjs --input "../${{ inputs.in }}" > /tmp/summary.json; then
+        if bun run dist/report-summary.cjs --input "../${{ inputs.in }}" > /tmp/summary.json; then
           echo "✅ Report summary generated successfully"
         else
           echo "❌ Failed to generate report summary"
@@ -250,7 +250,7 @@ runs:
         fi
 
         # Build the command
-        CMD="node dist/generate-html-report.cjs --input ../${{ inputs.in }} --output ../${{ inputs.out }}"
+        CMD="bun run dist/generate-html-report.cjs --input ../${{ inputs.in }} --output ../${{ inputs.out }}"
 
         # Add no-dedup flag if requested
         if [[ "${{ inputs.no-dedup }}" == "true" ]]; then
