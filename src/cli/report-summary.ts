@@ -1,4 +1,3 @@
-#!/usr/bin/env bun
 /**
  * CLI to generate a summary from a SARIF, Semgrep, or GitLab SAST JSON file.
  *
@@ -22,7 +21,9 @@ function parseArgs() {
 Security Report Summary Generator
 
 Usage:
-  bun src/cli/report-summary.ts --input <file>
+  node dist/report-summary.cjs --input <file>
+  # OR
+  bun run report-summary --input <file>
 
 Options:
   -i, --input <file>  Path to SARIF, Semgrep, or GitLab SAST JSON file (required)
@@ -30,13 +31,13 @@ Options:
 
 Examples:
   # Generate summary from SARIF file
-  bun src/cli/report-summary.ts --input scan.sarif.json
+  node dist/report-summary.cjs --input scan.sarif.json
 
   # Generate summary from Semgrep JSON
-  bun src/cli/report-summary.ts --input semgrep_output.json
+  bun run report-summary --input semgrep_output.json
 
   # Generate summary from GitLab SAST JSON
-  bun src/cli/report-summary.ts -i gl-sast-report.json
+  node dist/report-summary.cjs -i gl-sast-report.json
 
 Output:
   Returns JSON with detailed summary information:
@@ -88,7 +89,11 @@ function generateUnixTimestamp(): number {
   return Math.floor(Date.now() / 1000);
 }
 
-function formatToolInfo(toolName: string, toolVersion?: string, format?: string): string {
+function formatToolInfo(
+  toolName: string,
+  toolVersion?: string,
+  format?: string,
+): string {
   let toolInfo = toolName;
 
   if (toolVersion) {
@@ -120,8 +125,12 @@ async function main() {
   try {
     jsonData = JSON.parse(fileContent);
   } catch (err) {
-    console.error("❌ Failed to parse JSON. The file doesn't appear to be valid JSON.");
-    console.error(`   Error: ${err instanceof Error ? err.message : "Unknown error"}`);
+    console.error(
+      "❌ Failed to parse JSON. The file doesn't appear to be valid JSON.",
+    );
+    console.error(
+      `   Error: ${err instanceof Error ? err.message : "Unknown error"}`,
+    );
     process.exit(1);
   }
 
@@ -146,7 +155,10 @@ async function main() {
 
     const groups = DeduplicationService.deduplicateFindings(results);
     const totalDuplicates = results.length - groups.length;
-    const duplicatePercentage = ((totalDuplicates / results.length) * 100).toFixed(1);
+    const duplicatePercentage = (
+      (totalDuplicates / results.length) *
+      100
+    ).toFixed(1);
 
     return {
       unique_groups: groups.length,

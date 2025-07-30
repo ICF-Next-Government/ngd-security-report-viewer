@@ -90,6 +90,14 @@ runs:
         path: .security-report-viewer
         fetch-depth: 1
 
+    - name: Build CLIs
+      shell: bash
+      working-directory: .security-report-viewer
+      run: |
+        echo "🔨 Building CLIs..."
+        bun run build:cli
+        bun run build:cli-summary
+
     - name: Generate HTML report
       shell: bash
       working-directory: .security-report-viewer
@@ -99,7 +107,7 @@ runs:
         echo "Output file: ${{ inputs.out }}"
 
         # Build the command
-        CMD="bun src/cli/generate-html-report.ts --input ../${{ inputs.in }} --output ../${{ inputs.out }}"
+        CMD="node dist/generate-html-report.cjs --input ../${{ inputs.in }} --output ../${{ inputs.out }}"
 
         # Add no-dedup flag if requested
         if [[ "${{ inputs.no-dedup }}" == "true" ]]; then

@@ -7,7 +7,17 @@ This project adheres to [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+### Changed
+- Updated CLI tools to use consistent naming convention (`generate-html-report.cjs` and `report-summary.cjs`).
+- Unified build configuration for both CLI tools using same Vite config with environment variable selection.
+- Updated package.json scripts to use descriptive names (`generate-html-report` and `report-summary`).
+- Updated GitHub Actions workflow to use new CLI naming conventions.
+- Enhanced help text in both CLI tools to show correct usage examples with new naming.
+- Improved CLI tool build process to ensure standalone executables with proper module bundling.
 
+### Fixed
+- Resolved module resolution issues in CLI tools by ensuring dependencies are properly bundled.
+- Fixed path alias resolution problems in both CLI tools by using consistent build configuration.
 
 ### Added
 - Lefthook integration for Git hooks management.

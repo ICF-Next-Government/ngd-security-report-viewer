@@ -4,16 +4,6 @@
   "version": "2.1.0",
   "type": "module",
   "description": "A modern, interactive security report viewer and static HTML generator for SARIF, Semgrep, and GitLab SAST JSON files",
-  "keywords": [
-    "security",
-    "sarif",
-    "semgrep",
-    "gitlab-sast",
-    "gitleaks",
-    "vulnerability",
-    "report-viewer",
-    "static-site-generator"
-  ],
   "author": "NGD Security Team",
   "repository": {
     "type": "git",
@@ -25,8 +15,12 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build && bun run inject-fonts",
+    "build": "vite build && bun run inject-fonts && bun run build:cli && bun run build:cli-summary",
     "build:fast": "vite build",
+    "build:cli": "vite build --config vite.cli.config.js",
+    "build:cli-summary": "CLI_ENTRY=report-summary vite build --config vite.cli.config.js",
+    "generate-html-report": "node dist/generate-html-report.cjs",
+    "report-summary": "node dist/report-summary.cjs",
     "inject-fonts": "bun run scripts/inject-fonts.ts",
     "lint": "bunx @biomejs/biome lint .",
     "preview": "vite preview",

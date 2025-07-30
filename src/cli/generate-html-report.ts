@@ -1,4 +1,3 @@
-#!/usr/bin/env bun
 /**
  * CLI to generate a static HTML report from a SARIF or Semgrep JSON file.
  *
@@ -23,7 +22,9 @@ function parseArgs() {
 Security Report HTML Generator
 
 Usage:
-  bun src/cli/generate-html-report.ts --input <file> [--output <file>] [--no-dedup]
+  node dist/generate-html-report.cjs --input <file> [--output <file>] [--no-dedup]
+  # OR
+  bun run generate-html-report --input <file> [--output <file>] [--no-dedup]
 
 Options:
   -i, --input <file>   Path to SARIF, Semgrep, or GitLab SAST JSON file (required)
@@ -33,13 +34,13 @@ Options:
 
 Examples:
   # Generate report from SARIF file
-  bun src/cli/generate-html-report.ts --input scan.sarif.json --output report.html
+  node dist/generate-html-report.cjs --input scan.sarif.json --output report.html
 
   # Generate report from Semgrep JSON
-  bun src/cli/generate-html-report.ts --input semgrep_output.json
+  bun run generate-html-report --input semgrep_output.json
 
   # Generate report from GitLab SAST JSON
-  bun src/cli/generate-html-report.ts -i gl-sast-report.json -o security-report.html
+  node dist/generate-html-report.cjs -i gl-sast-report.json -o security-report.html
 
 Supported formats:
   - SARIF v2.1.0
@@ -99,8 +100,12 @@ async function main() {
   try {
     jsonData = JSON.parse(fileContent);
   } catch (err) {
-    console.error("❌ Failed to parse JSON. The file doesn't appear to be valid JSON.");
-    console.error(`   Error: ${err instanceof Error ? err.message : "Unknown error"}`);
+    console.error(
+      "❌ Failed to parse JSON. The file doesn't appear to be valid JSON.",
+    );
+    console.error(
+      `   Error: ${err instanceof Error ? err.message : "Unknown error"}`,
+    );
     process.exit(1);
   }
 
@@ -110,7 +115,9 @@ async function main() {
     results = parsed.results;
     summary = parsed.summary;
     console.log(`🔍 Detected format: ${summary.format.toUpperCase()}`);
-    console.log(`📊 Found ${summary.totalFindings} findings in ${summary.filesAffected} files`);
+    console.log(
+      `📊 Found ${summary.totalFindings} findings in ${summary.filesAffected} files`,
+    );
   } catch (err) {
     console.error(
       `❌ Failed to parse report: ${err instanceof Error ? err.message : "Unknown error"}`,
@@ -139,7 +146,9 @@ async function main() {
     }
   } catch (err) {
     console.error(`❌ Failed to write output file: ${outputPath}`);
-    console.error(`   Error: ${err instanceof Error ? err.message : "Unknown error"}`);
+    console.error(
+      `   Error: ${err instanceof Error ? err.message : "Unknown error"}`,
+    );
     process.exit(1);
   }
 }
