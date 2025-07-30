@@ -4,7 +4,15 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), tsconfigPaths()],
+  plugins: [
+    react(),
+    // Automatically read TypeScript path aliases from tsconfig files
+    // This ensures @/* imports work correctly in both dev and test environments
+    tsconfigPaths({
+      root: ".",
+      projects: ["./tsconfig.app.json"],
+    }),
+  ],
   base: "./",
   optimizeDeps: {
     exclude: ["lucide-react"],
