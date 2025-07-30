@@ -78,10 +78,12 @@ runs:
         echo "$HOME/.bun/bin" >> $GITHUB_PATH
 
         # Verify installation
-        "$HOME/.bun/bin/bun" --version || {
+        if "$HOME/.bun/bin/bun" --version; then
+          echo "✅ Bun installation verified: $("$HOME/.bun/bin/bun" --version)"
+        else
           echo "❌ Bun installation verification failed"
           exit 1
-        }
+        fi
 
     - name: Checkout report generator
       uses: actions/checkout@v4
@@ -90,13 +92,148 @@ runs:
         path: .security-report-viewer
         fetch-depth: 1
 
+    - name: Install dependencies
+      shell: bash
+      working-directory: .security-report-viewer
+      run: |
+        echo "📦 Installing project dependencies..."
+        if bun install --frozen-lockfile; then
+          echo "✅ Dependencies installed successfully"
+        else
+          echo "❌ Failed to install dependencies"
+          exit 1
+        fi
+
     - name: Build CLIs
       shell: bash
       working-directory: .security-report-viewer
       run: |
-        echo "🔨 Building CLIs..."
-        bun run build:cli
-        bun run build:cli-summary
+        echo "🔨 Building CLI tools..."
+
+        # Clean any previous builds
+        echo "🧹 Cleaning previous builds..."
+        rm -f dist/*.cjs dist/*.cjs.map
+
+        # Build HTML report generator CLI
+        echo "🔨 Building HTML report generator..."
+        if bun run build:cli; then
+          echo "✅ HTML report generator built successfully"
+        else
+          echo "❌ Failed to build HTML report generator"
+          exit 1
+        fi
+
+        # Build report summary CLI
+        echo "🔨 Building report summary CLI..."
+        if bun run build:cli-summary; then
+          echo "✅ Report summary CLI built successfully"
+        else
+          echo "❌ Failed to build report summary CLI"
+          exit 1
+        fi
+
+    - name: Verify CLI builds
+      shell: bash
+      working-directory: .security-report-viewer
+      run: |
+        echo "🔍 Verifying CLI builds..."
+
+        # Check if HTML report generator exists and is executable
+        if [[ -f "dist/generate-html-report.cjs" ]]; then
+          echo "✅ HTML report generator file exists"
+          if head -1 dist/generate-html-report.cjs | grep -q "#!/usr/bin/env node"; then
+            echo "✅ HTML report generator has correct shebang"
+          else
+            echo "❌ HTML report generator missing shebang"
+            exit 1
+          fi
+        else
+          echo "❌ HTML report generator file not found"
+          exit 1
+        fi
+
+        # Check if report summary CLI exists and is executable
+        if [[ -f "dist/report-summary.cjs" ]]; then
+          echo "✅ Report summary CLI file exists"
+          if head -1 dist/report-summary.cjs | grep -q "#!/usr/bin/env node"; then
+            echo "✅ Report summary CLI has correct shebang"
+          else
+            echo "❌ Report summary CLI missing shebang"
+            exit 1
+          fi
+        else
+          echo "❌ Report summary CLI file not found"
+          exit 1
+        fi
+
+        # Test CLI help functionality
+        echo "🧪 Testing CLI help functionality..."
+        if node dist/generate-html-report.cjs --help > /dev/null; then
+          echo "✅ HTML report generator help works"
+        else
+          echo "❌ HTML report generator help failed"
+          exit 1
+        fi
+
+        if node dist/report-summary.cjs --help > /dev/null; then
+          echo "✅ Report summary CLI help works"
+        else
+          echo "❌ Report summary CLI help failed"
+          exit 1
+        fi
+
+        # Show file sizes for reference
+        echo "📊 Built file information:"
+        ls -lh dist/*.cjs | awk '{print "   " $9 ": " $5}'
+
+    - name: Test report summary CLI
+      shell: bash
+      working-directory: .security-report-viewer
+      run: |
+        echo "🧪 Testing report summary CLI functionality..."
+
+        # Test report summary with the input file
+        echo "📊 Generating report summary..."
+        if node dist/report-summary.cjs --input "../${{ inputs.in }}" > /tmp/summary.json; then
+          echo "✅ Report summary generated successfully"
+        else
+          echo "❌ Failed to generate report summary"
+          exit 1
+        fi
+
+        # Verify the output is valid JSON
+        if command -v jq >/dev/null 2>&1; then
+          if jq empty /tmp/summary.json 2>/dev/null; then
+            echo "✅ Report summary output is valid JSON"
+          else
+            echo "❌ Report summary output is not valid JSON"
+            cat /tmp/summary.json
+            exit 1
+          fi
+
+          # Check for expected fields in the JSON output
+          if jq -e '.timestamp' /tmp/summary.json >/dev/null && \
+             jq -e '.tool' /tmp/summary.json >/dev/null && \
+             jq -e '.total_findings' /tmp/summary.json >/dev/null && \
+             jq -e '.severity' /tmp/summary.json >/dev/null; then
+            echo "✅ Report summary contains expected fields"
+
+            # Show key metrics
+            total_findings=$(jq -r '.total_findings' /tmp/summary.json)
+            tool_name=$(jq -r '.tool' /tmp/summary.json)
+            echo "📊 Summary: $total_findings findings detected by $tool_name"
+          else
+            echo "❌ Report summary missing expected fields"
+            echo "📄 Actual output:"
+            cat /tmp/summary.json
+            exit 1
+          fi
+        else
+          echo "📄 jq not available, showing raw output:"
+          cat /tmp/summary.json
+          echo ""
+          echo "✅ Report summary generated (JSON validation skipped)"
+        fi
 
     - name: Generate HTML report
       shell: bash
@@ -105,6 +242,12 @@ runs:
         echo "📊 Generating HTML report..."
         echo "Input file: ${{ inputs.in }}"
         echo "Output file: ${{ inputs.out }}"
+
+        # Verify input file readability
+        if [[ ! -r "../${{ inputs.in }}" ]]; then
+          echo "❌ Cannot read input file: ${{ inputs.in }}"
+          exit 1
+        fi
 
         # Build the command
         CMD="node dist/generate-html-report.cjs --input ../${{ inputs.in }} --output ../${{ inputs.out }}"
@@ -117,17 +260,41 @@ runs:
           echo "Deduplication: Enabled"
         fi
 
-        # Execute the command
+        # Execute the command with better error handling
+        echo "🚀 Executing: $CMD"
         if eval "$CMD"; then
           echo "✅ HTML report generated successfully"
 
-          # Show file info
+          # Verify output file was created and get detailed info
           if [[ -f "../${{ inputs.out }}" ]]; then
             file_size=$(stat -c%s "../${{ inputs.out }}" 2>/dev/null || stat -f%z "../${{ inputs.out }}" 2>/dev/null || echo "unknown")
-            echo "📄 Report file size: ${file_size} bytes"
+            echo "📄 Report file: ${{ inputs.out }}"
+            echo "📄 File size: ${file_size} bytes"
+
+            # Quick content validation
+            if [[ "$file_size" != "unknown" ]] && [[ "$file_size" -gt 1000 ]]; then
+              echo "✅ Output file appears to have reasonable size"
+            else
+              echo "⚠️  Warning: Output file seems unusually small"
+            fi
+          else
+            echo "❌ Output file was not created despite success status"
+            exit 1
           fi
         else
           echo "❌ Failed to generate HTML report"
+          echo "📋 Checking for common issues..."
+
+          # Show file format detection
+          echo "🔍 Attempting to detect file format..."
+          if command -v file >/dev/null 2>&1; then
+            file "../${{ inputs.in }}" || true
+          fi
+
+          # Show first few lines for debugging
+          echo "📄 First 5 lines of input file:"
+          head -5 "../${{ inputs.in }}" || true
+
           echo "Please check that the input file is a valid SARIF, Semgrep, or GitLab SAST JSON file"
           exit 1
         fi
@@ -135,17 +302,62 @@ runs:
     - name: Verify output
       shell: bash
       run: |
-        echo "🔍 Verifying output file..."
-        if [[ -f "${{ inputs.out }}" ]]; then
-          echo "✅ Output file '${{ inputs.out }}' created successfully"
+        echo "🔍 Performing comprehensive output verification..."
 
-          # Basic validation that it's an HTML file
-          if grep -q "<html" "${{ inputs.out }}"; then
-            echo "✅ Output appears to be valid HTML"
+        if [[ -f "${{ inputs.out }}" ]]; then
+          echo "✅ Output file '${{ inputs.out }}' exists"
+
+          # Get detailed file information
+          file_size=$(stat -c%s "${{ inputs.out }}" 2>/dev/null || stat -f%z "${{ inputs.out }}" 2>/dev/null || echo "0")
+          echo "📊 File size: ${file_size} bytes"
+
+          # Verify minimum file size (should be substantial for a real HTML report)
+          if [[ "$file_size" -gt 10000 ]]; then
+            echo "✅ File size appears reasonable for an HTML report"
           else
-            echo "⚠️  Warning: Output file may not be valid HTML"
+            echo "⚠️  Warning: File size seems small (${file_size} bytes)"
           fi
+
+          # Validate HTML structure
+          echo "🔍 Validating HTML structure..."
+          if grep -q "<html" "${{ inputs.out }}" && \
+             grep -q "<head>" "${{ inputs.out }}" && \
+             grep -q "<body>" "${{ inputs.out }}" && \
+             grep -q "</html>" "${{ inputs.out }}"; then
+            echo "✅ Basic HTML structure is valid"
+          else
+            echo "❌ Invalid HTML structure detected"
+            echo "📄 First 10 lines of output:"
+            head -10 "${{ inputs.out }}"
+            exit 1
+          fi
+
+          # Check for security report content
+          if grep -qi "security\|vulnerability\|finding" "${{ inputs.out }}"; then
+            echo "✅ Output contains security-related content"
+          else
+            echo "⚠️  Warning: Output may not contain expected security content"
+          fi
+
+          # Check for interactive elements (JavaScript/CSS)
+          if grep -q "<script" "${{ inputs.out }}" && grep -q "<style" "${{ inputs.out }}"; then
+            echo "✅ Output includes interactive elements"
+          else
+            echo "⚠️  Note: Output may be missing some interactive elements"
+          fi
+
+          # Final success message
+          echo "🎉 HTML report verification completed successfully!"
+          echo "📋 Summary:"
+          echo "   - File: ${{ inputs.out }}"
+          echo "   - Size: ${file_size} bytes"
+          echo "   - Status: Ready for use"
+
         else
-          echo "❌ Output file '${{ inputs.out }}' was not created"
+          echo "❌ Critical Error: Output file '${{ inputs.out }}' was not created"
+          echo "🔍 Checking working directory contents:"
+          ls -la . || true
+          echo "🔍 Checking for any HTML files:"
+          find . -name "*.html" -type f || true
           exit 1
         fi
