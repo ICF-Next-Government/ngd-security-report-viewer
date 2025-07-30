@@ -104,7 +104,7 @@ runs:
           exit 1
         fi
 
-    - name: Build CLIs
+    - name: Build CLI
       shell: bash
       working-directory: .security-report-viewer
       run: |
@@ -168,14 +168,14 @@ runs:
 
         # Test CLI help functionality
         echo "🧪 Testing CLI help functionality..."
-        if node dist/generate-html-report.cjs --help > /dev/null; then
+        if bun run dist/generate-html-report.cjs --help > /dev/null; then
           echo "✅ HTML report generator help works"
         else
           echo "❌ HTML report generator help failed"
           exit 1
         fi
 
-        if node dist/report-summary.cjs --help > /dev/null; then
+        if bun run dist/report-summary.cjs --help > /dev/null; then
           echo "✅ Report summary CLI help works"
         else
           echo "❌ Report summary CLI help failed"
